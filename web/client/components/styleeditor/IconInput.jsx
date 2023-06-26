@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { FormGroup, FormControl as FormControlRB, Glyphicon as GlyphiconRB } from 'react-bootstrap';
 import localizedProps from '../misc/enhancers/localizedProps';
@@ -14,6 +14,9 @@ import tooltip from '../misc/enhancers/tooltip';
 import withDebounceOnCallback from '../misc/enhancers/withDebounceOnCallback';
 import Loader from '../misc/Loader';
 import { validateImageSrc } from '../../utils/StyleEditorUtils';
+import IconSelectorModal from './IconSelectorModal';
+import ButtonRB from '../misc/Button';
+const Button = tooltip(ButtonRB);
 
 function FormControlOnChange(props) {
     return <FormControlRB { ...props } onChange={(event) => props.onChange(event.target.value)} />;
@@ -91,13 +94,24 @@ function IconInput({
         onImgSourceChange(initialValue.current);
     }, []);
 
+    // chumano: showIconSelector
+    const [showUploadIconsModal, setUploadIconsModal] = useState(false);
+    const onSelectedIcon = useCallback((icon)=>{
+        const {name, path :url} = icon;
+        onImgSourceChange(url, true)
+        setUploadIconsModal(false)
+    },[onImgSourceChange])
+    const showIconSelector = true;
+    const paddingRight = showIconSelector? 52 : 26;
+    const iconRight = showIconSelector? 26 : 0;
+
     return (
         <div
             className="ms-style-editor-icon-input"
             style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
             <FormGroup style={{ flex: 1 }}>
                 <FormControl
-                    style={{ paddingRight: 26 }}
+                    style={{ paddingRight: paddingRight }}
                     placeholder="styleeditor.placeholderEnterImageUrl"
                     value={value}
                     debounceTime={300}
@@ -108,7 +122,7 @@ function IconInput({
                     position: 'absolute',
                     minWidth: 26,
                     minHeight: 26,
-                    right: 0,
+                    right: iconRight,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
@@ -131,6 +145,29 @@ function IconInput({
                 />}
                 {loading && <Loader size={20}/>}
             </div>
+
+            {showIconSelector && <div
+                style={{
+                    position: 'absolute',
+                    minWidth: 26,
+                    minHeight: 26,
+                    right: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                <Button
+                    className="square-button-sm no-border"
+                    onClick={() => setUploadIconsModal(true)}>
+                    <Glyphicon
+                        glyph="map-marker"
+                    />
+                </Button>
+            </div>
+            }
+            {showIconSelector && showUploadIconsModal &&  
+                <IconSelectorModal onSelectedIcon={onSelectedIcon} onClose={()=> setUploadIconsModal(false)}/>
+            }
         </div>
     );
 }
