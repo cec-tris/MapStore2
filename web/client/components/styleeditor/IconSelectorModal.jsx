@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import {  FormControl as FormControlRB, Glyphicon as GlyphiconRB } from 'react-bootstrap';
+import React, { useState, useRef, useEffect} from 'react';
+import { Glyphicon as GlyphiconRB } from 'react-bootstrap';
 import tooltip from '../misc/enhancers/tooltip';
 import ButtonRB from '../misc/Button';
 const Button = tooltip(ButtonRB);
@@ -98,7 +98,7 @@ const IconSelectorModal = ({onSelectedIcon, onClose})=>{
     }
 
     function fetchData(textSearch, page =1){
-        const getIconsFunc = API.Utils.getService("getIcons")
+        const getIconsFunc = API.Utils.getService("GET_ICONS_API")
         if(!getIconsFunc) {
             setError({
                 messageId: 'errorNotSetGetIconsApiService'

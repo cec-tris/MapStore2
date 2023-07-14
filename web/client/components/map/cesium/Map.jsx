@@ -119,6 +119,12 @@ class CesiumMap extends React.Component {
             maximumRenderTimeChange: Infinity,
             skyBox: false
         }, this.getMapOptions(this.props.mapOptions)));
+        
+        //chumano
+        if(this.props.mapOptions?.customCredit){
+            const credit = new Cesium.Credit(this.props.mapOptions?.customCredit);
+            Cesium.CreditDisplay.cesiumCredit = credit
+        }
 
         if (this.props.errorPanel) {
             // override the default error message overlay

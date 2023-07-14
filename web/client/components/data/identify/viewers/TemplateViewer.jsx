@@ -12,6 +12,7 @@ import { template } from 'lodash';
 import { getCleanTemplate } from '../../../../utils/TemplateUtils';
 import HtmlRenderer from '../../../misc/HtmlRenderer';
 import Message from '../../../I18N/Message';
+import {ExternalViewer} from './ExternalViewer';
 
 export default ({layer = {}, response}) => (
     <div className="ms-template-viewer">
@@ -28,6 +29,7 @@ export default ({layer = {}, response}) => (
             }
             return (<div key={i}>
                 <HtmlRenderer html={html}/>
+                <ExternalViewer feature={feature} layer={layer}/>
             </div>);
         }
         )}
