@@ -39,7 +39,13 @@ const getFeatureTypeProperties = (describeFeatureType) => get(describeFeatureTyp
  * @param  {object} describeFeatureType the describeFeatureType object
  * @return {object}                     the featureType property
  */
-const findGeometryProperty = (describeFeatureType) => head((getFeatureTypeProperties(describeFeatureType) || []).filter( d => d.type.indexOf("gml:") === 0));
+//chumano
+const findGeometryProperty = (describeFeatureType) => {
+   const prop = head((getFeatureTypeProperties(describeFeatureType) || []).filter( isGeometryType ));
+   return prop;
+}
+
+    //head((getFeatureTypeProperties(describeFeatureType) || []).filter( d => d.type.indexOf("gml:") === 0));
 /**
  * Retrives the descriptor for a property in the describeFeatureType (supports single featureTypes)
  * @memberof utils.ogc.WFS
@@ -58,7 +64,9 @@ const getPropertyDesciptor = (propName, describeFeatureType) =>
  * @return {string}   url of the schemaLocation
  */
 const schemaLocation = (d) => d.targetNamespace;
-const isGeometryType = (pd) => pd.type.indexOf("gml:") === 0;
+//chumano
+//const isGeometryType = (pd) => pd.type.indexOf("gml:") === 0;
+const isGeometryType = (pd) => pd.type.indexOf("gml:") === 0 || pd.type === "xsd:Geometry";
 const isValidValue = (v, pd) =>
     pd === undefined
     || pd === null
