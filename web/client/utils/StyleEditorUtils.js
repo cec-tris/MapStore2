@@ -243,15 +243,28 @@ const loopFilterArrayToFilterObject = (filterArr, { index = 0, groupId } = {}, c
             groupId: newGroupId
         }, callback);
     }
-    if (operator) {
-        callback('filterField', {
-            attribute: operands[0],
-            groupId,
-            operator: mapOperators[operator] || operator,
-            rowId: uuidv1(),
-            type: isNaN(parseFloat(operands[1])) ? 'string' : 'number',
-            value: operands[1]
-        });
+    if (operator ) { 
+        //chumano
+        if(operands.length >=2){
+            if(!groupId){
+                const newGroupId = uuidv1();
+                groupId = newGroupId;
+                callback('groupField', {
+                    id: newGroupId,
+                    index,
+                    logic: 'AND'
+                });
+            }
+
+            callback('filterField', {
+                attribute: operands[0],
+                groupId,
+                operator: mapOperators[operator] || operator,
+                rowId: uuidv1(),
+                type: isNaN(parseFloat(operands[1])) ? 'string' : 'number',
+                value: operands[1]
+            });
+        }
         return loopFilterArrayToFilterObject(others, {
             index,
             groupId

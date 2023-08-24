@@ -95,6 +95,7 @@ function addAuthenticationToAxios(axiosConfig) {
 }
 
 axios.interceptors.request.use(config => {
+    if(config.url.startsWith(':80/')) {config.url = config.url.substring(3);} //chumano for dev
     var uri = config.url || '';
     var sameOrigin = !(uri.indexOf("http") === 0);
     var urlParts = !sameOrigin && uri.match(/([^:]*:)\/\/([^:]*:?[^@]*@)?([^:\/\?]*):?([^\/\?]*)/);
