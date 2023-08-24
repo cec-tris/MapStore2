@@ -6,13 +6,13 @@
         "about_a0": "đây",
         "about_h20": "Bản quyền",
         "about_h21": "Cảm ơn",
-        "about_p0-0": "MapStore là khung để phát triển các ứng dụng lập bản đồ trên mạng sử dụng các thư viện bản đồ chuẩn, như là",
+        "about_p0-0": "MapHub là khung để phát triển các ứng dụng lập bản đồ trên mạng sử dụng các thư viện bản đồ chuẩn, như là",
         "about_p0-1": "và",
-        "about_p1": "MapStore có một số ứng dụng ví dụ:",
-        "about_p3": "MapStore là phần mềm miễn phí và nguồn mở, dựa trên OpenLayers, Leaflet và ReactJS và được cấp phép theo Giấy phép BSD đơn giản hóa.",
+        "about_p1": "MapHub có một số ứng dụng ví dụ:",
+        "about_p3": "MapHub là phần mềm miễn phí và nguồn mở, dựa trên OpenLayers, Leaflet và ReactJS và được cấp phép theo Giấy phép BSD đơn giản hóa.",
         "about_p5-0": "Để biết thêm thông tin, hãy kiểm tra",
         "about_p5-1": "trang.",
-        "about_p6": "MapStore2 được tạo bởi:",
+        "about_p6": "MapHub được tạo bởi:",
         "about_title": "Về",
         "about_ul0_li0": "MapViewer là một trình xem đơn giản các bản đồ được cấu hình sẵn (được lưu trữ tùy chọn trong cơ sở dữ liệu sử dụng GeoStore)",
         "about_ul0_li1": "MapPublisher được phát triển để tạo ra, lưu và chia sẻ một cách đơn giản và trực quan các bản đồ và tập hợp được tạo ra bằng cách chọn nội dung từ các nguồn nổi tiếng như Google Maps và OpenStreetMap hoặc từ các dịch vụ được cung cấp bởi các tổ chức sử dụng giao thức mở như OGC WMS, WFS, WMTS hoặc TMS và như vậy. Để biết thêm thông tin, hãy kiểm tra",
@@ -20,9 +20,9 @@
             "addbtn": "Thêm vào",
             "groupName": "Tên nhóm"
         },
-        "Forbidden": "Forbidden",
+        "Forbidden": "Bị cấm",
         "annotations": {
-            "add": "Mới",
+            "add": "Thêm",
             "addGeometry": "Thêm một hình mới",
             "applyStyle": "Áp dụng kiểu",
             "back": "Trở lại",
@@ -60,7 +60,8 @@
                     "Polygon": "Trình chỉnh sửa đa giác",
                     "Text": "Trình soạn thảo văn bản"
                 },
-                "valid": "Hình hợp lệ"
+                "valid": "Hình hợp lệ",
+                "newFeature": "Mới"
             },
             "emptygeometry": "Hình không thể để trống",
             "errorLoadingSymbols": "Tải danh sách biểu tượng bị trục trặc. Vui lòng liên hệ với quản trị viên để kiểm tra các tùy chọn cấu hình",
@@ -76,7 +77,7 @@
             "loadtooltip": "Nhập chú thích",
             "mandatory": "Trường bắt buộc",
             "remove": "Xóa",
-            "removeannotation": "Bạn có muốn xóa chú thích có tiêu đề: {title}không?",
+            "removeannotation": "Bạn có muốn xóa chú thích có tiêu đề: {title} không?",
             "removegeometry": "Bạn có muốn xóa tất cả các tính năng chú thích?",
             "save": "Lưu lại",
             "selectfiletext": "Thả tệp của bạn vào đây hoặc nhấp để chọn Tệp chú thích để nhập vào. (các tệp được hỗ trợ: JSON)",
@@ -93,7 +94,25 @@
             "undo": "Bạn có chắc muốn từ bỏ phiên chỉnh sửa chú thích?",
             "undoDeleteFeature": "Bạn có chắc muốn xóa tính năng này?",
             "undoGeom": "Bạn có chắc muốn thoát mà không lưu? (Bạn sẽ mất mọi thay đổi)",
-            "zoomTo": "Thu phóng"
+            "zoomTo": "Thu phóng",
+            "saveGeometry": "Lưu đối tượng",
+            "geometries": "Đối tượng không gian",
+            "empty": "Chưa có chú thích, nhấn vào [+] để thêm chú thích",
+            "enableEdit": "Bật chỉnh sửa",
+            "editMeasurement": "Chỉnh sửa đo đạc",
+            "zoomToGeometry": "Phóng to tới đối tượng",
+            "removeGeometry": "Xóa",
+            "hide": "Ẩn chú thích",
+            "show": "Hiển thị chú thích",
+            "tabCoordinates": "Tọa độ",
+            "warning": "Cảnh báo!",
+            "measureWarningText": "Chuyển để chỉnh sửa bảng đo  sẽ xóa mọi kiểu màu đã dùng",
+            "notShowAgain": "Đừng hiển thị tin nhắn này nữa",
+            "tabStyle": "Kiểu màu",
+            "tooltip": "Chú thích",
+            "geometryError": "Cấu hình đối tượng không hợp lệ",
+            "annotationSaveGeometryError": "Tính năng lưu bị tắt do đối tượng không hợp lệ, vui lòng sửa nó để lưu chú thích",
+            "resolveAllErrors": "Vui lòng sửa bất kỳ lỗi nào trước khi chỉnh sửa đối tượng khác"
         },
         "annotationsbutton": "Chú thích",
         "autorefresh": {
@@ -108,8 +127,8 @@
         },
         "bandselector": {
             "algorithm": {
-                "ClipToMinimumMaximum": "Clip",
-                "ClipToZero": "Clip thành 0",
+                "ClipToMinimumMaximum": "Cắt",
+                "ClipToZero": "Cắt thành 0",
                 "StretchToMinimumMaximum": "Căng ra",
                 "none": "Không "
             },
@@ -145,8 +164,8 @@
             "noResultsText": "Không có kết quả",
             "notAvailable": "Không có sẵn",
             "notification": {
-                "errorTitle": "Error",
-                "errorSearchingRecords": "Some records have not been found: {records} Please check the query param url",
+                "errorTitle": "Lỗi",
+                "errorSearchingRecords": "Không tìm thấy một số bản ghi: {records} Vui lòng kiểm tra tham số truy vấn url",
                 "addCatalogService": "Dịch vụ được thêm chính xác",
                 "duplicatedServiceTitle": "Một dịch vụ với tiêu đề đó đã tồn tại. Xin vui lòng đổi tiêu đề",
                 "errorServiceUrl": "Dịch vụ không có sẵn. Vui lòng kiểm tra URL được cung cấp",
@@ -178,7 +197,55 @@
             "url": "URL",
             "urlPlaceholder": "gõ một URL",
             "wfsGetCapLink": "WFS",
-            "wmsGetCapLink": "WMS"
+            "wmsGetCapLink": "WMS",
+            "tms": {
+                "provider": "Nhà cung cấp",
+                "urlTemplate": "Mẫu URL",
+                "urlTemplateHint": "<p>Mẫu URL cho dịch vụ TMS tùy chỉnh, với khả năng chèn các biến (được biểu thị bằng dấu ngoặc nhọn, ví dụ: <code>{var_name}</code>) sẽ được ứng dụng thay thế.<br/>. Các biến <code>{x}</code>, <code>{y}</code> và <code>{z}</code> được dành riêng cho các giá trị tọa độ lưới ô vuông. Bạn cũng có thể sử dụng biến <code>{s}</code> cho tên miền phụ. Bất kỳ biến nào khác được chỉ định trong URL cũng phải được chỉ định trong tùy chọn bên trong \"Cấu hình TMS tùy chỉnh\" (Cài đặt nâng cao)</p>",
+                "customTMSConfiguration": "Cấu hình TMS tùy chỉnh",
+                "customTMSConfigurationHint": "<p>Tùy chọn có thể chứa :<br/><ul><li><code>\"subdomains\": ['a', 'b']</code>: được dùng cho nhiều tên miền, thay thế <code>{s}</code> trong mẫu URL</li><li><code>\"maxNativeZoom\": 20</code>: độ phóng tối đa</li></ul></p>",
+                "forceDefaultTileGrid": "Bắt buộc dùng ô lưới mặc định",
+                "forceDefaultTileGridDescription": "Sử dụng lưới của phép chiếu toàn cầu thay vì nguồn và độ phân giải do máy chủ cung cấp. Điều này hữu ích đối với một số dịch vụ TMS quảng cáo sai nguồn gốc hoặc độ phân giải."
+            },
+            "tileprovider": {
+                "tooltip": "x,y,z là vị trí ô lưới, s là tên miền con"
+            },
+            "invalidUrlHttpProtocol": "Không thể thêm mục lục này vào mục lục sẵn sàng, vì nó dùng giao thức http. Xin hãy cung cấp một địa chỉ URL của mục lục dùng giao thức https.",
+            "backgroundAlreadyAdded": "Thêm vào bộ chọn nền",
+            "enableLocalizedLayerStyles": {
+                "label": "Bật kiểu dáng cục bộ",
+                "tooltip": "Ghi chú: tham số này yêu cầu cấu hình cụ thể trên GeoServer"
+            },
+            "format": {
+                "noOption": "Không có tùy chọn",
+                "loading": "Đang tải..."
+            },
+            "filter": {
+                "static": {
+                    "label": "Lọc tĩnh",
+                    "info": "Bộ lọc luôn được áp dụng, ngay cả trong tìm kiếm trống"
+                },
+                "dynamic": {
+                    "label": "Lọc động",
+                    "info": "Bộ lọc được dùng khi có văn bản tìm kiếm và được áp dụng trong \" AND \" với bộ lọc tĩnh",
+                    "helpText": "Dùng mẫu có bộ giữ chỗ ${searchText} để chụp chuỗi tìm kiếm"
+                },
+                "error": "Cú pháp XML không hợp lệ"
+            },
+            "autoSetVisibilityLimits": {
+                "label": "Đặt giới hạn tầm nhìn",
+                "tooltip": "Tự động áp dụng giới hạn khả năng hiển thị do máy phục vụ đề nghị"
+            },
+            "allowUnsecureLayers": {
+                "label": "Cho phép các lớp không an toàn",
+                "tooltip": "Đang thêm lớp để ánh xạ nếu tùy chọn này bật, thì buộc ứng dụng phải áp dụng ủy nhiệm"
+            },
+            "domainAliases": {
+                "title": "Bí danh miền",
+                "helpTooltip": "Tùy chọn này được dùng để chia nội dung cho nhiều tên miền con",
+                "addAliasTooltip": "Thêm bí danh",
+                "removeAliasTooltip": "Gỡ bỏ bí danh"
+            }
         },
         "close": "Đóng",
         "collapse": "Thu hẹp",
@@ -220,8 +287,8 @@
                     "unknownError": "Có lỗi khi tải bảng điều khiển. Vui lòng liên hệ với quản trị viên"
                 },
                 "resourceAlreadyExists": "Một tài nguyên với tên này đã tồn tại",
-                "forbidden": "An unexpected error occured (403 Forbidden). Please contact the Administrator",
-                "forbidden405": "An unexpected error occured (405 Forbidden). Please contact the Administrator"
+                "forbidden": "Gặp lỗi bất thường (403 Cấm). Xin hãy liên lạc với quản trị viên.",
+                "forbidden405": "Gặp lỗi bất thường (405 bị cấm) Hãy liên lạc với quản trị viên"
             },
             "loadingSpinner": "Đang tải Bảng điều khiển",
             "saveDialog": {
@@ -237,10 +304,20 @@
                 "saveSuccessMessage": "Bảng điều khiển được lưu thành công",
                 "saveSuccessTitle": "Thành công",
                 "title": "Chỉnh sửa thuộc tính bảng điều khiển"
-            }
+            },
+            "importDialog": {
+                "selectFiles": "Chọn một tệp tin",
+                "heading": "Thả tập tin bảng điều khiển.json đã xuất trước đó",
+                "note": "Dữ liệu trong tập tin nhập sẽ thay thế dữ liệu trong bảng điều khiển hiện tại"
+            },
+            "exportDialog": {
+                "heading": "Xuất dashboard dưới dạng json"
+            },
+            "delete": "Xóa dashboard"
         },
         "details": {
-            "title": "Về bản đồ này"
+            "title": "Về bản đồ này",
+            "tooltip": "Thông tin về bản đồ này"
         },
         "dock": {
             "row": "Đã chọn hàng {rowsSelected}",
@@ -259,7 +336,7 @@
                 "weight": "Trọng lượng"
             },
             "fontTitle": "Phông chữ",
-            "lineDash": "LineDash",
+            "lineDash": "Gạch dòng",
             "marker": {
                 "icon": "Biểu tượng",
                 "layout": "Bố trí",
@@ -270,7 +347,8 @@
             "opacity": "Độ mờ đục",
             "stroke": "Đường ",
             "text": "Văn bản",
-            "width": "Độ rộng"
+            "width": "Độ rộng",
+            "textRotation": "Quay"
         },
         "drawLocal": {
             "draw": {
@@ -381,7 +459,7 @@
         "errorTitleDefault": "Lỗi",
         "expand": "Mở rộng",
         "expandtoolbar": {
-            "tooltip": "Mở rộng /Sụp đổ"
+            "tooltip": "Mở rộng /Thu gọn"
         },
         "featuregrid": {
             "backtosearch": "Quay lại tìm kiếm",
@@ -406,7 +484,12 @@
                     "default": "Tìm kiếm...",
                     "editMode": "Tìm kiếm nhanh không có sẵn trong chế độ chỉnh sửa",
                     "number": "Nhập một số hoặc một biểu thức. Ví dụ: 10,> 2, <10",
-                    "string": "Nhập văn bản để lọc ..."
+                    "string": "Nhập văn bản để lọc ...",
+                    "geometry": {
+                        "disabled": "Lọc việc nhắp vào map / Alt + chuột để vẽ bộ lọc hộp. Cũng giữ ctrl để thêm nhiều tính năng vào bộ lọc hiện thời",
+                        "enabled": "Nhấp vào map để chọn tính năng / Alt + chuột kéo để vẽ bộ lọc hộp. Giữ ctrl và nhấp để chọn nhiều tính năng",
+                        "applied": "Lau vùng chọn"
+                    }
                 }
             },
             "header": "Danh sách kết quả tìm kiếm",
@@ -449,10 +532,21 @@
                 "syncOnMap": "Đồng bộ hóa bản đồ với bộ lọc",
                 "synchPopoverText": "Sử dụng công cụ này để đồng bộ hóa bản đồ với bộ lọc đã chọn",
                 "synchPopoverTitle": "Đồng bộ hóa bản đồ với bộ lọc",
-                "zoomAll": "Thu phóng đến phạm vi trang"
+                "zoomAll": "Thu phóng đến phạm vi trang",
+                "enableSnapping": "Kích hoạt chụp",
+                "disableSnapping": "Tắt chụp",
+                "snapToLayer": "Đính vào lớp",
+                "snappingSettings": {
+                    "header": "Thiết lập",
+                    "vertex": "Vertex",
+                    "edge": "Cạnh",
+                    "pixelTolerance": "Dung sai (điểm ảnh)",
+                    "loadingStrategy": "Chiến lược nạp"
+                }
             },
             "tools": "Bảng công cụ",
-            "yesButton": "Có"
+            "yesButton": "Có",
+            "selectedInfo": "( {selected} Selected )"
         },
         "floatinglegend": {
             "hideLegend": "Ẩn chú giải",
@@ -478,7 +572,44 @@
                 "jet": "{number, plural, =0 {Jet} =1 {Jet} other {Jet}}",
                 "purple": "{number, plural, =0 {tía} =1 {tía} other {tía}}",
                 "random": "{number, plural, =0 {ngẫu nhiên} =1 {ngẫu nhiên} other {ngẫu nhiên}}",
-                "red": "{number, plural, =0 {đỏ} =1 {đỏ} other {đỏ}}"
+                "red": "{number, plural, =0 {đỏ} =1 {đỏ} other {đỏ}}",
+                "orrd": "OrRd",
+                "pubu": "PuBu",
+                "bupu": "BuPu",
+                "oranges": "Oranges",
+                "bugn": "BuGn",
+                "ylorbr": "YlOrBr",
+                "ylgn": "YlGn",
+                "reds": "Reds",
+                "rdpu": "RdPu",
+                "greens": "Greens",
+                "ylgnbu": "YlGnBu",
+                "purples": "Purples",
+                "gnbu": "GnBu",
+                "greys": "Greys",
+                "ylorrd": "YlOrRd",
+                "purd": "PuRd",
+                "blues": "Blues",
+                "pubugn": "PuBuGn",
+                "viridis": "Viridis",
+                "spectral": "Spectral",
+                "rdylgn": "RdYlGn",
+                "rdbu": "RdBu",
+                "piyg": "PiYg",
+                "prgn": "PrGn",
+                "rdylbu": "RdYlBu",
+                "brbg": "BrBg",
+                "rdgy": "RdGy",
+                "puor": "PuOr",
+                "set2": "Tập 2",
+                "accent": "Giọng",
+                "set1": "Tập 1",
+                "set3": "Tập 3",
+                "dark2": "Tối 2",
+                "paired": "Đã ghép cặp",
+                "pastel2": "Màu pastel 2",
+                "pastel1": "Màu pastel 1",
+                "custom": "Tự chọn"
             }
         },
         "globeswitcher": {
@@ -651,7 +782,7 @@
             "delete": "Xóa",
             "deleteLayer": "Xóa lớp",
             "deleteLayerMessage": "Bạn có thực sự muốn xóa lớp này?",
-            "deleteLayerGroup":"Xóa nhóm",
+            "deleteLayerGroup": "Xóa nhóm",
             "deleteLayerGroupMessage": "Bạn có thực sự muốn xóa nhóm này và tất cả các lớp của nó không?",
             "description": "Mô tả",
             "display": "Hiển thị",
@@ -672,8 +803,8 @@
             "name": "Tên",
             "propertiesFormatDescription": "Hiển thị kết quả thông tin tính năng dưới dạng danh sách thuộc tính",
             "propertiesFormatTitle": "THUỘC TÍNH",
-            "singleTile": "Ngói đơn",
-            "style": "Phong cách",
+            "singleTile": "Ô lát đơn",
+            "style": "Kiểu màu",
             "styleCustom": "Sử dụng kiểu có tên \"{value}\"",
             "styleListLoadError": "Có lỗi khi tải danh sách kiểu",
             "stylesRefreshList": "Làm mới danh sách kiểu",
@@ -689,7 +820,7 @@
             "textFormatTitle": "VĂN BẢN",
             "title": "Tiêu đề",
             "titleTranslations": "Bản dịch tiêu đề",
-            "heightOffset": "Height offset (m)",
+            "heightOffset": "Độ lệch chiều cao (m)",
             "tooltip": {
                 "both": "Tiêu đề và mô tả",
                 "bottom": "Dưới cùng",
@@ -699,10 +830,45 @@
                 "none": "Không có Tooltip",
                 "right": "Bên phải",
                 "title": "Tiêu đề",
-                "top": "Hàng đầu"
+                "top": "Hàng đầu",
+                "left": "Trái",
+                "editLayerName": "Sửa tên lớp",
+                "confirmLayerName": "Xác nhận thay đổi tên lớp"
             },
             "transparent": "Trong suốt",
-            "windowTitle": "Thuộc tính lớp"
+            "windowTitle": "Thuộc tính lớp",
+            "styleWarning": "Trình soạn thảo kiểu lớp cho kiểu hình học \"{geometryType} \" không được hỗ trợ.",
+            "templateError": "Có lỗi khi áp dụng mẫu cho thông tin trả về bởi máy phục vụ, vui lòng kiểm tra mẫu",
+            "visibilityLimits": {
+                "title": "Giới hạn khả kiến",
+                "serverValuesUpdateUndefined": "Máy phục vụ không cung cấp giới hạn hiển thị tỷ lệ cho lớp này",
+                "serverValuesUpdate": "Máy phục vụ cung cấp giới hạn hiển thị quy mô tối thiểu và tối đa cho lớp này",
+                "serverValuesUpdateMinScale": "Máy phục vụ chỉ cung cấp giới hạn hiển thị quy mô tối thiểu cho lớp này",
+                "serverValuesUpdateMaxScale": "Máy phục vụ chỉ cung cấp giới hạn hiển thị quy mô tối đa cho lớp này",
+                "rangeError": "Giá trị nhỏ nhất lớn hơn giá trị lớn nhất. Hãy đưa ra một phạm vi mà giá trị lớn nhất lớn hơn giá trị nhỏ nhất",
+                "serverValuesError": "Không thể yêu cầu giới hạn khả năng hiển thị quy mô tối thiểu và tối đa cho máy phục vụ. Có lẽ do lỗi trong kết nối mạng hay thiếu điểm cuối khả năng",
+                "updateWMSCapabilities": "Yêu cầu giới hạn khả năng hiển thị quy mô tối thiểu và tối đa cho máy phục vụ",
+                "maxValue": "Giá trị tối đa (trừ)",
+                "maxValuePlaceholder": "Chọn giá trị tối đa",
+                "valueNoResultsText": "Không có tùy chọn nào khớp với giá trị đầu vào",
+                "createOption": "Thêm giá trị mới {nhãn}",
+                "minValue": "Giá trị nhỏ (bao gồm)",
+                "minValuePlaceholder": "Chọn giá trị nhỏ",
+                "type": "Kiểu giới hạn",
+                "scale": "Phóng",
+                "resolution": "Độ phân giải"
+            },
+            "legendOptions": {
+                "title": "Chú giải",
+                "legendWidth": "Chiều rộng",
+                "legendHeight": "Chiều cao",
+                "legendPreview": "Xem thử"
+            },
+            "enableLocalizedLayerStyles": {
+                "label": "Bật kiểu dáng cục bộ",
+                "tooltip": "Ghi chú: tham số này yêu cầu cấu hình cụ thể trên GeoServer"
+            },
+            "forceProxy": "Buộc ủy nhiệm"
         },
         "layers": "Các lớp",
         "loading": "Đang tải...",
@@ -714,7 +880,8 @@
             "metersUnit": "mét",
             "outsideMapBoundsMsg": "Bạn dường như nằm ngoài ranh giới của bản đồ",
             "popup": "Bạn đang ở trong {distance} {unit} từ điểm này",
-            "tooltip": "Định vị tôi"
+            "tooltip": "Định vị tôi",
+            "tooltipDeactivate": "Đừng có khoe vị trí của tôi nữa."
         },
         "longitude": "Kinh độ",
         "manager": {
@@ -726,7 +893,8 @@
             "mapTypes_combo": "Chọn trình xem bản đồ:",
             "maps_title": "Bản đồ",
             "openInANewTab": "Mở bản đồ",
-            "theme_combo": "Chọn chủ đề:"
+            "theme_combo": "Chọn chủ đề:",
+            "managerMenu": "Trình đơn quản lý"
         },
         "map": {
             "description": "Mô tả",
@@ -745,7 +913,9 @@
                 "sureToClose": "Bạn có chắc đóng mà không lưu thay đổi của bạn?",
                 "title": "Bảng chi tiết - {name}",
                 "titleUnsavedChanges": "Bạn có chắc đóng mà không lưu thay đổi của bạn?",
-                "undo": "Hoàn tác xóa"
+                "undo": "Hoàn tác xóa",
+                "showAtStartup": "Hiện khi khởi chạy",
+                "showAsModal": "Hiển thị dưới dạng mô hình"
             },
             "error": "Hình ảnh được cung cấp không hợp lệ",
             "errorFormat": "Các định dạng được hỗ trợ: png / jpg",
@@ -756,7 +926,8 @@
                     "notAccessible": "Bản đồ không truy cập được",
                     "notFound": "Không tìm thấy bản đồ",
                     "title": "Bản đồ không thể xem được",
-                    "unknownError": "<p><small>Một trong những lý do sau đây có thể là nguyên nhân:</small> <ul><li>bạn không có quyền truy cập</li> <li>bạn đang cố truy cập bản đồ không tồn tại</li> <li>bản đồ đã bị xóa</li> <li>hình chiếu của bản đồ không được định dạng</li></ul> <p>"
+                    "unknownError": "<p><small>Một trong những lý do sau đây có thể là nguyên nhân:</small> <ul><li>bạn không có quyền truy cập</li> <li>bạn đang cố truy cập bản đồ không tồn tại</li> <li>bản đồ đã bị xóa</li> <li>hình chiếu của bản đồ không được định dạng</li></ul> <p>",
+                    "projectionError": "Hình chiếu của ánh xạ không được cấu hình"
                 }
             },
             "loading": "Đang tải...",
@@ -793,10 +964,40 @@
                 "error404": "Đã xảy ra lỗi khi tạo hình thu nhỏ",
                 "error409": "Một hình thu nhỏ với tên này đã tồn tại",
                 "errorDefault": "Lỗi mạng"
+            },
+            "mapDelete": "Xoá sơ đồ",
+            "errorCustomSize": "Cỡ tối đa cho phép: {tối đaSize}",
+            "renderingErrorTitle": "Lỗi vẽ",
+            "renderingErrorMessage": "<p>Hiển thị ánh xạ đã dừng và điều này có thể là do những lý do khác nhau: </p><ul><li>Kiểu áp dụng chứa một số quy tắc hay biến không được hỗ trợ bởi các tính năng</li><li>Lớp không được cấu hình đúng</li></ul><p>Bạn có thể áp dụng thay đổi kiểu dáng lớp và sau đó nhấn vào nút 'Lập lại ánh xạ '. <br/> Xem thông báo bên dưới để biết thêm thông tin: </p>",
+            "reloadMap": "Nạp lại ánh xạ",
+            "settings": {
+                "title": "Thiết lập bản đồ",
+                "skyAtmosphere": "Hiển thị bầu khí quyển bầu trời",
+                "groundAtmosphere": "Hiển thị bầu khí quyển mặt đất",
+                "fog": "Hiện sương mù",
+                "depthTest": "Bật thử độ sâu đối với địa hình"
             }
         },
         "mapExport": {
-            "title": "Xuất bản đồ"
+            "title": "Xuất bản đồ",
+            "tooltip": "Xuất ánh xạ hiện thời",
+            "exportPanel": {
+                "title": "<p><h4>Chọn định dạng của bạn</h4></p>",
+                "exportButtonLabel": "Xuất"
+            },
+            "formats": {
+                "mapstore2": {
+                    "label": "MapStore",
+                    "description": "<p><small>Định dạng cấu hình bản đồ Mạng bản đồ</small></p>"
+                },
+                "wmc": {
+                    "label": "WMC",
+                    "description": "<p><small>Định dạng Ngữ cảnh Bản đồ Mạng OGC</small></p>",
+                    "note": "<p><small><i><strong>note</strong>: Định dạng WMC hỗ trợ <strong>only WMS layers</strong></i></small></p>"
+                }
+            },
+            "errorTitle": "Xuất bản đồ gặp lỗi",
+            "wmcNoLayersError": "Cần ít nhất một lớp WMS để xuất sang WMC, nhưng không tìm thấy"
         },
         "mapImport": {
             "dropZone": {
@@ -807,9 +1008,12 @@
             },
             "errors": {
                 "fileNotSupported": "Tệp không được hỗ trợ",
-                "unknownError": "có một lỗi không xác định trong quá trình nhập"
+                "unknownError": "có một lỗi không xác định trong quá trình nhập",
+                "projectionNotSupported": "Không hỗ trợ phép chiếu của tập tin bạn đang cố nhập",
+                "fileBeyondBoundaries": "Không thể nhập tập tin {tên-tập-tin} vì nó không khớp với ranh giới ánh xạ"
             },
-            "title": "Nhập "
+            "title": "Nhập ",
+            "tooltip": "Nhập một tập tin ánh xạ hay dữ liệu véc-tơ"
         },
         "mapScale": "Tỉ lệ:",
         "maps": {
@@ -835,7 +1039,8 @@
                     "deletedSuccesfully": "Hình thu nhỏ đã được xóa chính xác",
                     "savedSuccesfully": "Hình thu nhỏ đã được lưu chính xác",
                     "updatedSuccesfully": "Hình thu nhỏ đã được cập nhật chính xác"
-                }
+                },
+                "errorLoadingContexts": "Gặp lỗi trong khi nạp ngữ cảnh"
             },
             "removeFromFeaturedMaps": "Xóa khỏi bản đồ đặc trưng",
             "search": "Tìm kiếm...",
@@ -868,7 +1073,11 @@
             "selectTool": "Chọn một công cụ đo lường",
             "showLabel": "Hiển thị nhãn đo lường",
             "title": "Đo",
-            "tooltip": "Đo chiều dài và diện tích"
+            "tooltip": "Đo chiều dài và diện tích",
+            "saveMeasure": "Lưu các phép đo vào chú thích",
+            "exportToGeoJSON": "Xuất ra GeoJSON",
+            "resetTooltip": "Các phép đo rõ ràng",
+            "addAsLayer": "Thêm như lớp"
         },
         "measureSupport": {
             "continueLine": "Nhấn vào đây để tiếp tục vẽ đường",
@@ -968,7 +1177,16 @@
             "sheetsize": "Kích cỡ trang:",
             "submit": "In",
             "title": "Tiêu đề",
-            "titleplaceholder": "Nhập tiêu đề ..."
+            "titleplaceholder": "Nhập tiêu đề ...",
+            "scale": "Phóng",
+            "includeScale": "Bao gồm trong bản in",
+            "disabledpreview": "Xem thử không sẵn sàng với các tham số in này",
+            "outputFormat": "Định dạng",
+            "previewFormatUnsupported": "Không hỗ trợ định dạng để xem thử",
+            "projection": "Hệ thống Toạ độ",
+            "projectionmismatch": "Hệ toạ độ không khớp giữa bản đồ in và màn hình",
+            "graticule": "thêm lưới với nhãn",
+            "additionalLayers": "Bao gồm lớp phủ"
         },
         "printbutton": "In",
         "pseudocolorsettings": {
@@ -1006,7 +1224,10 @@
                     "wrong_range": "Biên dưới phải thấp hơn biên trên"
                 },
                 "text_placeholder": "Nhập văn bản để tìm kiếm",
-                "tooltipTextField": "sử dụng <b>*</b> cho bất kỳ số nào của bất kỳ char nào</br> sử dụng <b>.</b> cho một char</br>sử dụng <b>!</b> để thoát khỏi hai (* và.)</br>ở trên"
+                "tooltipTextField": "sử dụng <b>*</b> cho bất kỳ số nào của bất kỳ char nào</br> sử dụng <b>.</b> cho một char</br>sử dụng <b>!</b> để thoát khỏi hai (* và.)</br>ở trên",
+                "deleteGroup": "Xoá nhóm",
+                "tooltipTextFieldCSS": "dùng <b>% </b> cho bất kỳ số ký tự nào</br>dùng <b> </b> cho một ký tự đơn</br>dùng <b>\\</b> để thoát hai (% và )</br> trên",
+                "tooltipTextField3DTiles": "dùng giá trị được hỗ trợ bởi hàm <strong>regExp</strong> của đặc tả kiểu dáng gạch 3d 1.0"
             },
             "changedFilter": "Bộ lọc đã thay đổi",
             "changedFilterAlert": "Có những thay đổi chưa được lưu. Bạn có muốn lưu không?",
@@ -1122,14 +1343,38 @@
             "deleteConfirmMessage": "Bạn có chắc muốn xóa tài nguyên này?",
             "deleteConfirmTitle": "Bạn có chắc không",
             "maps": {
-                "title": "Bản đồ ({count})"
+                "title": "Bản đồ ({count})",
+                "noMapAvailable": "Không có bản đồ sẵn sàng",
+                "createNewOne": "Tạo một cái mới",
+                "unsavedMapConfirmTitle": "Thay đổi chưa lưu",
+                "unsavedMapConfirmMessage": "Bạn có chắc muốn để lại thay đổi chưa được lưu không?",
+                "unsavedMapConfirmButtonText": "Đi đi",
+                "unsavedMapCancelButtonText": "Đóng"
             },
             "resource": {
                 "addToFeatured": "Chỉnh sửa tính năng",
                 "deleteResource": "Xóa",
                 "editResource": "Chỉnh sửa thuộc tính ",
                 "removeFromFeatured": "Xóa khỏi tính năng",
-                "showDetails": "Hiển thị chi tiết"
+                "showDetails": "Hiển thị chi tiết",
+                "editResourceData": "Sửa dữ liệu"
+            },
+            "successSaved": "Đã lưu thành công",
+            "savingError": "Có lỗi khi lưu dữ liệu",
+            "geostories": {
+                "newGeostory": "Tạo mới GeoStory",
+                "title": "GeoStories ({count})",
+                "titleNoCount": "GeoStories",
+                "create": "Tạo GeoStory",
+                "noGeostoryAvailable": "Không có GeoStory nào",
+                "createANewOne": "Tạo một cái mới",
+                "deleteError": "Có lỗi khi xóa GeoStory",
+                "errorLoadingGeostories": "Có lỗi khi tải GeoStories"
+            },
+            "contexts": {
+                "title": "Bối cảnh ({count})",
+                "titleNoCount": "Bối cảnh",
+                "noContextAvailable": "Không có bối cảnh nào"
             }
         },
         "rulesmanager": {
@@ -1226,7 +1471,7 @@
             "maxlabel": "Mẫu số tỉ lệ tối đa",
             "minerror": "Giá trị tối thiểu phải nhỏ hơn giá trị tối đa",
             "minlabel": "Mẫu số tỉ lệ tối thiểu",
-            "none": "Không gì"
+            "none": "Không có"
         },
         "search": {
             "addbtn": "Thêm vào",
@@ -1262,13 +1507,58 @@
             "serviceslistempty": "Không có dịch vụ tùy chỉnh được xác định",
             "serviceslistlabel": "Dịch vụ có sẵn",
             "s_launch_info_panel": {
-                "label": "Launch Info panel",
-                "no_info": "No Info",
-                "all_layers": "All Layers",
-                "single_layer": "Search Layer",
-                "no_info_description": "Identify panel will not show up on search",
-                "all_layers_description": "Identify panel will show up displaying information of all layers visible in map",
-                "single_layer_description": "Identify panel will show up with the data already available through the WFS search"
+                "label": "Mở cửa sổ thông tin",
+                "no_info": "Không có thông tin",
+                "all_layers": "Tất cả các lớp",
+                "single_layer": "Lớp tìm kiếm",
+                "no_info_description": "Bảng nhận diện sẽ không hiển thị khi tìm kiếm",
+                "all_layers_description": "Bảng nhận diện sẽ hiển thị thông tin của tất cả các lớp có thể nhìn thấy trong ánh xạ",
+                "single_layer_description": "Identify panel will show up with the data already available through the WFS search",
+                "openFeatureInfoButtonCheckbox": "Dùng nút để mở thông tin tính năng",
+                "forceSearchLayerVisibility": "Buộc hiển thị lớp tìm kiếm"
+            },
+            "layerMustBeVisible": "Lớp đích không hoạt động",
+            "searchByBookmark": "Tìm kiếm theo Đánh dấu",
+            "bookmarksettings": "Thiết lập Đánh dấu",
+            "zoomToBookmark": "Thu nhỏ tới đánh dấu đã chọn",
+            "bookmarkFilter": "Lọc Đánh dấu",
+            "editBookmark": "Sửa Đánh dấu",
+            "deleteBookmark": "Xoá Đánh dấu",
+            "b_listpaneltitle": "Xem các liên kết lưu",
+            "b_newpaneltitle": "Thêm Đánh dấu mới",
+            "latitude": "Lat",
+            "longitude": "Lon",
+            "b_title": "Tựa",
+            "b_layer_tooltip": "Bật/tắt nạp lại khả năng hiển thị lớp",
+            "b_bbox": "Hộp Đóng kết",
+            "b_bbox_tooltip": "Dùng ô xem hiện thời làm hộp giới hạn",
+            "b_bbox_south": "Nam",
+            "b_bbox_south_placeholder": "Vào Nam",
+            "b_bbox_west": "TâyName",
+            "b_bbox_west_placeholder": "Vào Tây",
+            "b_bbox_east": "ĐôngName",
+            "b_bbox_east_placeholder": "Vào Đông",
+            "b_bbox_north": "Bắc",
+            "b_bbox_north_placeholder": "Vào Bắc",
+            "bookmarkslistempty": "Chưa định nghĩa Đánh dấu",
+            "b_placeholder": "Chọn Đánh dấu...",
+            "b_clearvalue": "Xoá Đánh dấu",
+            "b_noresult": "Không tìm thấy dấu trang",
+            "s_max_zoom": "Mức phóng to tối đa",
+            "showGFI": "Hiện GFI",
+            "errors": {
+                "nonQueriableLayers": "Lớp được cung cấp trong URL không khả nghịch hoặc không nhìn thấy trong ánh xạ.",
+                "serverError": "Máy phục vụ đã trả về lỗi khi thực hiện yêu cầu GetFeatureInfo. Hãy kiểm tra xem tham số có đúng không."
+            },
+            "advancedSearchPanel": {
+                "title": "Bộ lọc tìm kiếm nâng cao",
+                "context": {
+                    "title": "Ngữ cảnh"
+                },
+                "showTooltip": "Hiển thị bộ lọc nâng cao",
+                "showTooltipActive": "Hiển thị các bộ lọc nâng cao (hoạt động)",
+                "hideTooltip": "Ẩn bộ lọc nâng cao",
+                "hideTooltipActive": "Ẩn bộ lọc nâng cao (hoạt động)"
             }
         },
         "settings": "Cài đặt",
@@ -1286,7 +1576,14 @@
             "success": " đã nhập đúng",
             "title": "Thêm tệp Vector cục bộ",
             "tooltip": "Thêm một tệp Vector cục bộ vào bản đồ.",
-            "zoom": "Phóng to các tập tin vectơ"
+            "zoom": "Phóng to các tập tin vectơ",
+            "merge": "Nhập vào lớp chú thích hiện có",
+            "replace": "Thay thế lớp chú thích hiện có",
+            "next": "Kế",
+            "skip": "Nhảy qua",
+            "finish": "Kết thúc",
+            "layerOf": "Lớp {số} của {tổng}:",
+            "styleCustomizationDisabled": "Lớp này đã được xác định kiểu dáng nên không thể tùy chỉnh nó."
         },
         "share": {
             "QRCodeLinkTitle": "mã QR",
@@ -1314,14 +1611,31 @@
             "zoomToolTip": "Tối thiểu: 0 và Tối đa: 35",
             "headingToolTip": "Tối thiểu: 0° và Tối: 360°",
             "rollToolTip": "Tối thiểu: -90° và Tối: 90°",
-            "pitchToolTip": "Tối thiểu: -90° và Tối: 90°"
+            "pitchToolTip": "Tối thiểu: -90° và Tối: 90°",
+            "tooltip": "Chia sẻ",
+            "addCenterAndZoomParam": "Thêm giữa và thu nhỏ liên kết chia sẻ",
+            "addMarkerAndZoomParam": "Thêm dấu chỗ và thu nhỏ liên kết chia sẻ",
+            "marker": "Thêm dấu trên ánh xạ đã tải",
+            "coordinate": "Toạ độ",
+            "coordTooltip": "Nhấn vào bản đồ để lấy các tọa độ",
+            "wrongCenterAndZoomParamTitle": "Param giữa và thu phóng không hợp lệ",
+            "wrongCenterAndZoomParamMessage": "Param giữa và Zoom phải là center=lon, lat & zoom=value và (+|- 90 lat, +|-180 lon, <=+35 zoom)",
+            "wrongMarkerAndZoomParamTitle": "Param đánh dấu và thu phóng không hợp lệ",
+            "wrongMarkerAndZoomParamMessage": "Dấu và Zoom param phải là marker=lon, lat & zoom=value và (+|-90 lat, +|-180 lon, <=+35 zoom)",
+            "showHomeButton": "Liên kết tới nhà MapStore",
+            "showSectionId": "Vị trí cuộn bao gồm",
+            "showConnections": "Hiện các kết nối",
+            "sizeOptions": {
+                "width": "chiều rộng",
+                "height": "chiều cao"
+            }
         },
         "showEmptyMessageGFI": "Hiển thị thông báo kết quả trống trong bảng GetFeatureInfo",
         "showMore": "Hiển thị nhiều hơn...",
         "showMousePositionCoordinates": "Hiển thị / ẩn tọa độ",
-        "showCrsSelector": "Select projection",
-        "crsSelectorFilterPlaceholder": "Filter projection",
-        "crsSelectorSelectedCRS": "Selected:",
+        "showCrsSelector": "Chọn phép chiếu",
+        "crsSelectorFilterPlaceholder": "Phép chiếu lọc",
+        "crsSelectorSelectedCRS": "Đã chọn:",
         "snapshot": {
             "date": "Ngày",
             "downloadingSnapshots": "tạo ảnh chụp đang chờ xử lý",
@@ -1383,12 +1697,164 @@
             "updateTmpErrorTitle": "Cập nhật kiểu tạm thời",
             "updateTmpStyleErrorMessage": "Kiểu tạm thời không thể được cập nhậ, có thể do định dạng kiểu không được hỗ trợ hoặc vấn đề kết nối.",
             "validationErrorTitle": "Lỗi xác nhận",
-            "heightReferenceFromGround": "Height reference from ground",
-            "height": "Height",
-            "constantValue": "Constant value",
-            "attributeValue": "Attribute value",
-            "relative": "Relative",
-            "clamp": "Clamp"
+            "heightReferenceFromGround": "Chiều cao tham chiếu từ mặt đất",
+            "height": "Độ cao",
+            "constantValue": "Giá trị hằng số",
+            "attributeValue": "Giá trị thuộc tính",
+            "relative": "Liên quan",
+            "clamp": "Bám",
+            "errorTitle": "Lỗi StyleEditor",
+            "parsingCapabilitiesError": "<h4>Nguyên nhân có thể: </h4>không thể phân tích các khả năng và lấy các kiểu dáng",
+            "globalError": "<h4>Nguyên nhân có thể: </h4>không thể kết nối tới dịch vụ",
+            "enterLegendLabelPlaceholder": "Nhập chú thích",
+            "addMarkSymbolizer": "Thêm ký hiệu đánh dấu",
+            "addMarkRule": "Thêm quy tắc đánh dấu",
+            "shape": "Kiểu hình",
+            "fill": "Màu tô",
+            "clampToGround": "Bám xuống đất",
+            "clampOutlineToGround": "Bám viền xuống đất",
+            "msBringToFront": "Mang ra phía trước",
+            "strokeColor": "Màu viền",
+            "strokeWidth": "Độ rộng viền",
+            "radius": "Bán kính",
+            "rotation": "Góc quay",
+            "classificationtype": "Loại đa giác",
+            "3dTile": "3D",
+            "terrain": "Địa hình",
+            "both": "Cả hai",
+            "addIconSymbolizer": "Thêm ký hiệu hình",
+            "addIconRule": "Thêm quy tắc hình",
+            "image": "Hình ảnh",
+            "format": "Định đạng",
+            "opacity": "Độ mờ",
+            "size": "Kích thước",
+            "addLineSymbolizer": "Thêm ký hiệu đường",
+            "addLineRule": "Thêm quy tắc đường",
+            "lineStyle": "Kiểu đường",
+            "lineCap": "Đầu bịt đường",
+            "lineJoin": "Kết nối đường",
+            "addFillSymbolizer": "Thêm kí hiệu tô",
+            "addFillRule": "Thêm quy tắc tô",
+            "outlineColor": "Màu viền",
+            "outlineWidth": "Độ rộng viền",
+            "addTextSymbolizer": "Thêm ký hiệu chữ",
+            "addTextRule": "Thêm quy tắc chữ",
+            "label": "Nhãn",
+            "fontFamily": "Họ phông chữ",
+            "fontColor": "Màu Font chữ",
+            "fontSize": "Kích thước Font",
+            "fontStyle": "Kiểu Font",
+            "fontWeight": "Độ đậm Font",
+            "haloColor": "Màu vầng sáng",
+            "haloWidth": "Độ rộng vầng sáng",
+            "offsetX": "Độ dời x",
+            "offsetY": "Dộ dời y",
+            "addRasterSymbolizer": "Thêm kí hiệu raster",
+            "addRasterRule": "Thêm quy tắc raster",
+            "colorRamp": "Dốc màu",
+            "reverse": "Đảo ngược thứ tự",
+            "attribute": "Thuộc tính",
+            "method": "Phương thức",
+            "intervals": "Khoảng cách",
+            "continuous": "Màu liên tục",
+            "lineCapButt": "Mông",
+            "lineCapRound": "Tròn",
+            "lineCapSquare": "Vuông",
+            "lineJoinBevel": "Xiên góc",
+            "lineJoinRound": "Tròn",
+            "lineJoinMiter": "Miter",
+            "fontStyleNormal": "Chuẩn",
+            "fontStyleItalic": "Nghiêng",
+            "fontWeightNormal": "Chuẩn",
+            "fontWeightBold": "Đậm",
+            "boolTrue": "Đúng",
+            "boolFalse": "Sai",
+            "colorMapType": {
+                "label": "Loại ánh xạ màu",
+                "ramp": "Dốc",
+                "intervals": "Khoảng cách",
+                "values": "Giá trị"
+            },
+            "addRuleBefore": "Thêm mục nhập mới trước",
+            "addRuleAfter": "Thêm mục nhập mới sau",
+            "remove": "Xóa",
+            "circle": " Tròn",
+            "square": "Vuông",
+            "triangle": "Tam giác",
+            "star": "Sao",
+            "cross": "Bắt chéo",
+            "x": "X",
+            "verticalLine": "Đường thẳng đứng",
+            "horizontalLine": "Đường ngang",
+            "slash": "Gạch chéo",
+            "backslash": "Gạch chéo ngược",
+            "dot": "Chấm",
+            "plus": "Cộng",
+            "times": "Nhân",
+            "openArrow": "Mũi tên mở",
+            "closedArrow": "Mũi tên đóng",
+            "band": "Băng",
+            "none": "Không",
+            "normalize": "Chuẩn hoá",
+            "histogram": "Biểu đồ tần xuất",
+            "contrastEnhancement": "Tăng độ tương phản",
+            "placeholderInput": "Nhập giá trị",
+            "placeholderEnterImageUrl": "Nhập đường dẫn hình ảnh",
+            "selectPlaceholder": "Chọn giá trị",
+            "noResultsSelectInput": "Không có kết quả",
+            "channelAuto": "Tự động",
+            "openFilterBuilder": "Mở bộ tạo bộ lọc",
+            "removeRule": "Bỏ quy tắc",
+            "openScaleDenominator": "Mở bộ lọc hệ số tỉ lệ",
+            "selectScale": "Chọn tỉ lệ",
+            "noResultScales": "Không có tỉ lệ khớp với bộ lọc của bạn",
+            "maxScaleDenominator": "Tỷ lệ tối đa",
+            "minScaleDenominator": "Thang đo nhỏ",
+            "simpleStyle": "Kiểu đơn giản",
+            "classificationStyle": "Kiểu phân loại",
+            "patternMarkStyle": "Kiểu đánh dấu mẫu",
+            "patternIconStyle": "Kiểu dáng biểu tượng mẫu",
+            "singleBand": "Một dải",
+            "rgbaBands": "Băng tần RGB",
+            "pseudoColor": "Màu giả",
+            "undoStyle": "Kiểu dáng & lùi lại",
+            "redoStyle": "Kiểu làm lại",
+            "equalInterval": "Khoảng bằng nhau",
+            "uniqueInterval": "Khoảng duy nhất",
+            "quantile": "Lượng tử",
+            "jenks": "Nghỉ ngơi tự nhiên (Jenks)",
+            "standardDeviation": "Độ lệch chuẩn",
+            "switchToTextareaEditor": "Chỉnh sửa mới mã",
+            "switchToVisualEditor": "Chỉnh sửa giao diện",
+            "alertForceTranslate": "Bạn sẽ mất mọi thay đổi được thêm vào trong chế độ văn bản bằng cách chuyển sang trình soạn thảo kiểu ảnh. Bạn có chắc sẽ chuyển sang chế độ soạn thảo kiểu ảnh không?",
+            "stayInTextareaEditor": "Không, tiếp tục với trình soạn thảo văn bản",
+            "useLatestValidStyle": "Vâng, chuyển sang trình chỉnh sửa ảnh",
+            "validationError": "Lỗi thẩm tra",
+            "incorrectPropertyInputError": "Điều này có lẽ là do giá trị thiếu hoặc không hợp lệ trong các thuộc tính đầu vào của trình soạn thảo kiểu dáng.",
+            "emptyRuleEditorTitle": "Thêm quy tắc mới",
+            "emptyRuleEditor": "Không có quy tắc cho kiểu dáng này. Thêm quy tắc mới bằng cách nhắp vào kiểu trình ký hiệu đã xem xét trong thanh công cụ",
+            "classificationError": "Dịch vụ không sẵn sàng. Hiện thời không thể tạo một phân loại",
+            "classificationRasterError": "Dịch vụ không sẵn sàng. Hiện thời không thể tạo phân loại raster",
+            "classificationRasterUniqueIntervalError": "Không thể phân loại giá trị duy nhất trên raster của kiểu nổi, chỉ hỗ trợ số nguyên. Hãy thử phân loại khác thay thế.",
+            "classificationUniqueIntervalError": "Vượt quá giới hạn khoảng tối đa! Bạn đang cố tạo một phân loại khoảng duy nhất với thuộc tính chứa nhiều hơn các lớp khác nhau. Phân loại khoảng duy nhất nên được áp dụng cho thuộc tính có một tập hợp các khoảng giới hạn để cho phép dễ đọc hơn kiểu dáng. Bạn có thể thử phương pháp khác cho thuộc tính đã chọn",
+            "redChannel": "Kênh Red",
+            "greenChannel": "Kênh Green",
+            "blueChannel": "Kênh Blue",
+            "grayChannel": "Kênh",
+            "ruleClassification": "Phân loại",
+            "ruleRaster": "Raster",
+            "customInterval": "Khoảng riêng",
+            "styleEmpty": "Phong cách này không có quy tắc",
+            "incompleteClassification": "Phân loại không đầy đủ vì không có mục nhập sẵn sàng. Hãy đảm bảo rằng mọi thuộc tính được cung cấp đúng.",
+            "imageSrcEmpty": "Thiếu địa chỉ URL nguồn ảnh theo kiểu biểu tượng",
+            "imageSrcLoadError": "Không thể nạp nguồn ảnh đã cung cấp. Hãy thử với một địa chỉ URL khác, hoặc đảm bảo rằng nguồn này có thể được MapStore truy cập.",
+            "imageSrcInvalidBase64": "Đây không phải là ảnh cơ số 64 hợp lệ. Một số trình biên dịch kiểu dáng không hỗ trợ kiểu nguồn này, bạn có thể sử dụng nguồn địa chỉ URL bên ngoài để thay thế.",
+            "imageSrcNotSupportedBase64Image": "Một số trình biên dịch kiểu dáng không hỗ trợ ảnh cơ số 64 ngay cả khi nguồn hiện thời là hợp lệ",
+            "imageFormatEmpty": "Không thể xác định định dạng ảnh. Hãy chọn định dạng ảnh từ những định dạng sẵn sàng trong trình thả xuống  Định dạng.",
+            "warningTextOrderTitle": "Cảnh báo",
+            "warningTextOrder": "Thứ tự của quy tắc chứa kiểu dáng văn bản không thể khớp với thứ tự vẽ trên ánh xạ. Hành vi này có liên quan đến một số công cụ vẽ mà vẽ nhãn trên các quy tắc khác",
+            "invalidProperty": "Kiểu thuộc tính { key } không hợp lệ",
+            "notSupportedVariable": "Biến { phím } không được bộ tileet hỗ trợ"
         },
         "styler": {
             "layerlabel": "Lớp",
@@ -1420,7 +1886,11 @@
             "settings": {
                 "snapToGuideLayer": "Snap để hướng dẫn lớp",
                 "snapToGuideLayerTooltip": "Buộc con trỏ thời gian để chụp dữ liệu của lớp đã chọn. Vô hiệu hóa tùy chọn này để mở khóa các con trỏ thời gian và cho phép tùy chỉnh bước hoạt hình",
-                "title": "Cài đặt dòng thời gian"
+                "title": "Cài đặt dòng thời gian",
+                "snapType": "Điểm chụp khoảng thời gian",
+                "snapTypeTooltip": "Khi Snap to Guide Layer được kích hoạt và dữ liệu thời gian bị kéo dài con trỏ sẽ chụp vào các cạnh tương ứng của khoảng thời gian (bắt đầu/kết thúc)",
+                "snapToEnd": "Kết thúc",
+                "snapToStart": "Bắt đầu"
             },
             "show": "Hiển thị dòng thời gian",
             "showLayerName": "Hiển thị tên lớp"
@@ -1454,7 +1924,31 @@
                 "subject": "Chủ đề",
                 "title": "Tiêu đề",
                 "toolLayerMetadataTooltip": "Hiển thị siêu dữ liệu của lớp đã chọn",
-                "type": "Loại"
+                "type": "Loại",
+                "purpose": "Mục đích",
+                "source": "Nguồn",
+                "createdDate": "Ngày tạo",
+                "lastRevisionDate": "Ngày sửa đổi cuối cùng",
+                "pointsOfContact": "Điểm liên lạc",
+                "individualName": "Tên riêng",
+                "organisationName": "Tên tổ chức",
+                "contactInfo": "Thông tin liên hệ",
+                "phone": "Số điện thoại",
+                "deliveryPoints": "Điểm giao hàng",
+                "city": "Thành phố",
+                "postalCode": "Mã bưu chính",
+                "country": "Quốc gia",
+                "URL": "URL",
+                "metadataUrl": "URL siêu dữ liệu",
+                "role": "Vai trò",
+                "hoursOfService": "Giờ phục vụ",
+                "electronicMailAddress": "Địa chỉ thư điện tử",
+                "defaultPropName": "Thuộc tính= \"{propName}\"",
+                "itemTitles": {
+                    "pointsOfContact": "Liên lạc",
+                    "default": "Mục"
+                },
+                "emptyMetadata": "Không có siêu dữ liệu sẵn sàng"
             },
             "layers": "Các lớp",
             "loadingerror": "Lớp không được tải chính xác hoặc không có sẵn",
@@ -1506,7 +2000,8 @@
                     "min": "Tối thiểu",
                     "quantile": "Lượng tử",
                     "sum": "Tổng"
-                }
+                },
+                "invalid_attribute": "Kiểu thuộc tính không hợp lệ trong vùng chọn. Hãy chọn một thuộc tính hợp lệ từ danh sách để dùng phương pháp phân loại"
             },
             "toggleGroupVisibility": "Chuyển đổi khả năng hiển thị của nhóm",
             "toggleLayerVisibility": "Chuyển đổi khả năng hiển thị của lớp",
@@ -1521,7 +2016,25 @@
             "toolTrashLayersTooltip": "Xóa các lớp đã chọn",
             "toolZoomToLayerTooltip": "Thu phóng đến phạm vi lớp đã chọn",
             "toolZoomToLayersTooltip": "Thu phóng đến phạm vi lớp đã chọn",
-            "zoomToLayerExtent": "Thu phóng đến phạm vi lớp"
+            "zoomToLayerExtent": "Thu phóng đến phạm vi lớp",
+            "addAnnotations": "Thêm chú thích",
+            "editAnnotations": "Sửa chú thích",
+            "toolTrashGroupTooltip": "Xóa nhóm đã chọn",
+            "compareTool": "Công cụ so sánh",
+            "configureTool": "Cấu hình",
+            "spyconfiguration": "Cấu hình Kính Thiên Văn",
+            "swipeconfiguration": "Cấu hình vuốt",
+            "swipe": "Vuốt",
+            "spyGlass": "Kính thiên văn",
+            "direction": "Hướng vuốt",
+            "radius": "Bán kính",
+            "notVisibleZoomIn": "Lớp không hiển thị vì nó nằm ngoài giới hạn độ phân giải. Phóng to để hiển thị lớp",
+            "notVisibleZoomOut": "Lớp không hiển thị vì nằm ngoài giới hạn độ phân giải. Thu nhỏ để hiển thị lớp",
+            "notVisibleSwitchTo3D": "Chuyển sang chế độ bản đồ 3D để xem lớp này",
+            "layerInfoTooltip": "Cập nhật tiêu đề và mô tả của lớp",
+            "error": {
+                "defaultGroupOnTop": "Nhóm {groupTitle} được đặt làm nhóm đích mặc định, vì thế nó phải ở trên cùng"
+            }
         },
         "tutorial": {
             "back": "Trở lại",
@@ -1650,6 +2163,152 @@
             "zoomOutButton": {
                 "text": "Nhấn vào đây để thu nhỏ bản đồ",
                 "title": "Thu nhỏ"
+            },
+            "contextCreator": {
+                "generalSettings": {
+                    "intro": {
+                        "title": "Trình hướng dẫn tạo ngữ cảnh Context",
+                        "text": "Đây là một trợ lý từng bước để tạo và chỉnh sửa ngữ cảnh MapStore"
+                    },
+                    "stepsOverview": {
+                        "title": "Các bước tạo ngữ cảnh",
+                        "text": "<p>Mỗi ngữ cảnh được tạo theo ba bước: </p><p><ul><li>Cài đặt chung</li><li>Bản đồ configure</li><li>Các phần bổ sung configure</li></ul></p>"
+                    },
+                    "navigation": {
+                        "next": {
+                            "title": "Di chuyển: Tiếp",
+                            "text": "<p>Ấn nút này để đi tới bước kế tiếp. Nếu nút bị tắt, có nghĩa là dữ liệu bạn đã cấu hình đang được xác thực, hoặc không hợp lệ. </p>"
+                        },
+                        "back": {
+                            "title": "Chuyển: Quay",
+                            "text": "<p>Ấn nút này để đi tới bước trước.</p>"
+                        },
+                        "close": {
+                            "title": "Di chuyển: Đóng",
+                            "text": "<p>Ấn nút này để rời khỏi tiến trình tạo ngữ cảnh mà không lưu. Có thể làm việc này tại bất kỳ thời điểm nào trong tiến trình tạo. </p>"
+                        }
+                    },
+                    "fields": {
+                        "title": "Thiết lập chung",
+                        "text": "<p>Bước tạo đầu tiên cần thiết phải ghi rõ tên của ngữ cảnh, cũng xác định địa chỉ URL duy nhất của nó, và tiêu đề sẽ được dùng làm tiêu đề cửa sổ trình duyệt khi ngữ cảnh được mở và hoạt động. Ghi chú: tên ngữ cảnh chỉ có thể chứa chữ cái La tinh, chữ số 0-9 và ký tự gạch dưới. Tiêu đề cửa sổ không thể là rỗng. </p>"
+                    },
+                    "showTutorial": {
+                        "title": "Hướng dẫn Hiển thị",
+                        "text": "<p>Nếu bạn muốn đi qua hướng dẫn cho một bước nữa, bạn có thể làm nó bất cứ lúc nào bằng cách nhấn nút này. </p>"
+                    }
+                },
+                "configureMap": {
+                    "intro": {
+                        "title": "Cấu hình sơ đồ",
+                        "text": "<p>Trong bước này, dùng công cụ xem bản đồ MapStore bạn có thể cấu hình bản đồ mặc định sẽ được mở khi truy cập ngữ cảnh. </p>"
+                    },
+                    "reloadMap": {
+                        "title": "Nạp lại nút ánh xạ",
+                        "text": "<p>Nếu bạn muốn bỏ đi mọi thay đổi đã làm cho bản đồ từ trước đến giờ và bắt đầu lại, bạn có thể làm vậy bằng cách bấm cái nút này. </p>"
+                    }
+                },
+                "configurePlugins": {
+                    "intro": {
+                        "title": "Cấu hình phần bổ sung",
+                        "text": "<p>Bước này cho phép bạn cấu hình các bổ sung sẽ có mặt trong ngữ cảnh.</p>"
+                    },
+                    "availablePlugins": {
+                        "title": "Bổ sung sẵn dùng",
+                        "text": "<p>Danh sách này chứa các bổ sung MapStore có thể thêm vào ngữ cảnh. Để chọn một bổ sung, chỉ cần nhấn vào thẻ của nó. Cũng có thể chọn nhiều bổ sung nếu bạn giữ phím CTRL. </p>"
+                    },
+                    "pluginManipulation": {
+                        "title": "Đang di chuyển các phần bổ sung",
+                        "text": "<p>Một khi đã chọn, phần bổ sung sẵn sàng có thể được di chuyển vào cột bên phải, để bật chúng trong ngữ cảnh. Một số bổ sung cần thiết bổ sung khác để hoạt động, trong trường hợp đó chúng sẽ được bật tự động cùng với bổ sung đã bật riêng. Phần bổ sung cũng có thể được di chuyển từ cột \"bật\" sang cột \"có sẵn\" để gỡ bỏ bổ sung khỏi ngữ cảnh. Nếu bạn gỡ bỏ một bổ sung, mọi bổ sung cần thiết để hoạt động cũng sẽ bị tắt, trừ khi có bổ sung đang bật cũng cần thiết một bổ sung như thế. </p>"
+                    },
+                    "enabledPlugins": {
+                        "title": "Bổ sung đã bật",
+                        "text": "<p>Danh sách này chứa các bổ sung MapStore nằm trong ngữ cảnh. Mỗi bổ sung ở đây có thể được cấu hình thêm bằng các nút công cụ. </p>"
+                    },
+                    "userPlugin": {
+                        "title": "Công cụ bổ sung: Bổ sung người dùng",
+                        "text": "<p>Bằng cách bấm cái nút này, bạn có thể cho phép người dùng bật/tắt một bổ sung, làm cho nó thành bổ sung người dùng. Những bổ sung như thế sẽ được hiển thị trong bổ sung Người dùng Phần mở rộng. Bổ sung này sẽ được thêm tự động vào ngữ cảnh nếu có ít nhất một bổ sung người dùng được bật. </p>"
+                    },
+                    "userPluginCheckbox": {
+                        "title": "Công cụ bổ sung: Bổ sung người dùng",
+                        "text": "<p>Nếu một bổ sung là một bổ sung người dùng, thì hộp chọn này điều khiển nếu một bổ sung người dùng nên được bật tự động khi tải ngữ cảnh.</p>"
+                    },
+                    "cfgTool": {
+                        "title": "Công cụ bổ sung: Công cụ cấu hìnhName",
+                        "text": "<p>Nén nút này làm cho trình soạn thảo xuất hiện, nơi bạn có thể chỉnh sửa cấu hình mặc định của bổ sung.</p>"
+                    },
+                    "cfgEditor": {
+                        "title": "Công cụ bổ sung: Bộ sửa cấu hìnhName",
+                        "text": "<p>Bộ soạn thảo hỗ trợ tô sáng cú pháp. Mọi thay đổi của bạn sẽ được lưu liên tục khi bạn soạn thảo. Nếu cấu hình chứa lỗi cú pháp, bạn sẽ được thông báo cho thích hợp. Lỗi này phải được sửa trước khi tiếp tục. </p>"
+                    },
+                    "documentationTool": {
+                        "title": "Công cụ bổ sung: Tài liệuStencils",
+                        "text": "<p>Nhấn nút này sẽ đưa bạn đến trang tài liệu hướng dẫn của bổ sung, nơi bạn có thể tìm kiếm thông tin về bổ sung làm gì và tham số cấu hình nào nó hỗ trợ. </p>"
+                    },
+                    "mapTemplatesTool": {
+                        "title": "Công cụ bổ sung: Mẫu bản đồName",
+                        "text": "<p> 'Liên kết bản đồ mẫu' cũng có một công cụ đặc biệt cho phép bạn cấu hình bản đồ mẫu sẽ được truy cập trong ngữ cảnh. </p>"
+                    },
+                    "extensions": {
+                        "title": "Phần mở rộng",
+                        "text": "<p>MapStore cũng hỗ trợ việc tải lên các bó mở rộng tùy chỉnh. Bạn có thể làm vậy bằng cách nhấn vào cái nút này. </p>"
+                    },
+                    "extensionsDelete": {
+                        "title": "Phần mở rộng",
+                        "text": "<p>Các phần mở rộng đã tải lên có thể bị xoá bất cứ lúc nào bằng cách bấm cái nút này.</p>"
+                    }
+                }
+            },
+            "geostoryIntro": {
+                "title": "Hướng dẫn",
+                "text": "<p>Xem tổng quan các chức năng của câu chuyện</p><p> Khám phá hướng dẫn người dùng liên quan <a target='blank' href='https://mapstore.readthedocs.io/en/latest/user-guide/exploring-stories/'>here</a>"
+            },
+            "geostoryViewHeader": {
+                "title": "Đầu trang",
+                "text": "Ở đây bạn có thể tìm bộ chọn ngôn ngữ, đăng nhập, liên kết trang chủ và trình đơn tùy chọn"
+            },
+            "geostoryViewNavItems": {
+                "title": "Mục điều khiển được",
+                "text": "Ở đây bạn có thể tìm thấy các mục hiện diện trong câu chuyện mà bạn có thể sử dụng để điều hướng/nhảy đến. Nó cũng hiển thị vị trí hiện tại trong câu chuyện"
+            },
+            "geostoryViewNavTitle": {
+                "title": "Tựa Câu chuyện",
+                "text": "Ở đây bạn có thể thấy tiêu đề câu chuyện"
+            },
+            "geostoryViewNavLogo": {
+                "title": "Logo câu chuyện",
+                "text": "Ở đây bạn có thể thấy logo câu chuyện"
+            },
+            "geostoryViewContent": {
+                "title": "Nội dung câu chuyện",
+                "text": "Đây sẽ là nội dung của câu chuyện"
+            },
+            "geostoryViewEditButton": {
+                "title": "Sửa câu chuyện",
+                "text": "Bằng cách nhấn vào đây bạn có thể chỉnh sửa nội dung và thiết lập câu chuyện"
+            },
+            "geostoryEditSidebar": {
+                "title": "Thanh bên",
+                "text": "<p>Trong Sidebar bạn có thể thấy tổng quan về câu chuyện nơi mỗi mục được xác định bởi một biểu tượng khác nhau hoặc với một xem trước trong trường hợp hình ảnh hoặc bản đồ</p><p>Ở đây bạn có thể: </p><ul><li>Thay đổi tiêu đề cho mỗi phần hoặc tiêu đề nội dung</li><li>Sắp xếp lại bằng các phần thả kéo và nội dung của nó</li><li>Thấp vào một nội dung cụ thể với nút đồng hồ cát</li></ul>"
+            },
+            "geostoryEditSidebarToolbar": {
+                "title": "Công cụ",
+                "text": "<p>Từ trái sang phải: </p><ul><li>Xóa một phần đã chọn</li><li>Đi trong chế độ xem</li><li>Chỉnh sửa thiết lập</li><li>Collapse/expand all</li></ul>"
+            },
+            "geostoryEditSidebarSettings": {
+                "title": "Thiết lập câu chuyện",
+                "text": "<p>Ở đây bạn có thể: </p><ul><li>Hiển thị/ẩn/sửa đổi tiêu đề câu chuyện</li><li>Chỉnh sửa chủ đề câu chuyện</li>Hiển thị/ẩn/sửa đổi logo câu chuyện</li>Tuỳ chỉnh thanh điều hướng trong chế độ xem</li></ul><p> Để biết thêm thông tin, xem hướng dẫn người dùng liên quan <a target='blank 'href=' https: //mapstore.readthedocs.io/en/latest/user-guide/settingstory/'>here</a>"
+            },
+            "geostoryEditContainer": {
+                "title": "Nội dung câu chuyện",
+                "text": "<p>Ở đây bạn có thể xem nội dung câu chuyện, chỉnh sửa nó bằng cách thêm hoặc bỏ các phần, đoạn văn, v. v. Thanh công cụ cho phép bạn thao tác nội dung câu chuyện, ví dụ: </p><img src='data:image/png; base64,iVBORw0KGgoAAANSUhEUgAAALsafCAIAAAAfCAIAAAfCAIAAAfCAIAAAf"
+            },
+            "geostoryEditAddbar": {
+                "title": "Thêm nội dung mới",
+                "text": "<p>Hình ảnh: </p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></"
+            },
+            "geostoryEditMediaEditor": {
+                "title": "Trình soạn thảo phương tiện",
+                "text": "<p>Sử dụng Media Editor, bạn có thể thêm vào câu chuyện các loại nội dung truyền thông khác nhau như: <ul><li>images</li><li>videos</li><li>maps</li></ul></p><p> Để biết thêm thông tin, xem hướng dẫn người dùng liên quan <a target='blank 'href=' https: //mapstore.readthedocs.io/en/latest/user-guide/media-editor-window/'>here</a>"
             }
         },
         "uploader": {
@@ -1690,7 +2349,13 @@
             "passwordMinlenght": "Mật khẩu của bạn phải có ít nhất ký tự {data} ",
             "retypePwd": "Gõ lại mật khẩu",
             "signIn": "Đăng nhập",
-            "username": "Tên đăng nhập"
+            "username": "Tên đăng nhập",
+            "passwordInvalidChar": "Mật khẩu không được chứa các ký tự sau: {dữ-liệu}",
+            "signInWith": "Đăng nhập với",
+            "orSignInWith": "Hoặc đăng nhập với",
+            "userMenu": "Menu người dùng",
+            "generalInformation": "Thông tin chung",
+            "attributes": "Thuộc tính"
         },
         "usergroups": {
             "addMember": "Thêm thành viên:",
@@ -1715,7 +2380,9 @@
             "noUsers": "Không có người dùng cho nhóm này",
             "removeUser": "Xóa người dùng",
             "saveGroup": "Lưu lại",
-            "searchGroups": "Tìm kiếm nhóm ..."
+            "searchGroups": "Tìm kiếm nhóm ...",
+            "generalInformation": "Thông tin chung",
+            "members": "Thành viên"
         },
         "users": {
             "confirmDeleteUser": "Bạn có chắc chắn muốn xóa người dùng này?",
@@ -1757,20 +2424,48 @@
             "tooltip": "Tạo và chỉnh sửa kiểu lớp vector"
         },
         "version": {
-            "label": "Phiên bản"
+            "label": "Phiên bản",
+            "title": "Phiên bản MapStore",
+            "message": "Tin nhắn",
+            "commit": "Gửi",
+            "date": "Ngày",
+            "githubUrl": "Mở cây cải tiến trong một thẻ mới"
         },
         "warning": "Cảnh báo",
         "layerdownload": {
-            "service": "Service",
+            "service": "Dịch vụ",
             "downloadonlycurrentpage": "Chỉ tải xuống trang hiện tại",
             "error": {
                 "invalidOutputFormat": "Định dạng xuất đã chọn không khả dụng",
-                "title": "Lỗi trong khi xuất"
+                "title": "Lỗi trong khi xuất",
+                "downloadEstimatorTitle": "Lỗi DownloadEstimator",
+                "downloadEstimatorFailed": "Yêu cầu DownloadEstimator bị lỗi, có nghĩa là tập tin đã xuất vượt quá giới hạn máy phục vụ đã cấu hình. Hãy thử thay đổi tùy chọn tải về, hoặc thêm bộ lọc vào lớp, rồi thử lại."
             },
             "export": "Xuất",
             "format": "Định dạng tệp",
             "srs": "Hệ thống tham chiếu không gian",
-            "title": "Xuất dữ liệu"
+            "title": "Xuất dữ liệu",
+            "cropDataSet": "Cắt bộ dữ liệu tới khung xem hiện thời",
+            "downloadFilteredDataSet": "Tải về bộ dữ liệu đã lọc",
+            "advancedOptions": "Tùy chọn cấp cao",
+            "compression": "Nén",
+            "tileWidth": "Chiều rộng gạch lát",
+            "tileHeight": "Chiều cao gạch lát",
+            "quality": "Chất lượng",
+            "exportResultsMessages": {
+                "newExport": "Tập tin sẽ có sẵn ở đây khi việc xuất hoàn tất",
+                "exportFailure": "Lỗi xuất cho lớp \"{layerTitle}\"! Mở hộp thoại kết quả xuất để xem thông tin thêm.",
+                "exportSuccess": "Quá trình xuất cho lớp \"{layerTitle}\" đã thành công.",
+                "invalidHref": "Đáp ứng từ máy phục vụ không chứa địa chỉ URL hợp lệ cho tập tin đã xuất ra!"
+            },
+            "wpsExecuteError": {
+                "processFailed": "Tiến trình tải về gặp lỗi! Máy phục vụ đã trả về báo cáo ngoại lệ sau: \"{exceptionReport}\"",
+                "badResponse": "Tiến trình tải về gặp lỗi! Máy phục vụ đã trả về dữ liệu không đúng, mã lỗi: \"{errorCode}\"",
+                "executeProcessXhrFailed": "Thực hiện yêu cầu tiến trình gặp lỗi! Có lẽ máy phục vụ có cấu hình sai hoặc không thể tới được nó",
+                "getExecutionStatusXhrFailed": "Yêu cầu GetExecutionStatus gặp lỗi! Có lẽ máy phục vụ có cấu hình sai hoặc không thể tới được nó",
+                "unexpectedError": "Gặp lỗi bất thường"
+            },
+            "noSupportedServiceFound": "Máy phục vụ không hỗ trợ WFS hay tải về WPS cho lớp này!"
         },
         "widgets": {
             "advancedOptions": {
@@ -1834,7 +2529,33 @@
                     "titlePlaceholder": "Chèn tiêu đề ...",
                     "updateWidget": "Cập nhật tiện ích",
                     "useTheSelectedLayer": "Sử dụng lớp đã chọn",
-                    "useThisMap": "Sử dụng bản đồ này"
+                    "useThisMap": "Sử dụng bản đồ này",
+                    "useTheseMap": "Dùng các bản đồ này",
+                    "enableIdentifyTool": "Bật công cụ nhận diện",
+                    "disableIdentifyTool": "Tắt công cụ nhận diện",
+                    "classAttributes": {
+                        "classColor": "Màu lớp",
+                        "classLabel": "Nhãn lớp",
+                        "classValue": "Giá trị lớp",
+                        "color": "Màu",
+                        "confirmModalMessage": "Đóng và loại bỏ các giá trị chưa phân loại?",
+                        "classificationAttribute": "Tính chất phân loạiStencils",
+                        "customLabels": "Nhãn tự chọn",
+                        "barChartCustomLabelsExample": "<div><p><code>${legendValue}</code> có thể được dùng làm bộ giữ chỗ cho thuộc tính Y. </p><p></p><h5>Ví dụ</h5><dl><dt><b>Đặc tính Y: </b></dt><dd>PHÂN CẤP</dd><dt><b>Class Nhãn: </b></dt><dd><code>${legendValue}",
+                        "pieChartCustomLabelsExample": "<div><p><code>${groupByValue}</code> có thể được dùng làm bộ giữ chỗ cho Nhóm theo thuộc tính.</p><p>các mục thuộc tính có cùng nội dung văn bản sẽ được nhóm lại trong biểu đồ.</p><h5>Ví dụ</h5><dl><dt><b>Attribute: </b></dt><dd>POPULATION</dd><dt><b>Class Label: </b></dt><dd><code>${groupByValue}</code> California</dd><dt><b>Result: </b></dt><dd>POPULATION California</dd></dl></div>",
+                        "pieRangeDefaultChartCustomLabelsExample": "<div><p><code>${groupByValue}</code> có thể được dùng làm bộ giữ chỗ cho Nhóm theo thuộc tính.</p><p>các mục thuộc tính có cùng nội dung văn bản sẽ được nhóm lại trong biểu đồ.</p><h5>Ví dụ</h5><dl><dt><b>Attribute: </b></dt><dd>POPULATION</dd><dt><b>Class Label: </b></dt><dd><code>${groupByValue}</code> California</dd><dt><b>Result: </b></dt><dd>POPULATION California</dd></dl></div>",
+                        "pieRangeClassChartCustomLabelsExample": "<div><p><code>${groupByValue}</code> có thể được dùng làm bộ giữ chỗ cho Nhóm By Attribute. </p><p><code>${legendValue}</code> có thể được dùng làm bộ giữ chỗ cho Thuộc tính Y.</p><p><code>${legendValue}</code> có thể được dùng làm bộ giữ chỗ cho Giá trị Min lớp.</p><p><code>${maxValue}</code> có thể được dùng làm bộ giữ chỗ cho Giá trị Max lớp.</p><p><p>Giá trị Min lớp.</p><p>Giá trị Min lớp.</p><p>Giá trị Min lớp.</p><p>Giá trị Min lớp.</p><p>Giá trị Min lớp.</p></dt><dd>Giá trị Max: </b></dt><dd>10000</dd><dt><b>Class Nhãn: </b></dt><dd><code>${groupByValue}</code> - <code>${maxValue}</code> - <code>${maxValue}</dd></dt><dd>POPULATION California LAND KM: 0 - 10000</dd></dl></div>",
+                        "barRangeDefaultChartCustomLabelsExample": "<div><p><code>${legendValue}</code> có thể được dùng làm bộ giữ chỗ cho thuộc tính Y. </p><p></p><h5>Ví dụ</h5><dl><dt><b>Đặc tính Y: </b></dt><dd>PHÂN CẤP</dd><dt><b>Class Nhãn: </b></dt><dd><code>${legendValue}",
+                        "barRangeClassChartCustomLabelsExample": "<div><p><code>${minValue}</code> có thể được dùng làm bộ giữ chỗ cho lớp Min Value.</p><p><code>${maxValue}</code> có thể được dùng làm bộ giữ chỗ cho lớp Max Value.</p><p><code>${legendValue}</code> có thể được dùng làm bộ giữ chỗ cho Thuộc tính Y.</p><p><p>các mục thuộc tính gốc có cùng nội dung văn bản sẽ được nhóm lại trong biểu đồ.</p><h5>Ví dụ</h5><dl><dt><b>Attribute: </b></dt><dd>POPULATION</dd><dt><b>Class Label: </b></dt><dd>${groupByValue}</code> California</dd></dl></div>",
+                        "defaultClassLabel": "Nhãn lớp mặc định",
+                        "defaultColorRamp": "Dốc màu mặc định",
+                        "defaultColor": "Màu mặc định",
+                        "defaultCustomLabel": "Nhãn mặc định",
+                        "editCustomColors": "Sửa màu tự chọn",
+                        "maxValue": "Giá trị tối đa",
+                        "minValue": "Giá trị nhỏ",
+                        "title": "Thiết lập màu riêng"
+                    }
                 }
             },
             "chartOptionsTitle": "Cấu hình dữ liệu",
@@ -1886,7 +2607,9 @@
                 "nodata": "Không có dữ liệu cho lớp / bộ lọc đã chọn",
                 "nodatainviewport": "Không có dữ liệu trong chế độ xem hiện tại",
                 "notext": "Không có văn bản",
-                "timeoutExpired": "Dịch vụ mất quá nhiều thời gian để đáp ứng. Có thể truy vấn quá phức tạp hoặc máy chủ đang bận"
+                "timeoutExpired": "Dịch vụ mất quá nhiều thời gian để đáp ứng. Có thể truy vấn quá phức tạp hoặc máy chủ đang bận",
+                "genericErrorWithMessage": "Gặp lỗi khi lấy dữ liệu: \"{message}\"",
+                "layerNotAvailable": "Lớp {tên lớp} không còn sẵn sàng"
             },
             "groupByAttributes": {
                 "bar": "Thuộc tính X",
@@ -1910,7 +2633,8 @@
                 },
                 "emptyMap": {
                     "description": "Bắt đầu từ một bản đồ trống",
-                    "title": "Bản đồ trống"
+                    "title": "Bản đồ trống",
+                    "noNameDescription": "Vùng chọn có ánh xạ trống. Thêm một tên vào ánh xạ trống để tiến hành cấu hình ánh xạ"
                 }
             },
             "selectWidgetType": "Chọn loại tiện ích",
@@ -1977,7 +2701,9 @@
                     "showChartData": "Hiển thị dữ liệu biểu đồ",
                     "unhide": "Không ẩn",
                     "unhideDescription": "Không ẩn tiện ích cho người dùng khác",
-                    "unpin": "Bỏ ghim"
+                    "unpin": "Bỏ ghim",
+                    "maximize": "Phóng đại",
+                    "minimize": "Thu nhỏ"
                 }
             },
             "widgetOptionsTitle": "Cấu hình thông tin tiện ích",
@@ -1992,6 +2718,53 @@
             "yAxisLabel": {
                 "bar": "Nhãn chú giải",
                 "line": "Nhãn chú giải"
+            },
+            "mapSwitcher": {
+                "noResults": "Không tìm thấy ánh xạ",
+                "placeholder": "Nhập tên ánh xạ",
+                "selectLabel": "Chọn một ánh xạ",
+                "infoOnHide": "Mở rộng ô điều khiển để xem bộ chuyển đổi ánh xạ",
+                "subTitle": "<p>Đối với đa lựa chọn, <br>trên cửa sổ dùng CTRL + nhấp <br> và trên Mac dùng control + nhấp</p>"
+            },
+            "operations": {
+                "COUNT": "SỐ",
+                "SUM": "TỔNG",
+                "AVG": "AVG",
+                "STDDEV": "STDDEV",
+                "MIN": "MIN",
+                "MAX": "MAX",
+                "NONE": "Không có thao tác"
+            },
+            "advanced": {
+                "displayCartesian": "Ẩn Lưới",
+                "xAxis": "Trục X",
+                "xAxisAngle": "Quay nhãn",
+                "hideLabels": "Ẩn nhãn",
+                "format": "Định dạng",
+                "prefix": "Tiền tố",
+                "suffix": "Hậu tố",
+                "examples": "Ví dụ",
+                "formatExamples": "<div><ul><li><code>.0%</code>: tỷ lệ phần trăm làm tròn, '12%' </li><li><code>.2s</code>: SI-prefix với hai chữ số có nghĩa, '42M' </li><li><code>,.2r</code>: nhóm hàng nghìn với hai chữ số có nghĩa '4,200' </li></ul><em> Thêm thông tin về cú pháp định dạng <a target=",
+                "formula": "Công thức",
+                "formulaExamples": "<div>Điều chỉnh giá trị bằng công thức. Sử dụng biến <code>value</code> trong biểu thức: <h5>Ví dụ</h5><ul><li><code>value + 2</code></li><liki><code>value / 100</code></ul><em>Hiển thị thêm thông tin về cú pháp <a target=\" trống\" href=\"https://github.com/m93a/filtrex#expressions",
+                "xAxisType": "Kiểu",
+                "forceTicks": "Không bao giờ bỏ qua nhãn",
+                "maxXAxisLabels": "Các nhãn dù sao cũng không thể nhiều hơn {tối đa}",
+                "yAxis": "Trục Y",
+                "yAxisType": "Kiểu",
+                "yAxisLabel": "Nhãn Ghi chú",
+                "title": "Tùy chọn cấp cao",
+                "legend": "Chú giải",
+                "barChartType": "Kiểu biểu đồ thanh",
+                "groupedBarChart": "Nhóm",
+                "stackedBarChart": "Xếp tầng",
+                "axisTypes": {
+                    "auto": "Tự động",
+                    "linear": "Tuyến tính",
+                    "category": "Phân loại",
+                    "log": "Bản ghi",
+                    "date": "Ngày"
+                }
             }
         },
         "wizard": {
@@ -2001,9 +2774,828 @@
         },
         "yes": "Có",
         "zoombuttons": {
-            "zoomAllTooltip": "Thu phóng đến mức tối đa",
-            "zoomInTooltip": "Tăng thu phóng",
-            "zoomOutTooltip": "Giảm thu phóng"
+            "zoomAllTooltip": "Phóng đến mức tối đa",
+            "zoomInTooltip": "Phóng to",
+            "zoomOutTooltip": "Thu nhỏ"
+        },
+        "aboutTooltip": "Thông tin",
+        "Links": "Liên kết",
+        "layerNameChangeError": {
+            "title": "Lỗi đổi tên",
+            "message": "Lớp không thể tải lại với tên đã thay đổi"
+        },
+        "errorPage": {
+            "title": "Rất tiếc, đã xảy ra lỗi...",
+            "subtitle": "Vui lòng nhấn vào biểu tượng dưới đây để tải lại",
+            "description": "Nếu bạn muốn báo cáo lỗi này, bạn có thể gửi email cho danh sách gửi thư của chúng tôi",
+            "descriptionAdmin": "Vui lòng liên hệ người quản trị"
+        },
+        "removeThumbnail": "Xóa hình đại diện",
+        "settingsTooltip": "Cấu hình",
+        "docsTooltip": "Tài liệu",
+        "printToolTip": "In",
+        "newMapEmpty": "Bản đồ trống",
+        "newMapContext": "Bối cảnh hiện có",
+        "identifyChangeCoordinateFormat": "Đổi định dạnh tọa độ",
+        "identifyEdit": "Sửa",
+        "identifyLayerSelectNoResult": "Không tìm thấy lớp nào",
+        "infoTriggerLabel": "Sự kiện kích hoạt để hiển thị bảng thông tin",
+        "click": "Nhấn vào tính năng",
+        "hover": "Di chuột vào tính năng",
+        "exportDataResults": {
+            "title": "Xuất kết quả dữ liệu",
+            "emptyStateMessage": "Danh sách xuất trống"
+        },
+        "dashboardEmbedded": {
+            "loadingSpinner": "Đang tải Dashboard",
+            "errors": {
+                "loading": {
+                    "title": "Lỗi tải dashboard",
+                    "dashboardNotAccessible": "Bạn không có quyền để truy cập dashboard này",
+                    "pleaseLogin": "Dashboard này thì không được công khai",
+                    "dashboardDoesNotExist": "Dashboard mà bạn đang muốn truy cập không tồn tại",
+                    "unknownError": "Có lội trong quá trỉnh tải dashboard",
+                    "notFound": "Không tìm thấy Dashboard",
+                    "notAccessible": "Dashboard không thể truy cập"
+                }
+            },
+            "emptyTitle": "Dashboard thì trống"
+        },
+        "context": {
+            "loadingSpinner": "Đang nạp ngữ cảnh...",
+            "errors": {
+                "loading": {
+                    "title": "Gặp lỗi khi nạp ngữ cảnh",
+                    "pleaseLogin": "Một số tài nguyên có thể không công khai. Hãy thử đăng nhập",
+                    "unknownError": "Gặp lỗi khi tải bản đồ hay ngữ cảnh. Hãy liên lạc với quản trị viên.",
+                    "notFound": "Không tìm thấy tài nguyên",
+                    "notAccessible": "Tài nguyên không thể truy cập"
+                },
+                "context": {
+                    "pleaseLogin": "Ngữ cảnh này không công khai. Hãy thử đăng nhập",
+                    "unknownError": "Gặp lỗi khi nạp ngữ cảnh. Hãy liên lạc với quản trị viên.",
+                    "notFound": "Bối cảnh bạn đang cố truy cập không tồn tại",
+                    "notAccessible": "Bạn không có quyền truy cập đúng vào ngữ cảnh này. Hãy liên lạc với quản trị viên để có quyền truy cập."
+                },
+                "template": {
+                    "title": "Gặp lỗi khi nạp mẫu",
+                    "notAccessible": "Bạn không có quyền truy cập mẫu này. Hãy liên lạc với người sở hữu tài nguyên",
+                    "pleaseLogin": "Mẫu này không công khai. Hãy thử đăng nhập",
+                    "unknownError": "Gặp lỗi khi nạp mẫu. Hãy liên lạc với quản trị viên.",
+                    "notFound": "Mẫu bạn đang cố truy cập không tồn tại"
+                },
+                "map": {
+                    "pleaseLogin": "Ánh xạ này hay ánh xạ không công khai. Hãy thử đăng nhập",
+                    "unknownError": "Gặp lỗi khi tải bản đồ. Hãy liên lạc với quản trị viên.",
+                    "notFound": "Bản đồ mà bạn đang cố truy cập không tồn tại",
+                    "notAccessible": "Bạn không có quyền truy cập bản đồ này. Hãy liên lạc với quản trị viên để có quyền truy cập."
+                },
+                "plugins": {
+                    "upload": "Gặp lỗi khi tải phần bổ sung lên",
+                    "uninstall": "Gặp lỗi khi gỡ cài đặt phần bổ sung"
+                },
+                "resourceAlreadyExists": "Một tài nguyên có tên này đã có"
+            }
+        },
+        "geostory": {
+            "storyResources": "Tài nguyên câu chuyện",
+            "geostoreMap": "Bản đồ",
+            "loadingSpinner": "Đang tải",
+            "addTitleSection": "Thêm phần tựa",
+            "addBannerSection": "Thêm phần cờ",
+            "addParagraphSection": "Thêm mục đoạn",
+            "addImmersiveSection": "Thêm phần Immersive",
+            "addMediaSection": "Thêm phần phương tiện",
+            "addWebPageSection": "Thêm phần trang Mạng",
+            "addImmersiveContent": "Thêm nội dung ImmersiveName",
+            "addGeocarouselSection": "Thêm mục băng chuyền địa lý",
+            "addGeocarouselContent": "Thêm nội dung băng chuyền địa lý",
+            "addTextContent": "Thêm nội dung văn bản",
+            "addMediaContent": "Thêm nội dung phương tiện",
+            "addWebPageContent": "Thêm nội dung trang Mạng",
+            "zoomToContent": "Phóng to nội dung",
+            "delete": "Xóa geostory",
+            "emptyTitle": "Câu chuyện này là trống rỗng",
+            "emptyDescription": "Bắt đầu tạo ra một địa tĩnh tuyệt vời bằng cách thêm nội dung mới",
+            "closeFullscreenMap": "Đóng ánh xạ toàn màn hình",
+            "showFullscreenMap": "Hiện ánh xạ toàn màn hình",
+            "carouselAddTitle": "Thêm ảnh mẫu mới",
+            "carouselEditTitle": "Sửa ảnh mẫu của thẻ",
+            "carouselAddMapInfo": "Thêm một ánh xạ nền",
+            "carouselAddItemInfo": "Thêm một dấu mới cho mục băng chuyền đã chọn",
+            "carouselPlaceMarkerInfo": "Nhấn vào bản đồ để thêm một dấu mới",
+            "contentToolbar": {
+                "contentSize": "Đổi cỡ",
+                "contentHeightAuto": "Tạo phần này để thích ứng với chiều cao nội dung",
+                "contentHeightView": "Đặt phần này cho vừa với ô xem theo chiều dọc",
+                "smallSizeLabel": "Nhỏ",
+                "mediumSizeLabel": "Vừa",
+                "largeSizeLabel": "Lớn",
+                "fullSizeLabel": "Đầy đủ",
+                "contentAlign": "Canh lề nội dung",
+                "leftAlignLabel": "Trái",
+                "centerAlignLabel": "Giữa",
+                "rightAlignLabel": "Phải",
+                "contentTheme": "Đổi sắc thái trường",
+                "brightThemeLabel": "Sáng",
+                "brightTextThemeLabel": "Văn bản sáng",
+                "darkThemeLabel": "Tối",
+                "darkTextThemeLabel": "Văn bản tối",
+                "defaultThemeLabel": "Mặc định",
+                "customizeThemeLabel": "Tùy chỉnh",
+                "customizeThemeRemoveLabel": "Gỡ bỏ tùy chỉnh",
+                "cover": "Làm cho nền bao phủ toàn bộ không gian chứa",
+                "fit": "Hiển thị toàn bộ nền bên trong hộp chứa",
+                "editMedia": "Thay đổi nguồn phương tiện",
+                "remove": "Gỡ bỏ",
+                "add": "Thêm",
+                "edit": "Sửa",
+                "marker": "Thêm dấu vào ánh xạ",
+                "removeConfirmTitle": "Bạn có chắc chắn?",
+                "removeConfirmContent": "Bạn có muốn xóa nội dung này khỏi câu chuyện không?",
+                "editMap": "Sửa cấu hình ánh xạ",
+                "resetMap": "Đặt lại ánh xạ về cấu hình gốc của nó",
+                "resetMapConfirm": "Đặt lại cấu hình bản đồ",
+                "resetConfirmContent": "Phục hồi cấu hình bản đồ về bản đồ gốc không?",
+                "saveChanges": "Lưu thay đổi",
+                "closeMapEditing": "Đóng",
+                "confirmCloseMapEditing": "Chỉnh sửa sơ đồ đóng",
+                "pendingChangesDiscardConfirm": "Bỏ thay đổi sơ đồ hiện thời không?",
+                "editURL": "Sửa URL trang Mạng",
+                "advancedMapEditor": "Mở trình soạn thảo bản đồ nâng cao",
+                "enableAudio": "Bật âm thanh",
+                "disableAudio": "Tắt tiếng video",
+                "enableAutoplay": "Bật tự động phát",
+                "disableAutoplay": "Tắt tự động phát",
+                "enableLoop": "Bật vòng lặp",
+                "disableLoop": "Tắt vòng lặp",
+                "hideCaption": "Ẩn phụ đề",
+                "showCaption": "Dùng mô tả làm chú thích"
+            },
+            "navigation": {
+                "edit": "Sửa story"
+            },
+            "builder": {
+                "defaults": {
+                    "htmlTitlePlaceholder": "Nhập tiêu đề",
+                    "htmlPlaceholder": "Nhập chữ ở đây...",
+                    "titleTitle": "Phần Tựa",
+                    "titleBanner": "Phần cờ",
+                    "titleParagraph": "Đoạn Mục",
+                    "titleImmersive": "Phần Immersive",
+                    "titleImmersiveContent": "Nội dung ImmersiveName",
+                    "titleGeocarousel": "Phần băng chuyền địa lý",
+                    "titleGeocarouselContent": "Nội dung băng chuyền địa lý",
+                    "titleMedia": "Phần phương tiện",
+                    "titleImage": "Ảnh",
+                    "titleText": "Văn bản",
+                    "titleWebPage": "Trang MạngName",
+                    "titleWebPageSection": "Phần trang MạngName",
+                    "titleUnknown": "KHÔNG HIỂU"
+                },
+                "delete": "Xóa phần đã chọn",
+                "preview": "Xem trước",
+                "edit": "Sửa",
+                "noContents": "Không có nội dung nào sẵn sàng",
+                "collapseAll": "Thu gọn tất cả",
+                "expandAll": "Mở rộng tất cả",
+                "fullscreen": "Xem trước toàn màn hình",
+                "settings": {
+                    "tooltip": "Cấu hình",
+                    "back": "Trở lại soạn thảo",
+                    "backConfirmTitle": "Cấu hình đã thay đổi",
+                    "backConfirmBody": "Bạn có chắc đóng bảng thiết lập mà không lưu các thay đổi của bạn",
+                    "backConfirmNo": "Không",
+                    "backConfirmYes": "Có",
+                    "save": "Lưu thiết lập",
+                    "storyTheme": "Sắc thái câu chuyện",
+                    "storyHeader": "Phần đầu câu chuyện",
+                    "title": "Tiêu đề",
+                    "titlePlaceholder": "Nhập tiêu đề",
+                    "logo": "Logo",
+                    "logoPlaceholder": "Thả ảnh logo của bạn vào đây hoặc nhấp để chọn một tập tin ảnh (các định dạng được hỗ trợ là png và jpeg)",
+                    "autoplay": "Tự động chạy",
+                    "enableAutoplay": "Bật tự động chạy",
+                    "autoplayInterval": "Khoảng tự động chạy(giây)",
+                    "autoplayIntervalPlaceholder": "Bật khoảng tự động chạy",
+                    "navbar": "Thanh điều hướng",
+                    "showNavbar": "Hiển thị thanh điều hướng",
+                    "theme": "Sắc thái mặc định",
+                    "fontFamily": "Nhóm phông chữ",
+                    "webFontLoadError": "Gặp lỗi khi nạp một số phông chữ từ cấu hình cục bộ",
+                    "fontSize": "Cỡ phông chữ",
+                    "overlay": "Lớp phủ",
+                    "templateTooltip": "Thiết lập này cho bạn khả năng bật chức năng Xác định trên sơ đồ bằng cách xác định một định dạng chung cho mọi lớp. Có thể cấu hình một định dạng khác cho mỗi lớp đơn bằng bộ soạn thảo sơ đồ nâng cao (biểu tượng bút chì). Để tìm thông tin thêm, xem <a href='https: //mapstore.readthedocs.io/en/latest/user-guide/layer-settings/#templates' target= 'blank' > hướng dẫn sử dụng </a>. Nếu một lớp đã xác định định dạng Xác định riêng của nó, nó sẽ được dùng thay vào định dạng chung được đặt ở cấp sơ đồ."
+                }
+            },
+            "importDialog": {
+                "selectFiles": "Chọn một tệp tin",
+                "heading": "Thả tập tin. json đã xuất trước",
+                "note": "Dữ liệu trong tập tin nhập sẽ thay thế dữ liệu trong địa tĩnh hiện thời"
+            },
+            "exportDialog": {
+                "heading": "Xuát geostory thành tệp tin .json"
+            },
+            "errors": {
+                "loading": {
+                    "notFound": "Geostory không tìm thấy",
+                    "title": "Lỗi",
+                    "unknownError": "Lỗi không xác định",
+                    "pleaseLogin": "Vui lòng đăng nhập",
+                    "notAccessible": "Story này không thể truy cập",
+                    "geostoryNotAccessible": "Bạn không có quyền truy cập story này",
+                    "geostoryDoesNotExist": "Story này không tồn tại",
+                    "video": "Rất tiếc! Có lỗi xuất hiện, vui lòng thử lại sau."
+                }
+            },
+            "mapEditor": {
+                "configureMapOptions": "Cấu hình bản đồ",
+                "settings": "Cấu hình",
+                "settingsSubTitle": "Quản lý tương tác người dùng",
+                "toc": "Lớp",
+                "pan": "Tương tác Pan",
+                "zoom": "Phóng to/thu nhỏ tương tác",
+                "topLeft": "Trên trái",
+                "topRight": "Trên phải",
+                "bottomLeft": "Trái dưới",
+                "bottomRight": "Phải dưới",
+                "identify": "Truy vấn"
+            },
+            "webPageCreator": {
+                "title": "Trang web",
+                "saveButton": "Lưu",
+                "error": "Vui lòng cung cấp đường dẫn trang web",
+                "url": {
+                    "label": "URL"
+                }
+            },
+            "customizeTheme": {
+                "backgroundColorLabel": "Nền",
+                "textColorLabel": "Văn bản",
+                "shadowLabel": "Bóng",
+                "useAlternativeTextColor": "Dùng màu văn bản thay thế",
+                "alternativeTextColorPopover": "<p>Cảnh báo: màu văn bản đã chọn không thể đọc được trên nền này.</p><p>Một màu văn bản thay thế là {color} &nbsp; <span class=\"ms-custom-theme-picker-alternative-text\" style=\"background-color:{color}\"></span></p>"
+            }
+        },
+        "geostoryEmbedded": {
+            "loadingSpinner": "Đang tải",
+            "errors": {
+                "loading": {
+                    "notFound": "Geostory không tìm thấy",
+                    "title": "Lỗi",
+                    "unknownError": "Lỗi không xác định",
+                    "notAccessible": "Story này không thể truy cập",
+                    "pleaseLogin": "Vui lòng đăng nhập",
+                    "geostoryNotAccessible": "Bạn không có quyền truy cập story này",
+                    "geostoryDoesNotExist": "Story này không tồn tại"
+                }
+            }
+        },
+        "saveDialog": {
+            "title": "Sửa thuộc tính",
+            "name": "Tên",
+            "description": "Mô tả",
+            "createdAt": "Tạo",
+            "modifiedAt": "Chỉnh sửa",
+            "namePlaceholder": "Nhập tên...",
+            "descriptionPlaceholder": "Nhập mô tả...",
+            "confirmCloseText": "Có thay đổi chưa được lưu, bạn có chắc chắn đóng mà không cần lưu?",
+            "close": "Đóng",
+            "cancel": "Hủy",
+            "saveSuccessTitle": "Thành công",
+            "saveSuccessMessage": "Đã lưu thành công",
+            "saveTooltip": "Lưu",
+            "saveAsTooltip": "Lưu thành"
+        },
+        "mapEditor": {
+            "modalTitle": "Biên soạn bản đồ",
+            "confirmExitTitle": "Đóng",
+            "confirmExitContent": "Bỏ qua những thay đổi?"
+        },
+        "mediaEditor": {
+            "modalTitle": "Phương tiện",
+            "images": "Ảnh",
+            "videos": "VideoName",
+            "maps": "Bản đồName",
+            "preview": "Xem trước",
+            "apply": "Áp dụng",
+            "confirmExitTitle": "Đóng bộ soạn thảo phương tiện",
+            "confirmExitContent": "Hủy thay đổi đang chờ?",
+            "mediaPicker": {
+                "services": "Dịch vụ: ",
+                "clean": "Xóa kết quả",
+                "noResults": "Không có kết quả",
+                "selectService": "Chọn dịch vụ",
+                "add": "Thêm",
+                "back": "Trở lại",
+                "save": "Lưu",
+                "edit": "Sửa",
+                "sourcePlaceholder": "Nhập một nguồn",
+                "source": "Nguồn",
+                "titlePlaceholder": "Nhập tiêu đề",
+                "title": "Tựa",
+                "altTextPlaceholder": "Nhập một văn bản thay thế",
+                "altText": "Văn bản xen kẽ",
+                "descriptionPlaceholder": "Nhập mô tả",
+                "description": "Mô tả",
+                "creditsPlaceholder": "Nhập tín chỉ",
+                "credits": "Công trạng",
+                "mapFilter": "Lọc các ánh xạ",
+                "videoFilter": "Lọc các video",
+                "imageFilter": "Lọc ảnh",
+                "import": "Nhập tài nguyên vào kho cục bộ",
+                "trash": "Gỡ bỏ tài nguyên",
+                "videoUrl": "URL phim",
+                "videoUrlPlaceholder": "Nhập địa chỉ URL video",
+                "thumbnail": "Thêm ảnh mẫu (kích thước tối đa 500kb)",
+                "createVideoThumbnail": "Tạo ảnh mẫu từ nguồn video",
+                "thumbnailCreateError": "Không thể tạo ảnh mẫu từ nguồn video hiện thời. Hãy nhắp hoặc thả ảnh vào đầu vào ảnh mẫu để tự tải lên nó."
+            },
+            "mediaform": {
+                "confirmExitTitle": "Đóng mẫu phương tiện",
+                "confirmExitContent": "Hủy thay đổi đang chờ?"
+            },
+            "mapForm": {
+                "thumbnailMessage": "Kích cỡ ảnh phải là một hình vuông 98px x 98px, tối đa 100kb",
+                "confirmMapSaveTitle": "Cập nhật bản đồ",
+                "confirmMapSaveContent": "Cập nhật bản đồ này sẽ đặt lại tất cả các bản đồ phụ thuộc trong câu chuyện trước đây tùy chỉnh thông qua trình soạn thảo nội tuyến, xác nhận?"
+            },
+            "mediaList": {
+                "removeResourceTitle": "Bạn có chắc chắn?",
+                "confirmRemoveResource": "Bạn có muốn loại bỏ tài nguyên truyền thông này khỏi câu chuyện?",
+                "confirmRemoveUsedResource": "Tài nguyên này cũng sẽ bị xóa khỏi mọi phần/nội dung mà nó được dùng và để trống. Bạn có muốn xóa nó khỏi câu chuyện không?",
+                "resultsCount": "{số} của {tổng} {tổng, số nhiều, một {Kết quả} khác {Kết quả}}"
+            },
+            "imageList": {
+                "emptyList": "Nhấn vào cái nút cộng để thêm một ảnh mới. Xem hướng dẫn người dùng <a href='https: //mapstore.readthedocs.io/en/latest/user-guide/media-editor-window/# images' target=' blank '/>here</a>"
+            },
+            "mapList": {
+                "emptyList": "Nhấn vào nút cộng để tạo bản đồ hoặc chọn một dịch vụ bản đồ khác. Xem hướng dẫn người dùng <a href='https: //mapstore.readthedocs.io/en/latest/user-guide/media-editor-window/# maps' target=' blank '/>here</a>"
+            },
+            "videoList": {
+                "emptyList": "Nhấn vào nút cộng để thêm một video mới. Xem hướng dẫn người dùng <a href='https: //mapstore.readthedocs.io/en/latest/user-guide/media-editor-window/#videos' target=' blank '/>here</a>"
+            }
+        },
+        "backgroundDialog": {
+            "addTitle": "Thêm nền mới",
+            "editTitle": "Sửa nền hiện tại",
+            "editAttribution": "Đóng góp",
+            "editAttributionPlaceholder": "Nhập mô tả đóng góp",
+            "title": "Tiêu đề",
+            "titlePlaceholder": "Nhập tên",
+            "add": "Thêm",
+            "thumbnailMessage": "Kích thước của hình ảnh nên là 98px x 98px hoặc 128px x 128px, tối đa 500kb",
+            "imageUploadMessage": "Nhấn hoặc kéo thể thể tải hình ảnh lên",
+            "additionalParameters": "Thông số bổ sung",
+            "addAdditionalParameterTooltip": "Thêm thông số",
+            "removeAdditionalParameterTooltip": "Xóa thông số",
+            "parameter": "Thông số",
+            "value": "Giá trị",
+            "string": "Chuỗi",
+            "number": "Số",
+            "boolean": "Boolean"
+        },
+        "defaultMapBackgroundsServiceTitle": "Phông nền mặc định",
+        "backgroundSelector": {
+            "addTooltip": "Thêm nền mới",
+            "editTooltip": "Sửa nền",
+            "deleteTooltip": "Xoá nền",
+            "confirmDelete": "Bạn có chắc muốn xoá nền \"{title}\" không?"
+        },
+        "stepper": {
+            "back": "Trở về",
+            "next": "Tiếp tục"
+        },
+        "newMapDialog": {
+            "title": "Chọn bối cảnh",
+            "noContexts": "Không tìm thấy ngữ cảnh",
+            "filterPlaceholder": "Tìm ngữ cảnh..."
+        },
+        "plugins": {
+            "About": {
+                "description": "Công cụ hiển thị cửa sổ About",
+                "title": "Thông tin"
+            },
+            "AddGroup": {
+                "description": "Cho phép người dùng tạo nhóm lớp mới trong TOC",
+                "title": "Thêm nhóm lớp"
+            },
+            "Annotations": {
+                "description": "Công cụ để vẽ chú thích trên ánh xạ",
+                "title": "Chú thích"
+            },
+            "AutoMapUpdate": {
+                "description": "Cho phép người dùng cập nhật bản đồ (phiên bản mapstore cũ)",
+                "title": "Cập nhật sơ đồ tự động"
+            },
+            "BackgroundSelector": {
+                "description": "Cho phép chọn nền bản đồ",
+                "title": "Bộ chọn nền"
+            },
+            "BurgerMenu": {
+                "description": "Trình đơn ở trên cùng bên phải của ánh xạ chứa các plug-in khác",
+                "title": "Trình đơn Burger"
+            },
+            "CRSSelector": {
+                "description": "Cho phép chuyển đổi phép chiếu ánh xạ",
+                "title": "Bộ chọn CRS"
+            },
+            "DeleteMap": {
+                "description": "Cho phép xoá tài nguyên bản đồ và mọi tài nguyên liên quan",
+                "title": "Xoá sơ đồ"
+            },
+            "Details": {
+                "description": "Cho phép hiển thị thẻ chi tiết cho bản đồ, nếu có",
+                "title": "Chi tiết bản đồ"
+            },
+            "Expander": {
+                "description": "Tiện ích cho thanh bên (điều hướng) cho phép ẩn một số nút",
+                "title": "Bộ mở rộng"
+            },
+            "FeatureEditor": {
+                "description": "Duyệt thuộc tính trong bảng",
+                "title": "Bảng thuộc tính"
+            },
+            "FilterLayer": {
+                "description": "Cho phép thêm bộ lọc vào lớp",
+                "title": "Lớp lọc"
+            },
+            "HelpLink": {
+                "description": "Một nút để truy cập tài liệu MapStore",
+                "title": "Liên kết tài liệu"
+            },
+            "Home": {
+                "description": "Liên kết tới trang chủ",
+                "title": "Trang chủ"
+            },
+            "Identify": {
+                "description": "Truy vấn đối tượng trên sơ đồ",
+                "title": "Truy vấn"
+            },
+            "Locate": {
+                "description": "Tìm và theo dõi vị trí của người dùng trên bản đồ",
+                "title": "Công cụ vị trí"
+            },
+            "Login": {
+                "description": "Công cụ đăng nhập",
+                "title": "Đăng nhập"
+            },
+            "MapCatalog": {
+                "description": "Cho phép duyệt, chỉnh sửa, xoá và tải các bản đồ sẵn có trên máy phục vụ",
+                "title": "Danh mục bản đồ"
+            },
+            "MapExport": {
+                "description": "Cho phép xuất ánh xạ ra tập tin",
+                "title": "Xuất bản đồ"
+            },
+            "MapImport": {
+                "description": "Cho phép nhập dữ liệu (SHP, KML/KMZ, GeoJSON, GPX) hoặc tải lại các bản đồ đã xuất.",
+                "title": "Nhập liệu"
+            },
+            "MapLoading": {
+                "description": "Một vòng xoay trong thanh bên cho biết liệu bản đồ đang tải",
+                "title": "Chỉ thị nạp sơ đồ"
+            },
+            "Measure": {
+                "description": "Cho phép đo khoảng cách và diện tích trên bản đồ",
+                "title": "Đo đạc"
+            },
+            "MetadataExplorer": {
+                "description": "Duyệt dịch vụ (WMS/WMTS/CSW) để thêm lớp vào bản đồ",
+                "title": "Danh mục"
+            },
+            "MousePosition": {
+                "description": "Hiển thị các tọa độ của điểm được chỉ bởi con trỏ chuột",
+                "title": "Vị trí chuột"
+            },
+            "Print": {
+                "description": "Cho phép in bản đồ hiện thời bằng chú giải",
+                "title": "Công cụ In"
+            },
+            "Save": {
+                "description": "Cho phép lưu các thay đổi của ánh xạ trên máy phục vụ",
+                "title": "Lưu"
+            },
+            "SaveAs": {
+                "description": "Cho phép tạo hay sao chép bản đồ trên máy phục vụ",
+                "title": "Lưu thành"
+            },
+            "ScaleBox": {
+                "description": "Một chỉ thị và một bộ chọn tỷ lệ hiện tại của bản đồ",
+                "title": "Chọn tỉ lệ"
+            },
+            "Search": {
+                "description": "Công cụ tìm kiếm văn bản (GeoCoder)",
+                "title": "Thanh tìm kiếm"
+            },
+            "Settings": {
+                "description": "Cho phép chỉnh sửa một số thiết lập cho bản đồ (ngôn ngữ, định dạng thông tin mặc định...)",
+                "title": "Cấu hình"
+            },
+            "Share": {
+                "description": "Cho phép chia sẻ bản đồ theo nhiều cách khác nhau (liên kết, mã QR, nhúng, mạng xã hội...) Name",
+                "title": "Công cụ chia sẻ"
+            },
+            "StreetView": {
+                "title": "Nhìn đường",
+                "description": "Công cụ xem đường phố để duyệt hình ảnh đường phố của Google từ bản đồ"
+            },
+            "StyleEditor": {
+                "description": "Trình biên tập kiểu dáng của lớp",
+                "title": "Biên soạn màu"
+            },
+            "TOC": {
+                "description": "Cung cấp danh sách các lớp với khả năng sắp xếp chúng",
+                "title": "Danh sách lớp"
+            },
+            "TOCItemsSettings": {
+                "description": "Cho phép chỉnh sửa thiết lập của lớp",
+                "title": "Cấu hình lớp"
+            },
+            "Timeline": {
+                "description": "Cho phép di chuyển thời gian cho dữ liệu với chiều thời gian",
+                "title": "Dòng thời gian"
+            },
+            "Tutorial": {
+                "description": "Thêm hướng dẫn để giải thích các chức năng khác nhau",
+                "title": "Hướng dẫn"
+            },
+            "UserExtensions": {
+                "description": "Cho phép người dùng bật/tắt phần mở rộng người dùng",
+                "title": "Phần mở rộng người dùng"
+            },
+            "UserSession": {
+                "title": "Phiên chạy người dùng",
+                "description": "HIệu lực một phiên người dùng đã lưu tự động cho mọi ngữ cảnh"
+            },
+            "Version": {
+                "description": "Hiển thị phiên bản của MapStore trong công cụ thiết lập bản đồ",
+                "descriptionGeorchestra": "Trình bày phiên bản của GeOrchestra trong công cụ thiết lập bản đồ",
+                "title": "Phiên bản"
+            },
+            "LayerDownload": {
+                "description": "Cho phép tải dữ liệu từ Bảng thuộc tính",
+                "title": "Tải về dữ liệu"
+            },
+            "Widgets": {
+                "description": "Cho phép thêm và hiển thị ô điều khiển trên ánh xạ",
+                "title": "Tiện tích"
+            },
+            "WidgetsTray": {
+                "description": "Một khay để sụp đổ và mở rộng các ô điều khiển trên sơ đồ. ",
+                "title": "Khay WidgetsName"
+            },
+            "Globe": {
+                "description": "Nút thanh bên để bật/tắt chế độ 3D",
+                "title": "3D"
+            },
+            "ZoomAll": {
+                "description": "Nút Sidebar để thu nhỏ đến mức độ bản đồ của bản đồ",
+                "title": "Phóng đến mức tối đa"
+            },
+            "ZoomIn": {
+                "description": "Nút tăng mức phóng to của ánh xạ",
+                "title": "Phóng to"
+            },
+            "ZoomOut": {
+                "description": "Nút giảm mức độ phóng to của ánh xạ",
+                "title": "Thu nhỏ"
+            }
+        },
+        "contextCreator": {
+            "generalSettings": {
+                "label": "Thiết lập chung",
+                "title": "Tạo ngữ cảnh ứng dụng mới",
+                "edit": "Sửa ngữ cảnh ứng dụng",
+                "name": "Tên",
+                "namePlaceholder": "Nhập tên ngữ cảnh ứng dụng...",
+                "windowTitle": "Tựa cửa sổ",
+                "windowTitlePlaceholder": "Nhập tiêu đề cửa sổ..."
+            },
+            "configureThemes": {
+                "title": "Cấu hình sắc thái",
+                "label": "Sắc thái",
+                "themes": "Chọn một sắc thái",
+                "noThemes": "Không tìm thấy sắc thái",
+                "customVariables": "Biến tự chọn",
+                "main": "Màu văn bản chính",
+                "background": "Màu nền chính",
+                "primaryContrast": "Màu văn bản chính",
+                "primary": "Màu chính",
+                "successContrast": "Màu văn bản thứ cấp",
+                "success": "Màu thứ cấp",
+                "guidelines": "Đảm bảo không dùng màu phụ quá giống với màu chính và rõ ràng là màu văn bản chính với màu đối ứng của nó (điều tương tự cũng áp dụng cho các cặp màu khác: chính, phụ).",
+                "alternativeTextPrimarySecondary": "<p>Cảnh báo: không thể đọc màu thứ cấp so với màu chính</p><p>Một màu thay thế là {color} &nbsp; <span class=\"ms-custom-theme-picker-alternative-text\" style=\"background-color:{color}\"></span></p>",
+                "tooltips": {
+                    "main": "Màu văn bản dùng trong bảng hoặc hộp thoại",
+                    "background": "Màu nền dùng trong bảng hoặc hộp thoại",
+                    "primaryContrast": "Màu văn bản trái ngược với màu chính và màu phụ thành công: biểu tượng bên trong thanh công cụ, tiêu đề, nút",
+                    "primary": "Màu cơ bản nền: thanh công cụ, tiêu đề, nút",
+                    "successContrast": "Màu văn bản được áp dụng khi màu phụ được dùng làm nền",
+                    "success": "Màu nền được sử dụng để hiển thị khi nút được 'chủ động' hoặc 'chọn'",
+                    "customColorsDescription": "Bạn có thể thay đổi một trong những màu này thêm vào (hoặc không) một sắc thái cấu hình sẵn đã chọn ở trên"
+                }
+            },
+            "configurePlugins": {
+                "label": "Cấu hình phần bổ sung",
+                "pluginsFilterPlaceholder": "Lọc các phần bổ sung theo tên...",
+                "availablePlugins": "Bổ sung sẵn dùng",
+                "enabledPlugins": "Bổ sung đã bật",
+                "availablePluginsEmpty": "Mọi phần bổ sung sẵn có đều được bật",
+                "enabledPluginsEmpty": "Thêm phần bổ sung vào cấu hình từ danh sách các phần bổ sung sẵn sàng",
+                "searchResultsEmpty": "Không tìm thấy phần bổ sung thỏa tiêu chí tìm kiếm",
+                "cfgParsingError": {
+                    "title": "Lỗi cấu hình",
+                    "body": "Lỗi phân tích JSON cấu hình. Gặp lỗi sau: \"{error}\""
+                },
+                "uploadLabel": "Kéo một gói phần mở rộng hoặc nhấp chuột để duyệt tìm và tải lên nó",
+                "uploadTitle": "Cài đặt một phần bổ sung MapStore",
+                "uploadParseError": "index.json có định dạng sai",
+                "uploadMissingIndexError": "thiếu tập tin index.json trong zip",
+                "uploadMissingPluginError": "Không có phần bổ sung nào được định nghĩa trong index. json",
+                "uploadMissingBundleError": "Không có gói javascript trong tập tin đã tải lên",
+                "uploadTooManyBundlesError": "Quá nhiều bó javascript trong gói zip",
+                "uploadWrongFileFormatError": "Ngờ tập tin định dạng zip",
+                "uploadAlreadyInstalledError": "Phần mở rộng đã được cài đặt. Gỡ bỏ phần mở rộng hiện thời trước khi cài đặt lại",
+                "confirmRemovePlugin": "Bạn có chắc muốn gỡ bỏ phần mở rộng không?",
+                "cancelUpload": "Đóng",
+                "install": "Cài đặt",
+                "uploadError": "Gặp lỗi khi cài đặt: ",
+                "uploadOk": "Phần mở rộng đã được cài đặt đúng",
+                "tooltips": {
+                    "enableUserPlugin": "Bật sự chọn bổ sung hiện thời cho người dùng",
+                    "disableUserPlugin": "Tắt khả năng chọn bổ sung hiện thời cho người dùng",
+                    "activatePlugin": "Bật nạp bổ sung này khi khởi chạy",
+                    "deactivatePlugin": "Tắt chạy bổ sung này khi khởi chạy",
+                    "editConfiguration": "Sửa cấu hình phần bổ sung",
+                    "pluginDocumentation": "Mở tài liệu hướng dẫn cấu hình phần bổ sung",
+                    "uploadPlugin": "Thêm phần mở rộng vào MapStore",
+                    "removePlugin": "Gỡ bỏ phần mở rộng này khỏi MapStore",
+                    "mapTemplatesConfig": "Cấu hình các mẫu bản đồName"
+                },
+                "tutorialPlugins": {
+                    "availableTitle": "Bổ sung sẵn dùngName",
+                    "availableDescription": "Phần bổ sung này bị tắt",
+                    "enabledTitle": "Bật bổ sung",
+                    "enabledDescription": "Bổ sung này đã bật"
+                },
+                "saveCfgErrorNotification": {
+                    "title": "Gặp lỗi cú pháp trong cấu hình phần bổ sung",
+                    "message": "Bổ sung  \"{pluginName}\"  có lỗi trong cấu hình. Hãy sửa chữa trước khi tiếp tục"
+                }
+            },
+            "configureTemplates": {
+                "title": "Cấu hình các mẫu ánh xạ",
+                "availableTemplates": "Các mẫu ánh xạ sẵn dùng",
+                "enabledTemplates": "Bật mẫu ánh xạ",
+                "templatesFilterPlaceholder": "Lọc các mẫu ánh xạ theo tên...",
+                "availableTemplatesEmpty": "Mọi mẫu ánh xạ sẵn có được bật",
+                "enabledTemplatesEmpty": "Thêm các mẫu ánh xạ vào cấu hình từ danh sách các mẫu sẵn có",
+                "searchResultsEmpty": "Không tìm thấy mẫu bản đồ thỏa tiêu chí tìm kiếm",
+                "fileDrop": {
+                    "label": "Mẫu sơ đồ",
+                    "clear": "Thả hoặc nhấp để chọn tập tin bản đồ (hỗ trợ các bản đồ JSON MapStore xuất ra hoặc các tập tin WMC)"
+                },
+                "uploadDialog": {
+                    "title": "Mẫu bản đồ tải lên",
+                    "save": "Tải lên",
+                    "jsonParsingError": "Lỗi phân tích cú pháp JSON: \"{error}\"",
+                    "fileReadError": "Gặp lỗi đọc tập tin bất thường"
+                },
+                "tooltips": {
+                    "uploadTool": "Tải mẫu bản đồ mới",
+                    "editTemplate": "Sửa các thuộc tính của mẫu ánh xạ",
+                    "deleteTemplate": "Xoá mẫu ánh xạ"
+                },
+                "deleteError": "Không thể xóa mẫu ánh xạ nên gặp lỗi",
+                "deleteConfirm": "Bạn có chắc muốn xoá mẫu sơ đồ \"{templateName}\" này không?"
+            },
+            "configureMap": {
+                "label": "Cấu hình sơ đồ",
+                "reload": "Nạp lại sơ đồ",
+                "confirm": "Tùy chọn này sẽ bỏ qua mọi thay đổi bản đồ hiện thời. Tiếp tục?"
+            },
+            "saveErrorNotification": {
+                "titleContext": "Gặp lỗi khi lưu ngữ cảnh",
+                "titleTemplate": "Gặp lỗi khi lưu mẫu",
+                "conflict": "Một tài nguyên có tên này đã có",
+                "defaultMessage": "Lỗi không rõ",
+                "categoryError": "Gặp lỗi khi tạo phân loại thiếu \"{categoryName}\""
+            },
+            "loadTemplateErrorNotification": {
+                "forbidden": "Không thể truy cập dữ liệu mẫu, người dùng thiếu quyền hạn cần thiết!",
+                "defaultMessage": "Gặp lỗi bất thường"
+            },
+            "contextNameErrorNotification": {
+                "title": "Tên ngữ cảnh sai",
+                "unknownError": "Gặp lỗi bất thường"
+            },
+            "undo": "Bạn có chắc muốn bỏ phiên chỉnh sửa ngữ cảnh không?",
+            "showTutorial": "Hướng dẫn Hiển thị"
+        },
+        "contextManager": {
+            "title": "Quản lý bối cảnh",
+            "gridTitle": "Bối cảnh",
+            "searchPlaceholder": "tìm...",
+            "newContext": "Bối cảnh mới",
+            "editContextTooltip": "Sửa bối cảnh"
+        },
+        "userExtensions": {
+            "title": "Tiện ích mở rộng",
+            "emptyTitle": "Không có kết quả",
+            "emptyDescription": "Bộ lọc đã nhập không khớp với tên hoặc mô tả của bất kỳ tiện ích mở rộng nào",
+            "filterPlaceholder": "Lọc...",
+            "addExtension": "Thêm tiện ích",
+            "removeExtension": "Xóa tiện ích"
+        },
+        "mapTemplates": {
+            "title": "Mẫu bản đồ",
+            "tooltip": "Xem các mẫu bản đồ",
+            "favouritesTitle": "Yêu thích",
+            "allTitle": "Tất cả",
+            "filterPlaceholder": "Lọc mẫu bản đồ...",
+            "transfer": "Thay thế bản đồ với mẫu bản đồ này",
+            "merge": "Thêm mẫu bản đồ này vào bản đồ",
+            "favouriteAdd": "Thêm vào yêu thích",
+            "favouriteRemove": "Xóa khỏi yêu thích",
+            "emptyTitle": "Không có kết quả",
+            "emptyDescription": "Bộ lọc đã nhập không khớp với tên hoặc mô tả của bất kỳ mẫu bản đồ nào",
+            "noTemplatesTitle": "Không có mẫu bản đồ được tìm thấy",
+            "noTemplatesDescription": "Nội dung hiện tại không chúa mẫu bản đồ",
+            "confirmReplaceTitle": "Thay thế nội dung bản đồ",
+            "confirmReplaceMessage": "Bạn sẽ thay thế tất cả các lớp và cấu hình bản đồ bằng mẫu bản đồ đã chọn bằng cách nhấp vào nút 'Thay thế'",
+            "confirmReplaceConfirmButton": "Thay thế"
+        },
+        "mapCatalog": {
+            "title": "Nhóm bản đồ",
+            "tooltip": "Duyệt và tải bản đổ",
+            "filterPlaceholder": "Tìm kiếm bản đồ...",
+            "deleteConfirmContent": "Bạn có chắc chắn muốn xóa bản đồ \"{mapName}\"?",
+            "tooltips": {
+                "edit": "Sửa thuộc tính",
+                "delete": "Xóa dữ liệu",
+                "share": "Chia sẻ"
+            },
+            "deletedMap": {
+                "title": "Bản đồ đã xóa",
+                "message": "Đã xóa bản đồ thành công"
+            },
+            "updatedMap": {
+                "title": "Bản đồ đã được lưu",
+                "message": "Đã lưu bản đồ thành công"
+            },
+            "deleteError": "Có lỗi bất thường xảy ra khi xóa bản đồ",
+            "updateError": "Có lỗi bất thường xảy ra khi lưu bản đồ"
+        },
+        "layerInfo": {
+            "title": "Cập nhật tiêu đề và mô tả của các lớp",
+            "noLayers": "Không tìm thấy lớp nào",
+            "syncButton": "Đồng bộ tiêu đề và mô tả",
+            "selectAll": "Chọn tất cả",
+            "deselectAll": "Bỏ chọn tất cả",
+            "updatingLayers": "Đang cập nhật lớp {updatedCount}/{totalCount}",
+            "tooltips": {
+                "syncSuccess": "Tiêu đề và mô tả đã được cập nhật thành công",
+                "syncError": "Không thể cập nhật tiêu đề và mô tả của lớp này. Bạn có thể kiểm tra lại cấu hình của tất cả các lớp"
+            },
+            "syncingLayersSavingToServerError": {
+                "title": "Lỗi hệ thống",
+                "message": "Một lỗi không mong đợi trong quá trình lưu dữ liệu"
+            },
+            "syncingLayersGeneralError": {
+                "title": "Lỗi",
+                "message": "Một lỗi không mong đợi trong quá trình đồng bộ"
+            },
+            "layerType": "Loại: {type}"
+        },
+        "userSession": {
+            "saveErrorNotification": {
+                "titleContext": "Lưu phiên người dùng bị lỗi",
+                "categoryError": "Tạo nhóm \"{categoryName}\" bị lỗi",
+                "defaultMessage": "Lỗi bất thường"
+            },
+            "removeErrorNotification": {
+                "titleContext": "Xóa phiên người dùng bị lỗi",
+                "defaultMessage": "Lỗi bất thường"
+            },
+            "tooltip": "Xóa phiên người dùng hiện tại đã lưu",
+            "successRemoved": "Phiên người dùng đã bỏ",
+            "remove": "Thiết lập lại phiên người dùng",
+            "confirmRemove": "Bản có chác chắn muốn khôi phục cấu hình mặc định không?"
+        },
+        "streetView": {
+            "title": "Nhìn đường",
+            "description": "Công cụ street-view để xem hình ảnh đường phố từ Google",
+            "tooltip": "Mở công cụ street-view",
+            "emptyTitle": "Nhìn đường",
+            "emptyDescription": "Nhấn vào bản đồ để bắt đầu xem hình ảnh street-view",
+            "messages": {
+                "noDataForPosition": "không có dữ liệu street-view cho vị trí này",
+                "unknownError": "lỗi bất thường"
+            }
+        },
+        "sidebarMenu": {
+            "showMoreItems": "Hiển thị thêm"
         }
     }
 }
