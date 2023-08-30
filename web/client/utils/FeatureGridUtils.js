@@ -127,7 +127,7 @@ export const featureTypeToGridColumns = (
             width: columnSettings[desc.name] && columnSettings[desc.name].width || (defaultSize ? defaultSize : undefined),
             name: columnSettings[desc.name] && columnSettings[desc.name].label || desc.name,
             description: option?.description || '',
-            title: option?.title || desc.name,
+            title: option?.title || (columnSettings[desc.name] && columnSettings[desc.name].label) || desc.name,
             showTitleTooltip: !!option?.description,
             resizable,
             editable,

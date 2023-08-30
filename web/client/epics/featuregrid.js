@@ -109,7 +109,8 @@ import {
     setSelectionOptions,
     setPagination,
     launchUpdateFilterFunc,
-    LAUNCH_UPDATE_FILTER_FUNC, SET_LAYER
+    LAUNCH_UPDATE_FILTER_FUNC, SET_LAYER, 
+    setAttributes
 } from '../actions/featuregrid';
 
 import {
@@ -330,11 +331,16 @@ const updateFilterFunc = (store) => ({update = {}, append} = {}) => {
 export const featureGridBrowseData = (action$, store) =>
     action$.ofType(BROWSE_DATA).switchMap( ({layer}) => {
         const currentTypeName = get(store.getState(), "query.typeName");
+        const datasetAttributes = (get(store.getState(), "gnresource.data.attribute_set") || []).reduce((prev, att)=>{
+            prev[att.attribute] = {'label' : att.description || att.attribute,'hide' : !att.visible }
+            return prev;
+        },{})
         return Rx.Observable.of(
             ...(currentTypeName !== layer.name ? [reset()] : []),
             setControlProperty('drawer', 'enabled', false),
             setLayer(layer.id),
-            openFeatureGrid()
+            openFeatureGrid(),
+            setAttributes(datasetAttributes)
         ).merge(
             createInitialQueryFlow(action$, store, layer)
         );

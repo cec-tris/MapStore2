@@ -66,6 +66,8 @@ export const GRID_QUERY_RESULT = 'FEATUREGRID:QUERY_RESULT';
 export const SET_TIME_SYNC = "FEATUREGRID:SET_TIME_SYNC";
 export const SET_PAGINATION = "FEATUREGRID:SET_PAGINATION";
 
+export const SET_ATTRIBUTES = "FEATUREGRID:SET_ATTRIBUTES";
+
 export function toggleShowAgain() {
     return {
         type: TOGGLE_SHOW_AGAIN_FLAG
@@ -399,3 +401,9 @@ export const setSyncTool = (syncWmsFilter) => ({
     type: SET_SYNC_TOOL,
     syncWmsFilter
 });
+
+
+export const setAttributes = (attributes)=> ({
+    type: SET_ATTRIBUTES,
+    attributes
+})

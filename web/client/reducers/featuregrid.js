@@ -47,7 +47,8 @@ import {
     SET_UP,
     SET_TIME_SYNC,
     UPDATE_EDITORS_OPTIONS,
-    SET_PAGINATION
+    SET_PAGINATION,
+    SET_ATTRIBUTES
 } from '../actions/featuregrid';
 
 import { FEATURE_TYPE_LOADED, QUERY_CREATE, UPDATE_QUERY } from '../actions/wfsquery';
@@ -324,7 +325,8 @@ function featuregrid(state = emptyResultsState, action) {
     }
     case OPEN_FEATURE_GRID: {
         return assign({}, state, {
-            open: true
+            open: true,
+            //attributes : customAttributes
         });
     }
     case CLOSE_FEATURE_GRID: {
@@ -434,6 +436,9 @@ function featuregrid(state = emptyResultsState, action) {
     }
     case SET_TIME_SYNC: {
         return assign({}, state, {timeSync: action.value});
+    }
+    case SET_ATTRIBUTES: {
+        return assign({}, state, {attributes: action.attributes})
     }
     default:
         return state;
