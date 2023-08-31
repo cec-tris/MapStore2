@@ -162,10 +162,13 @@ class DownloadDialog extends React.Component {
         </Dialog></Portal>) : null;
     }
     handleExport = () => {
-        const {url, filterObj, downloadOptions, defaultSrs, srsList, onExport, layer, attributes, customAttributeSettings} = this.props;
+        const {url, filterObj, downloadOptions, defaultSrs, srsList, onExport, layer, attributes, customAttributeSettings, formats} = this.props;
         const selectedSrs = downloadOptions && downloadOptions.selectedSrs || defaultSrs || (srsList[0] || {}).name;
         const propertyName = getAttributesList(attributes, customAttributeSettings);
-        onExport(url || layer.url, filterObj, assign({}, downloadOptions, {selectedSrs}, {propertyName}));
+        //chumano
+        const format = formats.find(o=>o.name==downloadOptions.selectedFormat);
+        const selectedFormatLabel = format && format.label;
+        onExport(url || layer.url, filterObj, assign({}, downloadOptions, {selectedSrs, selectedFormatLabel}, {propertyName}));
     }
 }
 

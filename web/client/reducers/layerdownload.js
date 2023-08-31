@@ -107,7 +107,7 @@ function layerdownload( state = {downloadOptions: {singlePage: true}}, action) {
     case ADD_EXPORT_DATA_RESULT: {
         return {
             ...state,
-            results: [...(state.results || []), action.result]
+            results: [action.result, ...(state.results || [])] //chumano : new at the top
         };
     }
     case UPDATE_EXPORT_DATA_RESULT: {

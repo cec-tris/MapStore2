@@ -32,7 +32,7 @@ const ExportDataResults = ({
     onRemoveResult = () => {}
 }) => loading ? <Loader size={100} style={{margin: '0 auto', padding: '10px'}}/> : (
     <div className="mapstore-exportdataresults-container">
-        {results.map(({id, layerName, layerTitle, startTime, status, result}) => {
+        {results.map(({id, layerName, layerTitle, startTime, status, result ,format}) => {
             const title = getLayerTitle({name: layerName, title: layerTitle}, currentLocale);
             const startDate = new Date(startTime);
             const pad = x => x < 10 ? `0${x}` : `${x}`;
@@ -42,6 +42,8 @@ const ExportDataResults = ({
                 <div key={id} className="mapstore-exportdataresults-item">
                     <div className="mapstore-exportdataresults-item-name">
                         {title}
+                        <br/>
+                        <span className='mapstore-exportdataresults-item-name-format'>{format}</span>
                     </div>
                     <div className="mapstore-exportdataresults-item-date">
                         {startDateStr}
@@ -54,7 +56,7 @@ const ExportDataResults = ({
                             </OverlayTrigger> : null}
                         {status === 'failed' && (!result || !result.msgId) ? failButton : null}
                         {status === 'completed' &&
-                            <a href={result} target="_blank" rel="noopener noreferrer">
+                            <a href={result} target="_blank" download="file" rel="noopener noreferrer">
                                 <Button bsStyle="primary" bsSize="small">
                                     <Glyphicon glyph="floppy-disk"/>
                                 </Button>

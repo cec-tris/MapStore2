@@ -352,7 +352,8 @@ export const startFeatureExportDownload = (action$, store) =>
                 id: uuidv1(),
                 layerName: layer.name,
                 layerTitle: layer.title,
-                status: 'pending'
+                status: 'pending',
+                format: action.downloadOptions.selectedFormatLabel || action.downloadOptions.selectedFormat  //chumano
             };
             const wpsExecuteOptions = {
                 outputsExtractor: makeOutputsExtractor(referenceOutputExtractor)
