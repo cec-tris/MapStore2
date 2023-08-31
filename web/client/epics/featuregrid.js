@@ -332,7 +332,7 @@ export const featureGridBrowseData = (action$, store) =>
     action$.ofType(BROWSE_DATA).switchMap( ({layer}) => {
         const currentTypeName = get(store.getState(), "query.typeName");
         const datasetAttributes = (get(store.getState(), "gnresource.data.attribute_set") || []).reduce((prev, att)=>{
-            prev[att.attribute] = {'label' : att.description || att.attribute,'hide' : !att.visible }
+            prev[att.attribute] = {'label' : att.attribute_label || att.attribute,'hide' : !att.visible }
             return prev;
         },{})
         return Rx.Observable.of(
