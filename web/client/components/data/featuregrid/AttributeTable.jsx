@@ -27,6 +27,8 @@ const range = (start, end) => Array.from({length: (end + 1 - start)}, (v, k) => 
 const getEditor = (formatRegex) => <FormatEditor dataType="string" formatRegex={formatRegex}/>;
 
 // Columns for configuring table options
+const regexTitle = "^([\u0000-\u0019\u0021-\uFFFF\\s]){0,100}$";//"^[-@.\\/\#&+\\w\\s*]{0,100}$";
+const regexDescription ="^([\u0000-\u0019\u0021-\uFFFF\\s]){0,200}$";// "^[-@.,\\/\#&+\\w\\s*]{0,200}$";
 const columns = [{
     name: 'Name',
     key: 'attribute',
@@ -34,13 +36,13 @@ const columns = [{
 }, {
     name: 'Title',
     key: 'title',
-    editor: getEditor("^[-@.\\/\#&+\\w\\s*]{0,100}$"),
+    editor: getEditor(regexTitle),
     width: 120,
     editable: (rowData) => !rowData?.hide
 }, {
     name: 'Description',
     key: 'description',
-    editor: getEditor("^[-@.,\\/\#&+\\w\\s*]{0,200}$"),
+    editor: getEditor(regexDescription),
     width: 150,
     editable: (rowData) => !rowData?.hide
 }];
