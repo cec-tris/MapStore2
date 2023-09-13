@@ -583,7 +583,10 @@ export const geoJSONToLayer = (geoJSON, id) => {
             },
             crs: "EPSG:4326"
         },
-        features
+        features,
+        ...(['geostyler'].includes(geoJSON?.style?.format) && geoJSON?.style?.body && {
+            style: geoJSON.style
+        })
     };
 };
 export const saveLayer = (layer) => {
@@ -594,6 +597,7 @@ export const saveLayer = (layer) => {
         thumbURL: layer.thumbURL && layer.thumbURL.split(':')[0] === 'blob' ? undefined : layer.thumbURL,
         group: layer.group,
         search: layer.search,
+        fields: layer.fields,
         source: layer.source,
         name: layer.name,
         opacity: layer.opacity,
@@ -645,7 +649,11 @@ export const saveLayer = (layer) => {
     layer.localizedLayerStyles ? { localizedLayerStyles: layer.localizedLayerStyles } : {},
     layer.options ? { options: layer.options } : {},
     layer.credits ? { credits: layer.credits } : {},
-    !isNil(layer.forceProxy) ? { forceProxy: layer.forceProxy } : {});
+    layer.tileGrids ? { tileGrids: layer.tileGrids } : {},
+    layer.tileGridStrategy ? { tileGridStrategy: layer.tileGridStrategy } : {},
+    layer.tileGridCacheSupport ? { tileGridCacheSupport: layer.tileGridCacheSupport } : {},
+    !isNil(layer.forceProxy) ? { forceProxy: layer.forceProxy } : {},
+    !isNil(layer.disableFeaturesEditing) ? { disableFeaturesEditing: layer.disableFeaturesEditing } : {});
 };
 
 /**
@@ -846,9 +854,20 @@ export const getWMSVendorParams = (layer) =>  {
     return { TILED: layer.singleTile ? false : (!isNil(layer.tiled) ? layer.tiled : true)};
 };
 
+/**
+ * Utility function to check if the node allows to show fields tab
+ * @param {object} node the node of the TOC (including layer properties)
+ * @returns {boolean} true if the node allows to show fields
+ */
+export const hasWFSService = ({type, search = {}} = {}) =>
+    type === 'wfs' // pure WFS layer
+        || (type === 'wms' && search.type === 'wfs'); // WMS backed by WFS (search)
+
+
 LayersUtils = {
     getGroupByName,
     getLayerId,
+    hasWFSService,
     normalizeLayer,
     getNotEmptyGroup,
     getLayersByGroup,
@@ -859,3 +878,4 @@ LayersUtils = {
     isInsideResolutionsLimits,
     visibleTimelineLayers
 };
+

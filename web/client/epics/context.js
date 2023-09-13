@@ -15,7 +15,7 @@ import { isLoggedIn, userSelector } from '../selectors/security';
 
 import { LOAD_CONTEXT, LOAD_FINISHED, loadContext, loading, setContext, setResource, contextLoadError, loadFinished, CONTEXT_LOAD_ERROR } from '../actions/context';
 import { clearMapTemplates } from '../actions/maptemplates';
-import { loadMapConfig, MAP_CONFIG_LOADED, MAP_CONFIG_LOAD_ERROR } from '../actions/config';
+import { loadMapConfig, MAP_CONFIG_LOADED, MAP_CONFIG_LOAD_ERROR, mapInfoLoaded } from '../actions/config';
 import { LOGIN_SUCCESS, LOGOUT } from '../actions/security';
 import { loadUserSession, USER_SESSION_LOADED, userSessionStartSaving, setUserSession, saveMapConfig } from '../actions/usersession';
 
@@ -23,6 +23,8 @@ import { wrapStartStop } from '../observables/epics';
 import ConfigUtils from '../utils/ConfigUtils';
 import {userSessionEnabledSelector, buildSessionName} from "../selectors/usersession";
 import merge from "lodash/merge";
+import { searchSelector } from '../selectors/router';
+import { contextResourceSelector } from '../selectors/context';
 
 function MapError(error) {
     this.originalError = error;
@@ -80,17 +82,22 @@ const createMapFlow = (mapId = 'new', mapConfig, session, action$) => {
     );
 };
 
-const errorToMessageId = (name, e, getState = () => {}) => {
-    let message = `context.errors.${name}.unknownError`;
+const errorToMessageId = (name = "loading", e, getState = () => {}) => {
+    let messageId = `context.errors.${name}.unknownError`;
+    let errorMessageType = "text";
     if (e.status === 403) {
-        message = `context.errors.${name}.pleaseLogin`;
+        messageId = `context.errors.${name}.pleaseLogin`;
         if (isLoggedIn(getState())) {
-            message = `context.errors.${name}.notAccessible`;
+            messageId = `context.errors.${name}.notAccessible`;
         }
     } if (e.status === 404) {
-        message = `context.errors.${name}.notFound`;
+        messageId = `context.errors.${name}.notFound`;
+        if (isLoggedIn(getState())) {
+            messageId = `context.errors.${name}.unknownError`;
+            errorMessageType = "html";
+        }
     }
-    return message;
+    return { messageId, errorMessageType };
 };
 
 /**
@@ -103,16 +110,17 @@ const errorToMessageId = (name, e, getState = () => {}) => {
  *
  * @returns {Observable} flow to load the current context (with session, if enabled)
  */
-const createSessionFlow = (mapId, contextName, action$, getState) => {
+const createSessionFlow = (mapId, contextName, resourceCategory, action$, getState) => {
     return Observable.forkJoin(
-        getResourceIdByName('CONTEXT', contextName),
-        (mapId ? Observable.of(null) : getResourceDataByName('CONTEXT', contextName))
+        getResourceIdByName(resourceCategory, contextName),
+        (mapId ? Observable.of(null) : getResourceDataByName(resourceCategory, contextName))
     ).flatMap(([id, data]) => {
         const userName = userSelector(getState())?.name;
         return Observable.of(loadUserSession(buildSessionName(id, mapId, userName))).merge(
             action$.ofType(USER_SESSION_LOADED).take(1).switchMap(({session}) => {
-                const mapSession = session?.map && {
-                    map: session.map
+                const sessionData = {
+                    ...(session?.map && {map: session.map}),
+                    ...(session?.featureGrid && {featureGrid: session.featureGrid})
                 };
                 const contextSession = session?.context && {
                     ...session.context
@@ -120,7 +128,7 @@ const createSessionFlow = (mapId, contextName, action$, getState) => {
                 return Observable.merge(
                     Observable.of(clearMapTemplates()),
                     createContextFlow(id, contextSession, getState).catch(e => {throw new ContextError(e); }),
-                    createMapFlow(mapId, data && data.mapConfig, mapSession, action$, getState).catch(e => { throw new MapError(e); }),
+                    createMapFlow(mapId, data && data.mapConfig, sessionData, action$).catch(e => { throw new MapError(e); }),
                     Observable.of(setUserSession(session)),
                     Observable.of(userSessionStartSaving())
                 );
@@ -136,15 +144,19 @@ const createSessionFlow = (mapId, contextName, action$, getState) => {
  */
 export const loadContextAndMap = (action$, { getState = () => { } } = {}) =>
     action$.ofType(LOAD_CONTEXT).switchMap(({ mapId, contextName }) => {
+        const params = new URLSearchParams(searchSelector(getState()));
+        // When loading a permalink of type context, we lose the category type upon page reload.
+        // Hence the category is fetched from the param to provide correct category name to getResourceIdByName
+        const resourceCategory = params.get("category") || 'CONTEXT';
         const sessionsEnabled = userSessionEnabledSelector(getState());
         const flow = sessionsEnabled
-            ? createSessionFlow(mapId, contextName, action$, getState)
+            ? createSessionFlow(mapId, contextName, resourceCategory, action$, getState)
             : Observable.merge(
                 Observable.of(clearMapTemplates()),
-                getResourceIdByName('CONTEXT', contextName)
+                getResourceIdByName(resourceCategory, contextName)
                     .switchMap(id => createContextFlow(id, null, getState)).catch(e => {throw new ContextError(e); }),
-                (mapId ? Observable.of(null) : getResourceDataByName('CONTEXT', contextName))
-                    .switchMap(data => createMapFlow(mapId, data && data.mapConfig, null, action$, getState)).catch(e => { throw new MapError(e); })
+                (mapId ? Observable.of(null) : getResourceDataByName(resourceCategory, contextName))
+                    .switchMap(data => createMapFlow(mapId, data && data.mapConfig, null, action$)).catch(e => { throw new MapError(e); })
             );
         return flow
             // if everything went right, trigger loadFinished
@@ -155,9 +167,10 @@ export const loadContextAndMap = (action$, { getState = () => { } } = {}) =>
                     loading(true, "loading"),
                     [loading(false, "loading")],
                     e => {
-                        const messageId = errorToMessageId(e.name, e.originalError, getState);
+                        const error = {...e.originalError, status: e.originalError?.status ?? e.status};
+                        const { messageId, errorMessageType } = errorToMessageId(e.name, error, getState);
                         // prompt login should be triggered here
-                        return Observable.of(contextLoadError({ error: {...e.originalError, messageId} }) );
+                        return Observable.of(contextLoadError({ error: {...e.originalError, messageId, errorMessageType} }) );
                     }
                 )
             );
@@ -177,7 +190,7 @@ export const loadContextAndMap = (action$, { getState = () => { } } = {}) =>
  */
 export const handleLoginLogoutContextReload = action$ =>
     // If the was a forbidden error (access denied to the given context)
-    action$.ofType(CONTEXT_LOAD_ERROR).filter(({ error }) => error.status === 403)
+    action$.ofType(CONTEXT_LOAD_ERROR).filter(({ error }) => [404, 403].includes(error.status)) // getResourceIdByName returns 404 in both the cases (not permitted/not found)
         //  or in case of context successfully loaded
         .merge(action$.ofType(LOAD_FINISHED))
         // on login-logout event
@@ -185,3 +198,23 @@ export const handleLoginLogoutContextReload = action$ =>
         // re-trigger the last context load event to re-load context and map ()
         .withLatestFrom(action$.ofType(LOAD_CONTEXT))
         .switchMap(([, args]) => Observable.of(loadContext(args)));
+
+/**
+ * Handles the update of map info when loading permalink context
+ * @param {observable} action$ stream of actions
+ * @param {object} store
+ * @returns {observable} action to update map info
+ */
+export const setMapInfoOnPermalinkContext = (action$, { getState = () => {} } = {}) =>
+    action$.ofType(LOAD_FINISHED)
+        .filter(() => {
+            const params = new URLSearchParams(searchSelector(getState()));
+            return params.get("category") === 'PERMALINK';
+        }).switchMap(() => {
+            const contextResource = contextResourceSelector(getState());
+            if (!contextResource) {
+                return Observable.empty();
+            }
+            const {data: { mapConfig } = {}, ...resource} = contextResource;
+            return Observable.of(mapInfoLoaded({...resource, data: mapConfig}, null));
+        });

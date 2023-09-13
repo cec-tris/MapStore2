@@ -53,7 +53,9 @@ describe("The SharePanel component", () => {
         const cmpSharePanel = ReactDOM.render(<SharePanel selectedTab="embed" getCount={()=>0} shareUrlRegex=".*" shareUrlReplaceString="ABC" shareUrl="www.geo-solutions.it" isVisible={false} />, document.getElementById("container"));
         expect(cmpSharePanel).toExist();
         const parsed = cmpSharePanel.generateUrl("TEST", "(TE)ST", "$1");
+        const embedMap = cmpSharePanel.generateUrl("http://localhost:8081/#/viewer/44asd", "(h[^#]*)#\/viewer\/([^\/]*\/[A-Za-z0-9]*|[A-Za-z0-9]*)", "$2");
         expect(parsed).toBe("TE");
+        expect(embedMap).toBe("44asd");
     });
     it('test showAPI flag', () => {
         let cmpSharePanel = ReactDOM.render(<SharePanel selectedTab="embed" showAPI={false} getCount={()=>0} shareUrl="www.geo-solutions.it" isVisible />, document.getElementById("container"));
@@ -157,5 +159,14 @@ describe("The SharePanel component", () => {
         expect(spyOnUpdateSettings).toHaveBeenCalled();
         expect(spyOnUpdateSettings.calls[0].arguments[0]).toEqual({ markerEnabled: true, centerAndZoomEnabled: true, bboxEnabled: false });
         expect(spyAddMarker).toHaveBeenCalled();
+    });
+    it('test permalink panel', () => {
+        const panel = ReactDOM.render(
+            <SharePanel settings={{markerEnabled: false}} items={[{target: "tabs", title: <div>test</div>, component: () => <div id="permalink">Permalink</div>}]} shareUrl="www.geo-solutions.it" isVisible />, document.getElementById("container"));
+        expect(panel).toBeTruthy();
+        const thirdTab = document.getElementById('sharePanel-tabs-tab-3');
+        ReactTestUtils.Simulate.click(thirdTab);
+        expect(panel.state.eventKey).toBe(3);
+        expect(document.getElementById('permalink')).toBeTruthy();
     });
 });

@@ -12,6 +12,7 @@ import {createShallowSelectorCreator} from "../utils/ReselectUtils";
 import {getLayerTitle} from "../utils/LayersUtils";
 import {currentLocaleSelector} from "./locale";
 
+
 export const changedGeometriesSelector = state => state && state.draw && state.draw.tempFeatures;
 export const drawSupportActiveSelector = (state) => {
     const drawStatus = get(state, "draw.drawStatus", false);
@@ -27,7 +28,7 @@ export const snappingConfig = state => get(state, 'draw.snapConfig', false);
 export const availableSnappingLayers = createShallowSelectorCreator(
     (a, b) => {
         return a === b
-            || isObject(a) && isObject(b) && a?.id === b?.id && a?.title === b?.title;
+            || isObject(a) && isObject(b) && a?.id === b?.id && a?.title === b?.title && a?.visibility === b?.visibility;
     }
 )([
     layersSelector,

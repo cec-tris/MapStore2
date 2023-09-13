@@ -5,25 +5,24 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
-import {toModulePlugin} from "../utils/ModulePluginsUtils";
-
 import Context from "../plugins/Context";
 import ContextCreator from "../plugins/ContextCreator";
 import Dashboard from "../plugins/Dashboard";
 import Dashboards from "../plugins/Dashboards";
 import FeedbackMask from '../plugins/FeedbackMask';
-import GeoStory from "../plugins/GeoStory";
 import GeoStories from "../plugins/GeoStories";
+import GeoStory from "../plugins/GeoStory";
+import Identify from '../plugins/Identify';
+import Login from '../plugins/Login';
 import Maps from "../plugins/Maps";
+import Print from "../plugins/Print";
 import RulesDataGrid from "../plugins/RulesDataGrid";
 import RulesEditor from "../plugins/RulesEditor";
 import RulesManagerFooter from "../plugins/RulesManagerFooter";
-import Print from "../plugins/Print";
 import UserSession from "../plugins/UserSession";
-import Login from '../plugins/Login';
-import Identify from '../plugins/Identify';
+import FeatureEditor from '../plugins/FeatureEditor';
 
+import {toModulePlugin} from "../utils/ModulePluginsUtils";
 
 /**
   * Please, keep them sorted alphabetically
@@ -35,16 +34,17 @@ export const plugins = {
     Dashboard: Dashboard,
     DashboardsPlugin: Dashboards,
     FeedbackMaskPlugin: FeedbackMask,
-    GeoStoryPlugin: GeoStory,
     GeoStoriesPlugin: GeoStories,
+    GeoStoryPlugin: GeoStory,
+    IdentifyPlugin: Identify,
+    LoginPlugin: Login,
     MapsPlugin: Maps,
     PrintPlugin: Print,
     RulesDataGridPlugin: RulesDataGrid,
     RulesEditorPlugin: RulesEditor,
     RulesManagerFooter: RulesManagerFooter,
     UserSessionPlugin: UserSession,
-    LoginPlugin: Login,
-    IdentifyPlugin: Identify,
+    FeatureEditorPlugin: FeatureEditor,
 
     // ### DYNAMIC PLUGINS ### //
     // product plugins
@@ -67,6 +67,8 @@ export const plugins = {
     ContentTabs: toModulePlugin('ContentTabs', () => import(/* webpackChunkName: 'plugins/contentTabs' */ '../plugins/ContentTabs')),
     ContextManagerPlugin: toModulePlugin('ContextManager', () => import(/* webpackChunkName: 'plugins/contextManager' */ '../plugins/contextmanager/ContextManager')),
     ContextsPlugin: toModulePlugin('Contexts', () => import(/* webpackChunkName: 'plugins/contexts' */ '../plugins/Contexts')),
+    ContextImportPlugin: toModulePlugin('ContextImport', () => import(/* webpackChunkName: 'plugins/contextImport' */ '../plugins/ContextImport')),
+    ContextExportPlugin: toModulePlugin('ContextExport', () => import(/* webpackChunkName: 'plugins/contextExport' */ '../plugins/ContextExport')),
     CookiePlugin: toModulePlugin('Cookie', () => import(/* webpackChunkName: 'plugins/cookie' */ '../plugins/Cookie')),
     CreateNewMapPlugin: toModulePlugin('CreateNewMap', () => import(/* webpackChunkName: 'plugins/createNewMap' */ '../plugins/CreateNewMap')),
     DashboardEditor: toModulePlugin('DashboardEditor', () => import(/* webpackChunkName: 'plugins/dashboardEditor' */ '../plugins/DashboardEditor')),
@@ -78,7 +80,6 @@ export const plugins = {
     DetailsPlugin: toModulePlugin('Details', () => import(/* webpackChunkName: 'plugins/details' */ '../plugins/Details')),
     DrawerMenuPlugin: toModulePlugin('DrawerMenu', () => import(/* webpackChunkName: 'plugins/drawerMenu' */ '../plugins/DrawerMenu')),
     ExpanderPlugin: toModulePlugin('Expander', () => import(/* webpackChunkName: 'plugins/expander' */ '../plugins/Expander')),
-    FeatureEditorPlugin: toModulePlugin('FeatureEditor', () => import(/* webpackChunkName: 'plugins/featureEditor' */ '../plugins/FeatureEditor')),
     FeaturedMaps: toModulePlugin('FeaturedMaps', () => import(/* webpackChunkName: 'plugins/featuredMaps' */ '../plugins/FeaturedMaps')),
     FilterLayerPlugin: toModulePlugin('FilterLayer', () => import(/* webpackChunkName: 'plugins/filterLayer' */ '../plugins/FilterLayer')),
     FloatingLegendPlugin: toModulePlugin('FloatingLegend', () => import(/* webpackChunkName: 'plugins/floatingLegend' */ '../plugins/FloatingLegend')),
@@ -90,6 +91,7 @@ export const plugins = {
     GeoStoryImport: toModulePlugin('GeoStoryImport', () => import(/* webpackChunkName: 'plugins/geoStoryImport' */ '../plugins/GeoStoryImport')),
     DashboardSavePlugin: toModulePlugin('DashboardSave', () => import(/* webpackChunkName: 'plugins/dashboardSave' */ '../plugins/DashboardSave'), { exportedName: 'DashboardSave'}),
     DashboardSaveAsPlugin: toModulePlugin('DashboardSaveAs', () => import(/* webpackChunkName: 'plugins/dashboardSave' */ '../plugins/DashboardSave'), { exportedName: 'DashboardSaveAs'}),
+    GeoProcessingTools: toModulePlugin('GeoProcessingTools', () => import(/* webpackChunkName: 'plugins/GeoProcessingTools' */ '../plugins/GeoProcessingTools')),
     GeoStoryNavigationPlugin: toModulePlugin('GeoStoryNavigation', () => import(/* webpackChunkName: 'plugins/geoStoryNavigation' */ '../plugins/GeoStoryNavigation')),
     GroupManagerPlugin: toModulePlugin('GroupManager', () => import(/* webpackChunkName: 'plugins/groupManager' */ '../plugins/manager/GroupManager')),
     GlobeViewSwitcherPlugin: toModulePlugin('GlobeViewSwitcher', () => import(/* webpackChunkName: 'plugins/globeViewSwitcher' */ '../plugins/GlobeViewSwitcher')),
@@ -102,6 +104,7 @@ export const plugins = {
     LayerDownload: toModulePlugin('LayerDownload', () => import(/* webpackChunkName: 'plugins/layerDownload' */ '../plugins/LayerDownload')),
     LayerInfoPlugin: toModulePlugin('LayerInfo', () => import(/* webpackChunkName: 'plugins/layerInfo' */ '../plugins/LayerInfo')),
     LocatePlugin: toModulePlugin('Locate', () => import(/* webpackChunkName: 'plugins/locate' */ '../plugins/Locate')),
+    LongitudinalProfileToolPlugin: toModulePlugin('LongitudinalProfileTool', () => import(/* webpackChunkName: 'plugins/LongitudinalProfileTool' */ '../plugins/LongitudinalProfileTool')),
     ManagerMenuPlugin: toModulePlugin('ManagerMenu', () => import(/* webpackChunkName: 'plugins/managerMenu' */ '../plugins/manager/ManagerMenu')),
     ManagerPlugin: toModulePlugin('Manager', () => import(/* webpackChunkName: 'plugins/manager' */ '../plugins/manager/Manager')),
     MapEditorPlugin: toModulePlugin('MapEditor', () => import(/* webpackChunkName: 'plugins/mapEditor' */ '../plugins/MapEditor')),
@@ -135,6 +138,7 @@ export const plugins = {
     SettingsPlugin: toModulePlugin('Settings', () => import(/* webpackChunkName: 'plugins/settings' */ '../plugins/Settings')),
     SidebarMenuPlugin: toModulePlugin('SidebarMenu', () => import(/* webpackChunkName: 'plugins/sidebarMenu' */ '../plugins/SidebarMenu')),
     SharePlugin: toModulePlugin('Share', () => import(/* webpackChunkName: 'plugins/share' */ '../plugins/Share')),
+    PermalinkPlugin: toModulePlugin('Permalink', () => import(/* webpackChunkName: 'plugins/permalink' */ '../plugins/Permalink')),
     SnapshotPlugin: toModulePlugin('Snapshot', () => import(/* webpackChunkName: 'plugins/snapshot' */ '../plugins/Snapshot')),
     StreetView: toModulePlugin('StreetView', () => import(/* webpackChunkName: 'plugins/streetView' */ '../plugins/StreetView')),
     StyleEditor: toModulePlugin('StyleEditor', () => import(/* webpackChunkName: 'plugins/styleEditor' */ '../plugins/StyleEditor')),

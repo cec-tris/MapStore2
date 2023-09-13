@@ -87,7 +87,6 @@
             "featureTypeError": "Layerattribute können nicht geladen werden",
             "featureTypeErrorInvalidJSON": "Layerattribute können nicht geladen werden. Antwort ist nicht gültig",
             "elevation": "Höhe",
-            "titleTranslations": "Titel Übersetzungen",
             "groupProperties": "Gruppeneigenschaften",
             "featureInfo": "Feature Info",
             "featureInfoFormatLbl": "Antwortformat festlegen",
@@ -119,6 +118,23 @@
                 "noVendor": "No Vendor",
                 "geoserver": "GeoServer"
             },
+            "availableTileGrids": "Verfügbare Kachelgitter",
+            "crsId": "Id",
+            "projection": "Projektion",
+            "tileSize": "Kachelgröße",
+            "tileGridInUse": "Das Kachelgitter {id} entspricht der aktuellen Kartenprojektion und der für diese Ebene ausgewählten Kachelgröße",
+            "useStandardTileGridStrategy": "Standard-Kachelraster verwenden",
+            "useCustomTileGridStrategy": "Entfernte benutzerdefinierte Kachelraster verwenden",
+            "updateTileGrids": "Verfügbare Kachelraster aktualisieren",
+            "noTileGridMatchesConfiguration": "Es gibt kein Kachelraster, das mit der aktuellen Kartenprojektion und der ausgewählten Kachelgröße übereinstimmt. In der Tabelle oben werden die verfügbaren Kachelraster hervorgehoben, die mit der aktuellen Kartenprojektion kompatibel sind. Sie können auf die Schaltfläche Aktualisieren klicken, um die Liste der verfügbaren zu aktualisieren Fliesengitter",
+            "noConfiguredGridSets": "Es ist nicht möglich, benutzerdefinierte Kachelraster abzurufen. Diese Ebene verfügt über keinen Rastersatz, der mit den verfügbaren Projektionen kompatibel ist. Bitte überprüfen Sie die Konfigurationsserverseite und versuchen Sie es erneut",
+            "notPossibleToConnectToWMTSService": "Es war nicht möglich, die Kachelraster vom Server abzurufen. Die an {requestUrl} gesendete Anfrage löst einen Fehler aus.",
+            "notSupportedSelectedFormatCache": "Das ausgewählte Format wird vom Cache nicht unterstützt",
+            "customParamsCacheWarning": "Für diese Ebene ist der lokalisierte Stil aktiviert. Bitte überprüfen Sie die Konfigurationsserverseite und stellen Sie sicher, dass sie den benutzerdefinierten ENV-Parameter unterstützt",
+            "supportedFormats": "Unterstützte Formate",
+            "checkAvailableTileGridsInfo": "Überprüfen Sie die verfügbaren Kachelgitterinformationen",
+            "tileGridInfoChecksTitle": "Informationen zu Kachelgittern",
+            "tileGridInfoChecks": "Die folgende Checkliste zeigt einige mögliche Kompatibilitätsprobleme zwischen dem aktuellen Gridset und den Remote-Informationen. Es ist immer noch möglich, dass das Tile Grid den Cache nicht erreicht, selbst wenn alle aufgeführten Prüfungen erfolgreich sind",
             "visibilityLimits": {
                 "title": "Sichtbarkeitsgrenzen",
                 "serverValuesUpdateUndefined": "Der Server hat keine Skalierungssichtbarkeitsbeschränkungen für diese Ebene angegeben",
@@ -172,7 +188,24 @@
                     "message": "Format konnte nicht abgerufen werden"
                 }
             },
-            "forceProxy": "Proxy erzwingen"
+            "forceProxy": "Proxy erzwingen",
+            "fields": {
+              "refresh": "Felder aus der Datenquelle neu laden",
+              "title": "Felder",
+              "tooltip": "Felder",
+              "name": "Name",
+              "alias": "Alias",
+              "type": "Typ",
+              "clearCustomization": "Alle Anpassungen entfernen",
+              "clearCustomizationConfirm": "Möchten Sie wirklich alle Anpassungen entfernen?",
+              "error": "Die Felder konnten nicht automatisch geladen werden"
+            },
+            "disableFeaturesEditing": "Deaktivieren Sie die Bearbeitung der Attributtabelle"
+        },
+        "localizedInput": {
+          "localize": "Diesen Text lokalisieren...",
+          "title": "Text lokalisieren",
+          "default": "Standard"
         },
         "longitude": "Längengrad",
         "latitude": "Breitengrad",
@@ -180,6 +213,7 @@
             "update": "Aktualisierung",
             "warning": "Warnung",
             "success": "Erfolg",
+            "error": "Fehler",
             "backgroundLayerNotSupported": "Der zuvor gewählte Hintergrund wird nicht für diese Art von Karte unterstützt. Der erste verfügbare wird alternativ verwendet.",
             "noBackgroundLayerSupported": "Es gibt keine unterstützten Hintergrundebenen für diese Art von Karte.",
             "updateOldMap": "Dies ist eine alte Karte, daher können nicht alle Funktionen aktiviert werden. Klicken Sie auf die Schaltfläche Aktualisieren, um die Karte zu aktualisieren, oder schließen Sie diese Benachrichtigung einfach, wenn Sie sie nicht aktualisieren möchten.",
@@ -1384,6 +1418,38 @@
                 "height": "Höhe"
             }
         },
+        "permalink": {
+            "title": "Permalink",
+            "shareLinkTitle": "Permalink generiert",
+            "accessible": "Öffentlich",
+            "success": "Permalink wurde erfolgreich gespeichert",
+            "createCategorySuccess": "Die Kategorie \"PERMALINK\" fehlte und wurde daher erstellt",
+            "descriptionLabel": "Beschreibung",
+            "titleLabel": "Titel",
+            "titlePlaceholder": "Geben Sie einen Titel ein",
+            "descriptionPlaceholder": "Geben Sie eine Beschreibung ein",
+            "generate": "Permalink generieren",
+            "create": "Erstellen Sie einen neuen Permalink",
+            "loadingSpinner": "Permalink wird geladen",
+            "subtitle": "Teilen Sie die Ressource mithilfe der generierten Adresse",
+            "errors": {
+                "loading": {
+                    "unknownError": "Beim Laden des Permalinks ist ein Fehler aufgetreten",
+                    "permalinkNotAccessible": "Sie haben keine Berechtigung, auf diesen Permalink zuzugreifen. Bitte wenden Sie sich an den Ressourceneigentümer",
+                    "permalinkDoesNotExist": "Der Permalink, auf den Sie zugreifen möchten, existiert nicht",
+                    "title": "Fehler beim Laden des Peramlinks",
+                    "pleaseLogin": "Dieser Permalink ist nicht öffentlich. Bitte versuchen Sie sich anzumelden",
+                    "notFound": "Permalink nicht gefunden",
+                    "notAccessible": "Permalink nicht zugänglich"
+                },
+                "save": {
+                    "title": "Die Permalink-Generierung ist fehlgeschlagen",
+                    "generic": "Fehler beim Speichern des Permalinks",
+                    "categoryErrorAdmin": "Das Erstellen der fehlenden Kategorie \"{categoryName}\" ist fehlgeschlagen",
+                    "categoryErrorNonAdmin": "Fehlende Kategorie \"{categoryName}\". Bitte wenden Sie sich an den Administrator, um die Kategorie zu erstellen"
+                }
+            }
+        },
         "snapshot": {
             "title": "Snapshot Vorschau",
             "save": "Speichern",
@@ -1896,6 +1962,11 @@
                     "errorChart": "Mindestens ein Diagramm ist ungültig",
                     "backToTableOptions": "Zurück zu den Tabellenoptionen",
                     "configureTableOptions": "Konfigurieren Sie die Tabellenoptionen",
+                    "attributeEditorColumns": {
+                      "name": "Name",
+                      "title": "Titel",
+                      "tooltip": "Tooltip"
+                    },
                     "resetColumnsSizes": "Setzen Sie alle Änderungen an den Spaltengrößen zurück",
                     "updateWidget": "Aktualisieren Sie das Widget",
                     "addTheWidget": "Hinzufügen des Widget",
@@ -2169,7 +2240,7 @@
                     "title": "Fehler beim Laden des Kontexts",
                     "notAccessible": "Ressource nicht zugänglich",
                     "pleaseLogin": "Einige Ressource kann nicht öffentlich. Bitte versuchen Sie sich einloggen",
-                    "unknownError": "Es gab einen Fehler in der Karte oder des Kontexts. Bitte kontaktieren Sie den Administrator",
+                    "unknownError": "<p><small>Einer der folgenden Gründe könnte die Ursache sein:</small> <ul><li>Sie haben keine Berechtigung, auf den Kontext und/oder die Karte zuzugreifen</li> <li>Sie versuchen, auf einen Kontext und/oder eine Karte zuzugreifen, die nicht existiert</li> <li>Der Kontext und/oder die Karte wurde entfernt</li> <li>Die Projektion der Karte ist nicht konfiguriert</li></ul> <p>",
                     "notFound": "Ressource nicht gefunden"
                 },
                 "context": {
@@ -2454,7 +2525,29 @@
             "color": "Farbe",
             "pointHeight": "Punkthöhe",
             "leaderLineColor": "Farbe der Führungslinie",
-            "leaderLineWidth": "Breite der Führungslinie"
+            "leaderLineWidth": "Breite der Führungslinie",
+            "geometryTransformation": "Geometrietransformation",
+            "center": "Mitte",
+            "startPoint": "Startpunkt",
+            "endPoint": "Endpunkt",
+            "line": "Linie",
+            "geodesicLine": "Geodätische Linie",
+            "geodesic": "Geodätisch",
+            "outlineStyle": "Umrissstil",
+            "strokeStyle": "Strichstil",
+            "anchor": "Ankerpunkt",
+            "addCircleRule": "Kreisregel hinzufügen",
+            "left": "Links",
+            "right": "Rechts",
+            "topLeft": "Oben links",
+            "top": "Oben",
+            "topRight": "Oben rechts",
+            "bottomLeft": "Unten links",
+            "bottom": "Unten",
+            "bottomRight": "Unten rechts",
+            "glyph": "Glyphe",
+            "marker": "Marker",
+            "filterByName": "Nach name filtern..."
         },
         "playback": {
             "settings": {
@@ -2824,16 +2917,18 @@
             "title": "Eigenschaften bearbeiten",
             "name": "Name",
             "description": "Beschreibung",
+            "titleInput": "Titel",
             "createdAt": "Erstellt",
             "modifiedAt": "Geändert",
             "namePlaceholder": "Geben Sie einen Namen ein ...",
             "descriptionPlaceholder": "Geben Sie eine Beschreibung ein ...",
+            "titlePlaceholder": "Geben Sie einen Titel ein...",
             "confirmCloseText": "Es gibt ausstehende Änderungen, sind Sie sicher, dass Sie schließen möchten, ohne zu speichern?",
             "close": "Schließen",
             "cancel": "Abbrechen",
             "saveSuccessTitle": "Erfolg",
             "saveSuccessMessage": "Erfolgreich gespeichert",
-            "saveTooltip": "Sparen",
+            "saveTooltip": "Speichern",
             "saveAsTooltip": "Speichern als"
         },
         "mapEditor": {
@@ -2989,6 +3084,10 @@
             "description": "Ermöglicht das Hinzufügen eines Filters zu einer Ebene",
             "title": "Ebenenfilter"
           },
+          "GeoProcessingTools": {
+            "description": "Ermöglicht die Geoverarbeitung von Layern zur Generierung eines neuen Layers mithilfe von WPS-Prozessen für Puffer und Schnittpunkte",
+            "title": "Geo-Verarbeitungstools"
+          },
           "HelpLink": {
             "description": "Eine Schaltfläche für den Zugriff auf die MapStore-Dokumentation",
             "title": "Dokumentationslink"
@@ -3008,6 +3107,10 @@
           "Login": {
             "description": "Anmeldungswerkzeug",
             "title": "Anmeldung"
+          },
+          "LongitudinalProfileTool": {
+            "description": "Ermöglicht dem Benutzer die Erstellung eines Längsprofils anhand einer Linienfolge und einer Ebene mit Höhenattribut. Muss konfiguriert werden",
+            "title": "Längsprofilwerkzeug"
           },
           "MapCatalog": {
             "description": "Ermöglicht das Durchsuchen, Bearbeiten, Löschen und Laden von Karten, die auf dem Server verfügbar sind",
@@ -3064,6 +3167,10 @@
           "Share": {
             "description": "Ermöglicht das Teilen der Karte auf verschiedene Arten (Link, QR-Code, Einbettung, soziale Netzwerke ...)",
             "title": "Freigabe-Werkzeug"
+          },
+          "Permalink": {
+            "description": "Ermöglicht das Erstellen eines Permalinks der aktuell angezeigten Ressource",
+            "title": "Permalink"
           },
           "StreetView": {
             "title": "Street-View",
@@ -3264,7 +3371,25 @@
                 "unknownError": "Ein unerwarteter Fehler ist aufgetreten"
             },
             "undo": "Möchten Sie die Kontextbearbeitungssitzung wirklich abbrechen?",
-            "showTutorial": "Tutorial anzeigen"
+            "showTutorial": "Tutorial anzeigen",
+            "errors":{
+                "loading": {
+                    "title": "Fehler beim Laden des Kontexts",
+                    "import": "Der Kontext konnte nicht importiert werden",
+                    "export": "Der Kontext konnte nicht exportiert werden"
+                }
+            },
+            "import": "Importieren",
+            "importTooltip": "Um einen Kontext zu importieren, fahren Sie mit Schritt 1 fort",
+            "export": "Export",
+            "importDialog": {
+                "selectFiles": "Wählen Sie eine Datei aus",
+                "heading": "Exportieren Sie diesen Kontext als Datei",
+                "note": "Die Daten in der importierten Datei ersetzen die Daten im aktuellen Kontext"
+            },
+            "exportDialog": {
+                "heading": "Kontext als .json-Datei exportieren"
+            }
         },
         "contextManager": {
             "title": "Kontexte verwalten",
@@ -3707,6 +3832,137 @@
         },
         "sidebarMenu": {
           "showMoreItems": "Weitere Elemente anzeigen"
+        },
+        "longitudinalProfile": {
+          "open": "Längsprofil öffnen",
+          "close": "Längsprofil schließen",
+          "title": "Längsprofil",
+          "draw": "Linie zeichnen",
+          "import": "Lade Datei",
+          "select": "Auswahl zum Profilieren",
+          "parameters": "Parameter",
+          "elevation": "Elevation (m)",
+          "crsSelector": "Geben Sie eine Projektion für die DXF-Datei an",
+          "distance": "Distanz (m)",
+          "chart": "Diagramm",
+          "infos": "Information",
+          "preferences": "Präferenzen",
+          "CRS": "CRS",
+          "uom": "Maßeinheiten",
+          "fileSelected": "Datei ausgewählt: ",
+          "uomMeters": "meter",
+          "source": "Quelle",
+          "downloadCSV": "CSV",
+          "downloadPNG": "PNG",
+          "downloadPDF": "PDF",
+          "info": {
+            "points": " punkte",
+            "totalPoints": "Anzahl der verarbeiteten Punkte:",
+            "layer":"Schicht:",
+            "line":"Distance:",
+            "up":"Kumulierter Höhenunterschied:",
+            "down":"Kumulativer Höhenverlust:",
+            "noInfos": "Keine Informationen verfügbar"
+          },
+          "help": {
+            "draw": "Klicken Sie auf die Karte, um die Linie zu zeichnen. Klicken Sie zum Abschluss noch einmal auf den Endpunkt.",
+            "select": "Bitte wählen Sie die Ebene im Inhaltsverzeichnis aus und klicken Sie auf das Linienmerkmal, um ein Profil zu erstellen.<br/>Ausgewählte Ebenen: {layerName}",
+            "noLayer": "Keine Ebene ausgewählt",
+            "notSupportedLayer": "nicht unterstützt. Bitte wählen Sie WMS, WFS oder Vektorebene aus."
+          },
+          "warnings": {
+            "noLayerSelected": "Bitte wählen Sie zuerst die Ebene aus",
+            "layerNotSupported": "Die ausgewählte Ebene wird nicht unterstützt. Bitte wählen Sie WMS, WFS oder Vektorebene aus.",
+            "noFeatureInPoint": "Das Linienmerkmal wurde am ausgewählten Punkt nicht gefunden.",
+            "noLineFeatureFound": "Das Linienmerkmal wurde am ausgewählten Punkt nicht gefunden.",
+            "fallbackToProjection": "Projektion der Standardreferenz \"{defaultReferential}\" wird nicht unterstützt. Rückgriff auf Referenzen \"{referential}\" mit \"{projection}\" Projektion."
+          },
+          "errors": {
+            "outsideCoverage": "Die angegebene Zeile liegt außerhalb der Profilabdeckung",
+            "loadingError": "Fehler beim Laden der Daten für das Längsprofil",
+            "unableToSetupPlugin": "Die Längsprofilverlängerung kann nicht eingerichtet werden.",
+            "defaultReferentialNotFound": "Die Standardreferenz ist konfiguriert, kann jedoch nicht in der Referenzliste gefunden werden. Bitte aktualisieren Sie die Erweiterungskonfiguration.",
+            "projectionNotSupported": "Referenz mit von der Karte unterstützter Projektion kann nicht gefunden werden. Bitte aktualisieren Sie die Erweiterungskonfiguration oder fügen Sie die gewünschte Projektion zur App-Konfiguration hinzu.",
+            "cannotDownloadPDF": "Es ist nicht möglich, die aktuelle Karte zu drucken, da sie Verweise auf externe Domänen enthält. Bitte entfernen Sie diese, speichern Sie die Karte, aktualisieren Sie die Seite und versuchen Sie es erneut.",
+            "cannotDownloadPNG": "Das Diagramm kann nicht als Bild heruntergeladen werden."
+          },
+          "settings": {
+            "chartTitle": "Diagrammtitel",
+            "referential": "Profilebene",
+            "distance": "Distanz (m)"
+          },
+          "dropZone": {
+            "heading": "<p><h4>Legen Sie Ihre Datei hier ab </h4><small>oder</small></p>",
+            "selectFiles": "Datei aussuchen...",
+            "infoSupported": "<p><small>Unterstützte Dateitypen: GeoJSON, DXF, Shapefiles</small></p>",
+            "dxfGeometryNotSupported": "Es wird nur LWPOLYLINE unterstützt"
+          }
+        },
+        "GeoProcessingTools": {
+          "title": "Geoverarbeitungswerkzeuge",
+          "emptyTitle": "Diese WPS-Prozesse müssen in Geoserver installiert sein, um dieses Tool verwenden zu können:",
+          "emptyDescription": "<ul><li>geo:buffer</li><li>gs:IntersectionFeatureCollection</li><li>gs:CollectGeometries</li></ul>",
+          "sourceLayer": "Quellebene",
+          "sourceFeature": "Quellfunktion",
+          "tool": "Wählen Sie ein zu verwendendes Werkzeug aus",
+          "highlight": "Markieren Sie Funktionen",
+          "bufferTool": "Puffer",
+          "distance": "Distanz",
+          "distanceUom": "Maßeinheiten",
+          "km": "km",
+          "m": "m",
+          "run": "Laufen",
+          "intersectionTool": "Überschneidung",
+          "noMatchedLayer": "Keine Ebene entspricht dem aktuellen Filter",
+          "noMatchedFeature": "Keine Funktion entspricht dem aktuellen Filter",
+          "intersectionLayer": "Schnittebene",
+          "intersectionFeature": "Kreuzungsfunktion",
+          "advancedSettings": "Erweiterte Einstellungen",
+          "quadrantSegments": "Quadrantensegmente",
+          "capStyle": "Stil für die Pufferendkappen",
+          "round": "Runden",
+          "flat": "Wohnung",
+          "square": "Quadrat",
+          "firstAttributeToRetain": "Erstes einzuschließendes Feature-Sammlungsattribut",
+          "secondAttributeToRetain": "Zweites einzuschließendes Feature-Sammlungsattribut",
+          "intersectionMode": "Gibt die für sich überschneidende Features berechnete Geometrie an",
+          "percentagesEnabled": "Gibt an, ob Prozentsätze der Feature-Fläche ausgegeben werden sollen",
+          "areasEnabled": "Gibt an, ob Featurebereiche ausgegeben werden sollen",
+          "noMatchedMode": "Kein Modus entspricht dem aktuellen Filter",
+          "INTERSECTION": "ÜBERSCHNEIDUNG",
+          "FIRST": "ERSTE",
+          "SECOND": "ZWEITE",
+          "true": "wahr",
+          "false": "falsch",
+          "notifications": {
+            "errorIntersectGFI": "Beim Überschneiden der Features ist ein Fehler aufgetreten. Der Schnittpunkt-Layer konnte nicht erstellt werden.",
+            "errorGFI": "Beim Laden der Funktion ist ein Fehler aufgetreten",
+            "errorGetFeature": "Beim Laden des Features zum Abrufen seiner Geometrie ist ein Fehler aufgetreten",
+            "layerNotSupported": "Ausgewählte Ebene wird nicht unterstützt. Bitte wählen Sie WMS, WFS oder Vektorebene aus.",
+             "noFeatureInPoint": "Am ausgewählten Punkt wurde kein Feature gefunden.",
+             "featureFound": "Am ausgewählten Punkt wurde ein Feature gefunden.",
+             "noLayerSelected": "Bitte wählen Sie zuerst die Ebene aus.",
+             "successfulIntersection": "Der Schnittvorgang war erfolgreich und ein neuer Layer wurde erstellt und dem Inhaltsverzeichnis hinzugefügt",
+             "successfulBuffer": "Der Puffervorgang war erfolgreich und eine neue Ebene wurde erstellt und dem Inhaltsverzeichnis hinzugefügt",
+             "errorBuffer": "Der Puffervorgang ist fehlgeschlagen"
+          },
+          "warningTitle": "Warnung",
+          "warningBody": "Sie haben keine Funktion ausgewählt und dies kann die Leistung im Geoserver verlangsamen. Möchten Sie fortfahren?",
+          "warningConfirmText": "Ja",
+          "warningCancel": "Abbrechen",
+          "tooltip": {
+            "clickToSelectFeature": "Klicken, um Funktion auszuwählen",
+             "invalidLayers": "Eine der von Ihnen ausgewählten Ebenen kann in diesem Werkzeug nicht verwendet werden",
+             "fillRequiredDataIntersection": "Bitte wählen Sie mindestens den Quell-Layer und den Schnittpunkt-Layer aus",
+             "fillRequiredDataBuffer": "Bitte wählen Sie mindestens die Quellebene aus",
+             "siderBarBtn": "GeoProcessing Tools",
+             "selectFeature": "Bitte wählen Sie eine Funktion aus",
+             "validFeature": "Diese Funktion ist gültig",
+             "invalidFeature": "Diese Funktion ist ungültig",
+             "selectLayer": "Bitte wählen Sie eine Ebene aus",
+             "validLayer": "Diese Ebene ist gültig und kann in diesem Tool verwendet werden",
+             "invalidLayer": "Dieser Layer unterstützt weder die erforderlichen WPS-Prozesse \ngeo:buffer\ngs:IntersectionFeatureCollection\ngs:CollectGeometries\n\noch handelt es sich um einen Raster-Layer."
+          }
         }
     }
 }

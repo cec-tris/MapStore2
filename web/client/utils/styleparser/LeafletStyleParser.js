@@ -7,10 +7,20 @@
  */
 
 import L from 'leaflet';
-import { castArray } from 'lodash';
+import { castArray, flatten } from 'lodash';
+import 'ol/geom/Polygon';
+import {
+    resolveAttributeTemplate,
+    geoStylerStyleFilter,
+    drawIcons,
+    getImageIdFromSymbolizer,
+    parseSymbolizerExpressions
+} from './StyleParserUtils';
+import { geometryFunctionsLibrary } from './GeometryFunctionsUtils';
+import { circleToPolygon } from '../DrawGeometryUtils';
 
 const geometryTypeToKind = {
-    'Point': ['Mark', 'Icon', 'Text'],
+    'Point': ['Mark', 'Icon', 'Text', 'Circle'],
     'MultiPoint': ['Mark', 'Icon', 'Text'],
     'LineString': ['Line'],
     'MultiLineString': ['Line'],
@@ -18,21 +28,60 @@ const geometryTypeToKind = {
     'MultiPolygon': ['Fill']
 };
 
-function parseLabel(feature, label = '') {
-    if (!feature.properties) {
-        return label;
+const getGeometryFunction = geometryFunctionsLibrary.geojson();
+
+const anchorToPoint = (anchor, width, height) => {
+    switch (anchor) {
+    case 'top-left':
+        return [0, 0];
+    case 'top':
+        return [width / 2, 0];
+    case 'top-right':
+        return [width, 0];
+    case 'left':
+        return [0, height / 2];
+    case 'center':
+        return [width / 2, height / 2];
+    case 'right':
+        return [width, height / 2];
+    case 'bottom-left':
+        return [0, height];
+    case 'bottom':
+        return [width / 2, height];
+    case 'bottom-right':
+        return [width, height];
+    default:
+        return [width / 2, height / 2];
     }
-    return Object.keys(feature.properties)
-        .reduce((str, key) => {
-            const regExp = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
-            return str.replace(regExp, feature.properties[key] ?? '');
-        }, label);
-}
+};
+
+const anchorToTransform = (anchor) => {
+    switch (anchor) {
+    case 'top-left':
+        return ['0px', '0px'];
+    case 'top':
+        return ['-50%', '0px'];
+    case 'top-right':
+        return ['-100%', '0px'];
+    case 'left':
+        return ['0px', '-50%'];
+    case 'center':
+        return ['-50%', '-50%'];
+    case 'right':
+        return ['-100%', '-50%'];
+    case 'bottom-left':
+        return ['0px', '-100%'];
+    case 'bottom':
+        return ['-50%', '-100%'];
+    case 'bottom-right':
+        return ['-100%', '-100%'];
+    default:
+        return ['-50%', '-50%'];
+    }
+};
 
 function getStyleFuncFromRules({ rules: geoStylerStyleRules = [] }, {
-    geoStylerStyleFilter,
-    images,
-    getImageIdFromSymbolizer
+    images
 }) {
 
     // the last rules of the array should the one we'll apply
@@ -41,8 +90,111 @@ function getStyleFuncFromRules({ rules: geoStylerStyleRules = [] }, {
     // by reversing all the rules
     const rules = [...geoStylerStyleRules].reverse();
     return ({
-        opacity: globalOpacity = 1
+        opacity: globalOpacity = 1,
+        layer = {}
     } = {}) => {
+
+        if (layer._msAdditionalLayers) {
+            layer._msAdditionalLayers.forEach((additionalLayer) => {
+                additionalLayer.remove();
+            });
+        }
+
+        layer._msAdditionalLayers = [];
+
+        const pointToLayer = ({ symbolizer: _symbolizer, latlng, feature }) => {
+            const symbolizer = parseSymbolizerExpressions(_symbolizer, feature);
+            if (symbolizer.kind === 'Mark') {
+                const { image, src, width, height } = images.find(({ id }) => id === getImageIdFromSymbolizer(symbolizer)) || {};
+                if (image) {
+                    const aspect = width / height;
+                    const size = symbolizer.radius * 2;
+                    let iconSizeW = size;
+                    let iconSizeH = iconSizeW / aspect;
+                    if (height > width) {
+                        iconSizeH = size;
+                        iconSizeW = iconSizeH * aspect;
+                    }
+                    return L.marker(latlng, {
+                        icon: L.icon({
+                            iconUrl: src,
+                            iconSize: [iconSizeW, iconSizeH],
+                            iconAnchor: [iconSizeW / 2, iconSizeH / 2]
+                        }),
+                        opacity: 1 * globalOpacity
+                    });
+                }
+            }
+            if (symbolizer.kind === 'Icon') {
+                const { image, src, width, height } = images.find(({ id }) => id === getImageIdFromSymbolizer(symbolizer)) || {};
+                if (image) {
+                    const aspect = width / height;
+                    let iconSizeW = symbolizer.size;
+                    let iconSizeH = iconSizeW / aspect;
+                    if (height > width) {
+                        iconSizeH = symbolizer.size;
+                        iconSizeW = iconSizeH * aspect;
+                    }
+                    return L.marker(latlng, {
+                        icon: L.icon({
+                            iconUrl: src,
+                            iconSize: [iconSizeW, iconSizeH],
+                            iconAnchor: anchorToPoint(symbolizer.anchor, iconSizeW, iconSizeH)
+                        }),
+                        opacity: symbolizer.opacity * globalOpacity
+                    });
+                }
+            }
+            if (symbolizer.kind === 'Text') {
+                const label = resolveAttributeTemplate(feature, symbolizer.label, '');
+                const haloProperties = `
+                    -webkit-text-stroke-width:${symbolizer.haloWidth}px;
+                    -webkit-text-stroke-color:${symbolizer.haloColor || ''};
+                `;
+                const [anchorH, anchorV] = anchorToTransform(symbolizer.anchor);
+                const textIcon = L.divIcon({
+                    html: `<div style="
+                        color:${symbolizer.color};
+                        font-family: ${castArray(symbolizer.font || []).join(', ')};
+                        font-style: ${symbolizer.fontStyle || 'normal'};
+                        font-weight: ${symbolizer.fontWeight || 'normal'};
+                        font-size: ${symbolizer.size}px;
+                        
+                        position: absolute;
+                        transform: translate(calc(${anchorH} + ${symbolizer?.offset?.[0] ?? 0}px), calc(${anchorV} + ${symbolizer?.offset?.[1] ?? 0}px)) rotateZ(${symbolizer?.rotate ?? 0}deg);
+
+                        ${symbolizer.haloWidth > 0 ? haloProperties : ''}
+                    ">
+                        ${label}
+                        </div>`,
+                    className: ''
+                });
+                return L.marker(latlng, {
+                    icon: textIcon,
+                    opacity: 1 * globalOpacity
+                });
+            }
+            if (symbolizer.kind === 'Circle') {
+                const radius = symbolizer.radius;
+                const geodesic = symbolizer.geodesic;
+                const geoJSONLayer = L.geoJSON({
+                    ...feature,
+                    geometry: circleToPolygon(feature.geometry.coordinates, radius, geodesic)
+                });
+                geoJSONLayer.setStyle({
+                    fill: true,
+                    stroke: true,
+                    fillColor: symbolizer.color,
+                    fillOpacity: symbolizer.opacity * globalOpacity,
+                    color: symbolizer.outlineColor,
+                    opacity: (symbolizer.outlineOpacity ?? 0) * globalOpacity,
+                    weight: symbolizer.outlineWidth ?? 0,
+                    ...(symbolizer.outlineDasharray && { dashArray: symbolizer.outlineDasharray.join(' ') })
+                });
+                return geoJSONLayer;
+            }
+            return null;
+        };
         return {
             filter: (feature) => {
                 const geometryType = feature?.geometry?.type;
@@ -53,7 +205,7 @@ function getStyleFuncFromRules({ rules: geoStylerStyleRules = [] }, {
                 if (rules
                     .find(rule =>
                         // the symbolizer should be included in the supported ones
-                        rule?.symbolizers?.find(symbolizer => supportedKinds.includes(symbolizer.kind))
+                        rule?.symbolizers?.find(symbolizer => ['Fill', 'Line'].includes(symbolizer.kind) || supportedKinds.includes(symbolizer.kind))
                         // the filter should match the expression or be undefined
                         && (!rule.filter || geoStylerStyleFilter(feature, rule.filter))
                     )
@@ -65,98 +217,66 @@ function getStyleFuncFromRules({ rules: geoStylerStyleRules = [] }, {
             pointToLayer: (feature, latlng) => {
                 const geometryType = feature?.geometry?.type;
                 const supportedKinds = geometryTypeToKind[geometryType] || [];
-                const firstValidRule = rules
-                    .find(rule =>
+                const validRules = rules
+                    .filter(rule =>
                         // the symbolizer should be included in the supported ones
                         rule?.symbolizers?.find(symbolizer => supportedKinds.includes(symbolizer.kind))
                         // the filter should match the expression or be undefined
                         && (!rule.filter || geoStylerStyleFilter(feature, rule.filter))
                     ) || {};
-                const firstValidSymbolizer = firstValidRule?.symbolizers?.find(symbolizer => supportedKinds.includes(symbolizer.kind)) || {};
-                if (firstValidSymbolizer.kind === 'Mark') {
-                    const { image, src, width, height } = images.find(({ id }) => id === getImageIdFromSymbolizer(firstValidSymbolizer)) || {};
-                    if (image) {
-                        const aspect = width / height;
-                        const size = firstValidSymbolizer.radius * 2;
-                        let iconSizeW = size;
-                        let iconSizeH = iconSizeW / aspect;
-                        if (height > width) {
-                            iconSizeH = size;
-                            iconSizeW = iconSizeH * aspect;
-                        }
-                        return L.marker(latlng, {
-                            icon: L.icon({
-                                iconUrl: src,
-                                iconSize: [iconSizeW, iconSizeH],
-                                iconAnchor: [iconSizeW / 2, iconSizeH / 2]
-                            }),
-                            opacity: 1 * globalOpacity
-                        });
+                const symbolizers = flatten(validRules.map((rule) => rule.symbolizers.filter(({ kind }) => supportedKinds.includes(kind))));
+                symbolizers.forEach((symbolizer, idx) => {
+                    if (idx > 0) {
+                        const pointLayer = pointToLayer({ symbolizer, latlng, feature });
+                        layer._msAdditionalLayers.push(pointLayer);
+                        layer.addLayer(pointLayer);
                     }
-                }
-                if (firstValidSymbolizer.kind === 'Icon') {
-                    const { image, src, width, height } = images.find(({ id }) => id === getImageIdFromSymbolizer(firstValidSymbolizer)) || {};
-                    if (image) {
-                        const aspect = width / height;
-                        let iconSizeW = firstValidSymbolizer.size;
-                        let iconSizeH = iconSizeW / aspect;
-                        if (height > width) {
-                            iconSizeH = firstValidSymbolizer.size;
-                            iconSizeW = iconSizeH * aspect;
-                        }
-                        return L.marker(latlng, {
-                            icon: L.icon({
-                                iconUrl: src,
-                                iconSize: [iconSizeW, iconSizeH],
-                                iconAnchor: [iconSizeW / 2, iconSizeH / 2]
-                            }),
-                            opacity: firstValidSymbolizer.opacity * globalOpacity
-                        });
-                    }
-                }
-                if (firstValidSymbolizer.kind === 'Text') {
-                    const label = parseLabel(feature, firstValidSymbolizer.label);
-                    const haloProperties = `
-                        -webkit-text-stroke-width:${firstValidSymbolizer.haloWidth}px;
-                        -webkit-text-stroke-color:${firstValidSymbolizer.haloColor || ''};
-                    `;
-                    const textIcon = L.divIcon({
-                        html: `<div style="
-                            color:${firstValidSymbolizer.color};
-                            font-family: ${castArray(firstValidSymbolizer.font || []).join(', ')};
-                            font-style: ${firstValidSymbolizer.fontStyle || 'normal'};
-                            font-weight: ${firstValidSymbolizer.fontWeight || 'normal'};
-                            font-size: ${firstValidSymbolizer.size}px;
-
-                            position: absolute;
-                            transform: translate(${firstValidSymbolizer?.offset?.[0] ?? 0}px, ${firstValidSymbolizer?.offset?.[1] ?? 0}px) rotateZ(${firstValidSymbolizer?.rotate ?? 0}deg);
-
-                            ${firstValidSymbolizer.haloWidth > 0 ? haloProperties : ''}
-                        ">
-                            ${label}
-                            </div>`,
-                        className: ''
-                    });
-                    return L.marker(latlng, {
-                        icon: textIcon,
-                        opacity: 1 * globalOpacity
-                    });
-                }
-                return null;
+                });
+                const firstValidSymbolizer = symbolizers[0];
+                return pointToLayer({
+                    symbolizer: firstValidSymbolizer,
+                    latlng,
+                    feature
+                });
             },
             style: (feature) => {
+                if (feature?.geometry?.type === 'Point') {
+                    return null;
+                }
                 const geometryType = feature?.geometry?.type;
                 const supportedKinds = geometryTypeToKind[geometryType] || [];
-                const firstValidRule = rules
+                const validRules = rules
+                    .filter(rule =>
+                        // the filter should match the expression or be undefined
+                        (!rule.filter || geoStylerStyleFilter(feature, rule.filter))
+                    ) || {};
+
+                (['LineString', 'MultiLineString', 'Polygon', 'MultiPolygon'].includes(geometryType)
+                    ? flatten(validRules.map((rule) => rule.symbolizers.filter(({ kind }) => ['Mark', 'Icon', 'Text'].includes(kind))))
+                    : [])
+                    .forEach((_symbolizer) => {
+                        const symbolizer = parseSymbolizerExpressions(_symbolizer, feature);
+                        const geometryFunction = getGeometryFunction({ msGeometry: { name: 'centerPoint' }, ...symbolizer});
+                        if (geometryFunction) {
+                            const coordinates = geometryFunction(feature);
+                            if (coordinates) {
+                                const latlng = L.latLng(coordinates[1], coordinates[0]);
+                                const pointLayer = pointToLayer({ symbolizer, latlng, feature });
+                                layer._msAdditionalLayers.push(pointLayer);
+                                layer.addLayer(pointLayer);
+                            }
+                        }
+                    });
+
+                const firstValidRule = validRules
                     .find(rule =>
                         // the symbolizer should be included in the supported ones
                         rule?.symbolizers?.find(symbolizer => supportedKinds.includes(symbolizer.kind))
-                        // the filter should match the expression or be undefined
-                        && (!rule.filter || geoStylerStyleFilter(feature, rule.filter))
                     ) || {};
-                const firstValidSymbolizer = firstValidRule?.symbolizers?.find(symbolizer => supportedKinds.includes(symbolizer.kind)) || {};
+                const firstValidSymbolizer = parseSymbolizerExpressions(firstValidRule?.symbolizers?.find(symbolizer => supportedKinds.includes(symbolizer.kind)) || {}, feature);
                 if (firstValidSymbolizer.kind === 'Line') {
-                    return {
+                    const geometryFunction = getGeometryFunction(firstValidSymbolizer);
+                    const style = {
                         stroke: true,
                         fill: false,
                         color: firstValidSymbolizer.color,
@@ -166,6 +286,19 @@ function getStyleFuncFromRules({ rules: geoStylerStyleRules = [] }, {
                         ...(firstValidSymbolizer.cap && { lineCap: firstValidSymbolizer.cap }),
                         ...(firstValidSymbolizer.join && { lineJoin: firstValidSymbolizer.join })
                     };
+                    if (geometryFunction && feature.geometry.type === 'LineString') {
+                        const coordinates = geometryFunction(feature);
+                        const geoJSONLayer = L.geoJSON({ ...feature, geometry: { type: 'LineString', coordinates }});
+                        geoJSONLayer.setStyle(style);
+                        layer._msAdditionalLayers.push(geoJSONLayer);
+                        layer.addLayer(geoJSONLayer);
+                        return {
+                            stroke: false,
+                            fill: false
+                        };
+                    }
+
+                    return style;
                 }
                 if (firstValidSymbolizer.kind === 'Fill') {
                     return {
@@ -175,7 +308,8 @@ function getStyleFuncFromRules({ rules: geoStylerStyleRules = [] }, {
                         fillOpacity: firstValidSymbolizer.fillOpacity * globalOpacity,
                         color: firstValidSymbolizer.outlineColor,
                         opacity: (firstValidSymbolizer.outlineOpacity ?? 0) * globalOpacity,
-                        weight: firstValidSymbolizer.outlineWidth ?? 0
+                        weight: firstValidSymbolizer.outlineWidth ?? 0,
+                        ...(firstValidSymbolizer.outlineDasharray && { dashArray: firstValidSymbolizer.outlineDasharray.join(' ') })
                     };
                 }
                 return {
@@ -188,14 +322,6 @@ function getStyleFuncFromRules({ rules: geoStylerStyleRules = [] }, {
 }
 
 class LeafletStyleParser {
-
-    constructor({ drawIcons, getImageIdFromSymbolizer, geoStylerStyleFilter } = {}) {
-        this._drawIcons = drawIcons ? drawIcons : () => Promise.resolve(null);
-        this._getImageIdFromSymbolizer = getImageIdFromSymbolizer
-            ? getImageIdFromSymbolizer
-            : (symbolizer) => symbolizer.symbolizerId;
-        this._geoStylerStyleFilter = geoStylerStyleFilter ? geoStylerStyleFilter : () => true;
-    }
 
     readStyle() {
         return new Promise((resolve, reject) => {
@@ -210,13 +336,9 @@ class LeafletStyleParser {
     writeStyle(geoStylerStyle) {
         return new Promise((resolve, reject) => {
             try {
-                this._drawIcons(geoStylerStyle)
+                drawIcons(geoStylerStyle)
                     .then((images = []) => {
-                        const styleFunc = getStyleFuncFromRules(geoStylerStyle, {
-                            images,
-                            getImageIdFromSymbolizer: this._getImageIdFromSymbolizer,
-                            geoStylerStyleFilter: this._geoStylerStyleFilter
-                        });
+                        const styleFunc = getStyleFuncFromRules(geoStylerStyle, { images });
                         resolve(styleFunc);
                     });
             } catch (error) {

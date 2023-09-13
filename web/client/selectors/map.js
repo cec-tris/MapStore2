@@ -11,6 +11,7 @@ import CoordinatesUtils from '../utils/CoordinatesUtils';
 import { createSelector } from 'reselect';
 import {get, memoize} from 'lodash';
 import {detectIdentifyInMapPopUp} from "../utils/MapUtils";
+import { isLoggedIn } from './security';
 
 /**
  * selects map state
@@ -42,6 +43,26 @@ export const mapIsEditableSelector = state => {
         return get(state, 'context.resource.canEdit');
     }
     return mapInfoCanEdit;
+};
+export const mapInfoAttributesSelector = state => get(mapInfoSelector(state), 'attributes');
+
+/**
+ * Show editable feature checkbox based on user permission on the map resource
+ * @memberof selectors.map
+ * @param {object} state the state
+ * @returns {boolean} flag to show/hide the option
+ */
+export const showEditableFeatureCheckboxSelector = state => {
+    const { id: mapId, canEdit: mapCanEdit } = mapInfoSelector(state) ?? {};
+    const { id: contextId } = get(state, 'context.resource', {});
+    if (isLoggedIn(state)) {
+        // in case of context without a map hide the option
+        if (contextId && !mapId) {
+            return false;
+        }
+        return mapId ? mapCanEdit : true;
+    }
+    return false;
 };
 
 // TODO: move these in selectors/localConfig.js or selectors/config.js
@@ -94,7 +115,11 @@ export const mapVersionSelector = (state) => state.map && state.map.present && s
  * @param  {object} state the state
  * @return {string} name/title of the map
  */
-export const mapNameSelector = (state) => state.map && state.map.present && state.map.present.info && state.map.present.info.name || '';
+export const mapNameSelector = (state) => {
+    const mapInfo = mapInfoSelector(state);
+    const attributes = mapInfoAttributesSelector(state);
+    return attributes?.title || mapInfo?.name || '';
+};
 
 export const mapSizeSelector = (state) => state?.map?.present?.size ?? 0;
 

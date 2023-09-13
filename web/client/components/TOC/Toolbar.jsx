@@ -330,7 +330,7 @@ class Toolbar extends React.Component {
                     : null}
                 {this.props.items
                     .filter(({ selector = () => true }) => selector({ ...this.props, status })) // filter items that should not show
-                    .map(({ Component }) => <Component {...this.props} status={status} />)}
+                    .map(({ Component, name }, i) => <Component key={name ?? `item-${i}`} {...this.props} status={status} />)}
                 <ConfirmModal
                     ref="removelayer"
                     options={{
@@ -350,10 +350,10 @@ class Toolbar extends React.Component {
     }
 
     browseData = () => {
+        const layer = this.props.selectedLayers[0] || {};
         this.props.onToolsActions.onBrowseData({
-            url: this.props.selectedLayers[0].search.url || this.props.selectedLayers[0].url,
-            name: this.props.selectedLayers[0].name,
-            id: this.props.selectedLayers[0].id
+            ...layer,
+            url: layer?.search?.url || layer.url
         });
     }
 

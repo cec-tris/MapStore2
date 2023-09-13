@@ -6,16 +6,18 @@
   * LICENSE file in the root directory of this source tree.
   */
 
-import { identity, trim, fill, findIndex, get, isArray, isNil, isString, isPlainObject } from 'lodash';
+import { identity, trim, fill, findIndex, get, isArray, isNil, isString, isPlainObject, includes } from 'lodash';
 
 import {
     findGeometryProperty,
     getFeatureTypeProperties,
-    getPropertyDesciptor,
+    getPropertyDescriptor,
     isGeometryType,
     isValid,
     isValidValueForPropertyName as isValidValueForPropertyNameBase
 } from './ogc/WFS/base';
+
+import { applyDefaultToLocalizedString } from '../components/I18N/LocalizedString';
 
 const getGeometryName = (describe) => get(findGeometryProperty(describe), "name");
 const getPropertyName = (name, describe) => name === "geometry" ? getGeometryName(describe) : name;
@@ -113,28 +115,39 @@ export const getCurrentPaginationOptions = ({ startPage, endPage }, oldPages, si
     return { startIndex: nPs[0] * size, maxFeatures: needPages * size };
 };
 
-
+/**
+ * Utility function to get from a describeFeatureType response the columns to use in the react-data-grid
+ * @param {object} describe describeFeatureType response
+ * @param {object} columnSettings column settings a set of column configuration (Includes `hide` `width`, `label`)
+ * @param {object[]} fields fields configuration (Includes `name` `alias`)
+ * @param {object} getters getters functions for creating header, filterRenderer, formatter, heditor ( Includes `getEditor` `getFilterRenderer` `getFormatter` `getHeaderRenderer`)
+ * @param {*} param4
+ * @returns
+ */
 export const featureTypeToGridColumns = (
     describe,
     columnSettings = {},
+    fields = [],
     {editable = false, sortable = true, resizable = true, filterable = true, defaultSize = 200, options = []} = {},
-    {getEditor = () => {}, getFilterRenderer = () => {}, getFormatter = () => {}} = {}) =>
+    {getEditor = () => {}, getFilterRenderer = () => {}, getFormatter = () => {}, getHeaderRenderer = () => {}} = {}) =>
     getAttributeFields(describe).filter(e => !(columnSettings[e.name] && columnSettings[e.name].hide)).map((desc) => {
         const option = options.find(o => o.name === desc.name);
+        const field = fields.find(f => f.name === desc.name);
         return {
             sortable,
             key: desc.name,
             width: columnSettings[desc.name] && columnSettings[desc.name].width || (defaultSize ? defaultSize : undefined),
             name: columnSettings[desc.name] && columnSettings[desc.name].label || desc.name,
             description: option?.description || '',
-            title: option?.title || desc.name,
+            title: applyDefaultToLocalizedString(option?.title || field?.alias, desc.name),
+            headerRenderer: getHeaderRenderer(),
             showTitleTooltip: !!option?.description,
             resizable,
             editable,
             filterable,
-            editor: getEditor(desc),
-            formatter: getFormatter(desc),
-            filterRenderer: getFilterRenderer(desc, desc.name)
+            editor: getEditor(desc, field),
+            formatter: getFormatter(desc, field),
+            filterRenderer: getFilterRenderer(desc, field)
         };
     });
 /**
@@ -172,7 +185,7 @@ export const getGridEvents = (gridEvents = {}, rowGetter, describe, actionOpts, 
     ...events,
     [currentEventKey]: (...args) => gridEvents[currentEventKey](...args, rowGetter, describe, actionOpts, columns)
 }), {});
-export const isProperty = (k, d) => !!getPropertyDesciptor(k, d);
+export const isProperty = (k, d) => !!getPropertyDescriptor(k, d);
 export const isValidValueForPropertyName = (v, k, d) => isValidValueForPropertyNameBase(v, getPropertyName(k, d), d);
 export const getDefaultFeatureProjection = () => "EPSG:4326";
 
@@ -210,7 +223,7 @@ export const getOperatorAndValue = (value, type) => {
 };
 
 
-export const gridUpdateToQueryUpdate = ({attribute, operator, value, type} = {}, oldFilterObj = {}) => {
+export const gridUpdateToQueryUpdate = ({attribute, operator, value, type, filters = []} = {}, oldFilterObj = {}) => {
 
     const cleanGroupFields = oldFilterObj.groupFields?.filter((group) => attribute !== group.id && group.id !== 1 ) || [];
     if ((type === 'string' || type === 'number') && isString(value) && value?.indexOf(",") !== -1) {
@@ -225,6 +238,7 @@ export const gridUpdateToQueryUpdate = ({attribute, operator, value, type} = {},
                     groupId: 1,
                     index: 0
                 }]),
+            filters: (oldFilterObj?.filters?.filter((filter) => attribute !== filter?.attribute) ?? []).concat(filters),
             filterFields: cleanFilterFields.concat(multipleValues.map((v) => {
                 let {operator: op, newVal} = getOperatorAndValue(v, type);
 
@@ -251,6 +265,7 @@ export const gridUpdateToQueryUpdate = ({attribute, operator, value, type} = {},
                 groupId: 1,
                 index: 0
             }]),
+        filters: (oldFilterObj?.filters?.filter((filter) => attribute !== filter?.attribute) ?? []).concat(filters),
         filterFields: type === 'geometry' ? oldFilterObj.filterFields : !isNil(value)
             ? upsertFilterField((oldFilterObj.filterFields || []), {attribute: attribute}, {
                 attribute,
@@ -353,3 +368,18 @@ export const dateFormats = {
     'date': 'YYYY-MM-DD[Z]'
 };
 
+const supportedEditLayerTypes = [ "wms", "wfs"];
+
+/**
+ * Check if the layer supports feature editing
+ * @param {object} layer current layer object
+ * @returns {boolean} flag
+ */
+export const supportsFeatureEditing = (layer) => includes(supportedEditLayerTypes, layer?.type);
+
+/**
+ * Check if layer features are editable based on configured layer setting
+ * @param {object} layer current layer object
+ * @returns {boolean} flag
+ */
+export const areLayerFeaturesEditable = (layer) =>  !layer?.disableFeaturesEditing && supportsFeatureEditing(layer);

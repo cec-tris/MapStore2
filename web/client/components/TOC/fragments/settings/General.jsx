@@ -6,19 +6,25 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { find, includes, isObject, isString, uniqBy } from 'lodash';
-import assign from 'object-assign';
+import { find, includes, isObject, uniqBy } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Col, ControlLabel, FormControl, FormGroup, Grid, InputGroup } from 'react-bootstrap';
+import { Checkbox, Col, ControlLabel, FormControl, FormGroup, Grid } from 'react-bootstrap';
+import LocalizedInput from '../../../misc/LocalizedInput';
+
 import Select from 'react-select';
 import Spinner from 'react-spinkit';
 
-import { getMessageById, getSupportedLocales } from '../../../../utils/LocaleUtils';
-import { isValidNewGroupOption, flattenGroups,
-    getLabelName as _getLabelName, getTitle as _getTitle } from '../../../../utils/TOCUtils';
 import Message from '../../../I18N/Message';
 import LayerNameEditField from './LayerNameEditField';
+import { getMessageById } from '../../../../utils/LocaleUtils';
+import {
+    isValidNewGroupOption,
+    flattenGroups,
+    getLabelName as _getLabelName,
+    getTitle as _getTitle
+} from '../../../../utils/TOCUtils';
+import { supportsFeatureEditing } from "../../../../utils/FeatureGridUtils";
 
 /**
  * General Settings form for layer
@@ -34,7 +40,8 @@ class General extends React.Component {
         showTooltipOptions: PropTypes.bool,
         allowNew: PropTypes.bool,
         enableLayerNameEditFeedback: PropTypes.bool,
-        currentLocale: PropTypes.string
+        currentLocale: PropTypes.string,
+        showFeatureEditOption: PropTypes.bool
     };
 
     static contextTypes = {
@@ -55,8 +62,6 @@ class General extends React.Component {
     getLabelName = (label, groups) => _getLabelName(this.getTitle(label), groups);
 
     render() {
-        const locales = getSupportedLocales();
-        const translations = isObject(this.props.element.title) ? assign({}, this.props.element.title) : { 'default': this.props.element.title };
         const { hideTitleTranslations = false } = this.props.pluginCfg;
 
         const tooltipItems = [
@@ -82,32 +87,12 @@ class General extends React.Component {
                         <ControlLabel>
                             <Message msgId="layerProperties.title" />
                         </ControlLabel>
-                        <FormControl
-                            defaultValue={translations.default || ""}
+                        <LocalizedInput
                             key="title"
-                            type="text"
-                            onBlur={this.updateTranslation.bind(null, 'default')} />
+                            showTranslateTool={!hideTitleTranslations}
+                            value={this.props.element.title}
+                            onChange={this.updateTitle} />
                     </FormGroup>
-                    {hideTitleTranslations || (<FormGroup>
-                        <ControlLabel><Message msgId="layerProperties.titleTranslations" /></ControlLabel>
-                        {Object.keys(locales).map((a) => {
-                            let flagImgSrc;
-                            try {
-                                flagImgSrc = require('../../../I18N/images/flags/' + locales[a].code + '.png');
-                            } catch (e) {
-                                flagImgSrc = false;
-                            }
-                            return flagImgSrc ? (<InputGroup key={a}>
-                                <InputGroup.Addon><img src={flagImgSrc} alt={locales[a].description} /></InputGroup.Addon>
-                                <FormControl
-                                    placeholder={locales[a].description}
-                                    defaultValue={translations[locales[a].code] || ''}
-                                    type="text"
-                                    onBlur={this.updateTranslation.bind(null, locales[a].code)} />
-                            </InputGroup>) : null;
-                        }
-                        )}
-                    </FormGroup>)}
                     {includes(this.supportedNameEditLayerTypes, this.props.element.type) &&
                     <LayerNameEditField
                         element={this.props.element}
@@ -125,7 +110,7 @@ class General extends React.Component {
                                 onBlur={this.updateEntry.bind(null, "description")} />}
                     </FormGroup>
                     {this.props.nodeType === 'layers' ?
-                        <div>
+                        <div className={"form-group"}>
                             <label key="group-label" className="control-label"><Message msgId="layerProperties.group" /></label>
                             <SelectCreatable
                                 clearable={false}
@@ -160,9 +145,8 @@ class General extends React.Component {
                         </div> : null}
                     {   /* Tooltip section */
                         this.props.showTooltipOptions &&
-                        <div style={{ width: "100%" }}>
+                        <div style={{ width: "100%", display: "inline-block" }}>
                             <Col xs={12} sm={8} className="first-selectize">
-                                <br />
                                 <label key="tooltip-label" className="control-label"><Message msgId="layerProperties.tooltip.label" /></label>
                                 <Select
                                     clearable={false}
@@ -172,7 +156,6 @@ class General extends React.Component {
                                     onChange={(item) => { this.updateEntry("tooltipOptions", { target: { value: item.value || "title" } }); }} />
                             </Col>
                             <Col xs={12} sm={4} className="second-selectize">
-                                <br />
                                 <label key="tooltip-placement-label" className="control-label"><Message msgId="layerProperties.tooltip.labelPlacement" /></label>
                                 <Select
                                     clearable={false}
@@ -184,6 +167,16 @@ class General extends React.Component {
                             </Col>
                         </div>
                     }
+                    {supportsFeatureEditing(this.props.element) && this.props.showFeatureEditOption && <FormGroup>
+                        <Checkbox
+                            data-qa="general-read-only-attribute"
+                            key="disableFeaturesEditing"
+                            checked={this.props.element?.disableFeaturesEditing === undefined ? false : this.props.element?.disableFeaturesEditing}
+                            onChange={(event) => this.props.onChange("disableFeaturesEditing", event.target.checked)}
+                        >
+                            <Message msgId="layerProperties.disableFeaturesEditing"/>
+                        </Checkbox>
+                    </FormGroup>}
 
                 </form>
             </Grid>
@@ -193,14 +186,7 @@ class General extends React.Component {
     supportedNameEditLayerTypes = ['wms'];
 
     updateEntry = (key, event) => isObject(key) ? this.props.onChange(key) : this.props.onChange(key, event.target.value);
-
-    updateTranslation = (key, event) => {
-        const title = (key === 'default' && isString(this.props.element.title))
-            ? event.target.value
-            : assign({}, isObject(this.props.element.title) ? this.props.element.title : { 'default': this.props.element.title || '' }, { [key]: event.target.value });
-
-        this.props.onChange('title', title);
-    };
+    updateTitle = (title) => this.props.onChange("title", title);
 
     findGroupLabel = () => {
         const wholeGroups = this.props.groups && flattenGroups(this.props.groups, 0, true);

@@ -8,10 +8,10 @@
 import Rx from 'rxjs';
 
 import expect from 'expect';
-import { testEpic, testCombinedEpicStream } from './epicTestUtils';
+import { testEpic, testCombinedEpicStream, TEST_TIMEOUT, addTimeoutEpic } from './epicTestUtils';
 import ajax from '../../libs/ajax';
 
-import { configureMap, configureError, LOAD_MAP_CONFIG } from "../../actions/config";
+import { configureMap, configureError, LOAD_MAP_CONFIG, MAP_INFO_LOADED } from "../../actions/config";
 import { CLEAR_MAP_TEMPLATES } from '../../actions/maptemplates';
 import {
     loadContext,
@@ -23,7 +23,6 @@ import {
     contextLoadError,
     CONTEXT_LOAD_ERROR,
     loadFinished
-
 } from "../../actions/context";
 
 import {
@@ -36,7 +35,7 @@ import CONTEXT_RESOURCE from '../../test-resources/geostore/resources/resource/c
 import CONTEXT_DATA from '../../test-resources/geostore/data/context_1.json';
 import CONTEXT_ATTRIBUTES from '../../test-resources/geostore/resources/resource/context_1_attributes.json';
 
-import { loadContextAndMap, handleLoginLogoutContextReload } from "../context";
+import { loadContextAndMap, handleLoginLogoutContextReload, setMapInfoOnPermalinkContext } from "../context";
 import MockAdapter from 'axios-mock-adapter';
 import ConfigUtils from "../../utils/ConfigUtils";
 import { LOAD_USER_SESSION, userSessionLoaded, SET_USER_SESSION, USER_SESSION_START_SAVING } from '../../actions/usersession';
@@ -115,6 +114,9 @@ describe('context epics', () => {
                 expect(sessionLoadAction.type).toBe(LOAD_USER_SESSION);
                 expect(sessionLoadAction.name).toBe("2.1.Saitama");
                 expect(userSessionLoadedAction).toBeTruthy(); // emitted by the test
+                expect(userSessionLoadedAction.session).toBeTruthy();
+                expect(userSessionLoadedAction.session.map).toBeTruthy();
+                expect(userSessionLoadedAction.session.featureGrid).toBeTruthy();
                 expect(clearMapTemplatesAction.type).toBe(CLEAR_MAP_TEMPLATES);
                 expect(loadMapAction.type).toBe(LOAD_MAP_CONFIG);
                 expect(setUserSessionAction.type).toBe(SET_USER_SESSION);
@@ -137,7 +139,8 @@ describe('context epics', () => {
                         map: {},
                         context: {
                             userPlugins: []
-                        }
+                        },
+                        featureGrid: {attributes: {col1: {hide: true}}}
                     })).delay(100)),
                 // simulate load map
                 action$
@@ -176,14 +179,14 @@ describe('context epics', () => {
         /*
          * check error actions
          */
-        const checkLoadErrors = (startActions, initialState, messageId, done) => {
+        const checkLoadErrors = (startActions, initialState, messageId, errorStatus, done) => {
             testEpic(loadContextAndMap, 5, startActions, ([loadingAction, clearMapTemplatesAction, loadMapAction, errorAction, loadEndAction]) => {
                 expect(loadingAction.type).toBe(LOADING);
                 expect(loadingAction.value).toBe(true);
                 expect(clearMapTemplatesAction.type).toBe(CLEAR_MAP_TEMPLATES);
                 expect(loadMapAction.type).toBe(LOAD_MAP_CONFIG);
                 expect(errorAction.type).toBe(CONTEXT_LOAD_ERROR);
-                expect(errorAction.error.status).toBe(403);
+                expect(errorAction.error.status).toBe(errorStatus);
                 expect(errorAction.error.messageId).toBe(messageId);
                 expect(loadEndAction.type).toBe(LOADING);
                 expect(loadEndAction.value).toBe(false);
@@ -205,7 +208,7 @@ describe('context epics', () => {
                     loadContext({ mapId, contextName }),
                     configureError({status: 403}) // THIS ACTION FAKES MAP LOAD FLOW END
                 ];
-                checkLoadErrors(actions, NOT_LOGGED_STATE, 'context.errors.map.pleaseLogin', done);
+                checkLoadErrors(actions, NOT_LOGGED_STATE, 'context.errors.map.pleaseLogin', 403, done);
 
             });
             it('403 forbidden, logged in', done => {
@@ -214,7 +217,7 @@ describe('context epics', () => {
                     loadContext({ mapId, contextName }),
                     configureError({ status: 403 }) // THIS ACTION FAKES MAP LOAD FLOW END
                 ];
-                checkLoadErrors(actions, LOGGED_STATE, 'context.errors.map.notAccessible', done);
+                checkLoadErrors(actions, LOGGED_STATE, 'context.errors.map.notAccessible', 403, done);
 
             });
         });
@@ -225,7 +228,7 @@ describe('context epics', () => {
                     loadContext({ mapId, contextName }),
                     configureMap() // THIS ACTION FAKES MAP LOAD FLOW END
                 ];
-                checkLoadErrors(actions, NOT_LOGGED_STATE, 'context.errors.context.pleaseLogin', done);
+                checkLoadErrors(actions, NOT_LOGGED_STATE, 'context.errors.context.pleaseLogin', 403, done);
 
             });
             it('403 forbidden, logged in', done => {
@@ -234,13 +237,39 @@ describe('context epics', () => {
                     loadContext({ mapId, contextName }),
                     configureMap() // THIS ACTION FAKES MAP LOAD FLOW END
                 ];
-                checkLoadErrors(actions, LOGGED_STATE, 'context.errors.context.notAccessible', done);
+                checkLoadErrors(actions, LOGGED_STATE, 'context.errors.context.notAccessible', 403, done);
+            });
+            it('404, logged in', done => {
+                createContextResponse(404);
+                const actions = [
+                    loadContext({ mapId, contextName }),
+                    configureMap() // THIS ACTION FAKES MAP LOAD FLOW END
+                ];
+                checkLoadErrors(actions, LOGGED_STATE, 'context.errors.context.unknownError', 404, done);
+            });
+            it('404, not logged in', done => {
+                createContextResponse(404);
+                const actions = [
+                    loadContext({ mapId, contextName }),
+                    configureMap() // THIS ACTION FAKES MAP LOAD FLOW END
+                ];
+                checkLoadErrors(actions, NOT_LOGGED_STATE, 'context.errors.context.notFound', 404, done);
+
             });
         });
     });
     describe('handleLoginLogoutContextReload', () => {
         it('reload when forbidden, then the user login', done => {
             const actions = [loadContext({ mapId, contextName }), contextLoadError({ error: { status: 403 } }), loginSuccess()];
+            testEpic(handleLoginLogoutContextReload, 1, actions, ([reloadAction]) => {
+                expect(reloadAction.type).toBe(LOAD_CONTEXT);
+                expect(reloadAction.mapId).toBe(mapId);
+                expect(reloadAction.contextName).toBe(contextName);
+                done();
+            });
+        });
+        it('reload when 404, then the user login', done => {
+            const actions = [loadContext({ mapId, contextName }), contextLoadError({ error: { status: 404 } }), loginSuccess()];
             testEpic(handleLoginLogoutContextReload, 1, actions, ([reloadAction]) => {
                 expect(reloadAction.type).toBe(LOAD_CONTEXT);
                 expect(reloadAction.mapId).toBe(mapId);
@@ -272,6 +301,38 @@ describe('context epics', () => {
             });
         });
     });
-
+    describe('setMapInfoOnPermalinkContext', () => {
+        it('setMapInfoOnPermalinkContext, with no resource', (done) => {
+            const NUMBER_OF_ACTIONS = 1;
+            testEpic(
+                addTimeoutEpic(setMapInfoOnPermalinkContext, 10),
+                NUMBER_OF_ACTIONS, [
+                    loadFinished()
+                ], actions => {
+                    expect(actions.length).toBe(NUMBER_OF_ACTIONS);
+                    actions.map((action) => {
+                        expect(action.type).toBe(TEST_TIMEOUT);
+                    });
+                    done();
+                }, {router: {location: {search: '?category=PERMALINK'}}});
+        });
+        it('setMapInfoOnPermalinkContext, with context resource', (done) => {
+            const NUMBER_OF_ACTIONS = 1;
+            testEpic(
+                setMapInfoOnPermalinkContext,
+                NUMBER_OF_ACTIONS, [
+                    loadFinished()
+                ], actions => {
+                    expect(actions.length).toBe(NUMBER_OF_ACTIONS);
+                    actions.map((action) => {
+                        expect(action.type).toBe(MAP_INFO_LOADED);
+                    });
+                    done();
+                }, {
+                    router: {location: {search: '?category=PERMALINK'}},
+                    context: {resource: {id: "1", name: "test", data: {mapConfig: {map: {}}}}}
+                });
+        });
+    });
 });
 

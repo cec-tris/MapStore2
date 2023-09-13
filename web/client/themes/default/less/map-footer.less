@@ -29,6 +29,11 @@
             background-color: transparent;
             .color-var(@theme-vars[main-color]);
         }
+        .cesium-credit-textContainer,
+        .cesium-credit-expand-link {
+            .color-var(@theme-vars[main-color]);
+            text-shadow: none;
+        }
     }
 }
 
@@ -85,6 +90,8 @@
        img {
            max-height: 2.6em;
        }
+       display: block;
+       max-width: none;
        position: absolute;
        left: 0;
        height: 30px;

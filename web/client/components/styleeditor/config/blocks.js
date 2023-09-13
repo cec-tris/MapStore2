@@ -22,6 +22,120 @@ const vector3dStyleOptions = ({ label = 'styleeditor.clampToGround', isDisabled 
 
 const INITIAL_OPTION_VALUE = '@ms-INITIAL_OPTION_VALUE';
 
+const pointGeometryTransformation = () => ({
+    msGeometry: property.select({
+        label: 'styleeditor.geometryTransformation',
+        key: 'msGeometry',
+        setValue: (value) => {
+            if (!value) {
+                return 'unset';
+            }
+            return value?.name;
+        },
+        getValue: (value) => {
+            if (value === 'unset') {
+                return { msGeometry: undefined };
+            }
+            return {
+                msGeometry: { name: value }
+            };
+        },
+        getOptions: () => [
+            {
+                value: 'unset',
+                labelId: 'styleeditor.center'
+            },
+            {
+                value: 'startPoint',
+                labelId: 'styleeditor.startPoint'
+            },
+            {
+                value: 'endPoint',
+                labelId: 'styleeditor.endPoint'
+            }
+        ]
+    })
+});
+
+const anchorProperty = () => ({
+    anchor: property.select({
+        label: 'styleeditor.anchor',
+        key: 'anchor',
+        setValue: (value) => {
+            return value ? value : 'center';
+        },
+        getOptions: () => [
+            {
+                value: 'top-left',
+                labelId: 'styleeditor.topLeft'
+            },
+            {
+                value: 'top',
+                labelId: 'styleeditor.top'
+            },
+            {
+                value: 'top-right',
+                labelId: 'styleeditor.topRight'
+            },
+            {
+                value: 'left',
+                labelId: 'styleeditor.left'
+            },
+            {
+                value: 'center',
+                labelId: 'styleeditor.center'
+            },
+            {
+                value: 'right',
+                labelId: 'styleeditor.right'
+            },
+            {
+                value: 'bottom-left',
+                labelId: 'styleeditor.bottomLeft'
+            },
+            {
+                value: 'bottom',
+                labelId: 'styleeditor.bottom'
+            },
+            {
+                value: 'bottom-right',
+                labelId: 'styleeditor.bottomRight'
+            }
+        ]
+    })
+});
+
+const lineGeometryTransformation = () => ({
+    msGeometry: property.select({
+        label: 'styleeditor.geometryTransformation',
+        key: 'msGeometry',
+        setValue: (value) => {
+            if (!value) {
+                return 'unset';
+            }
+            return value?.name;
+        },
+        getValue: (value) => {
+            if (value === 'unset') {
+                return { msGeometry: undefined };
+            }
+            return {
+                msGeometry: { name: value }
+            };
+        },
+        getOptions: () => [
+            {
+                value: 'unset',
+                labelId: 'styleeditor.line'
+            },
+            {
+                value: 'lineToArc',
+                labelId: 'styleeditor.geodesicLine'
+            }
+        ]
+    })
+});
+
 const heightPoint3dOptions = ({ isDisabled }) =>  ({
     msHeightReference: property.msHeightReference({
         label: "styleeditor.heightReferenceFromGround",
@@ -80,16 +194,14 @@ const getBlocks = ({
 } = {}) => {
     // if enable3dStyleOptions is undefined means we are using the WMS style editor
     // so we do not need to show the properties because there are no differences between 2D/3D
-    const shouldHide3DOptions = enable3dStyleOptions === undefined;
+    const shouldHideVectorStyleOptions = enable3dStyleOptions === undefined;
     const symbolizerBlock = {
         Mark: {
             kind: 'Mark',
             glyph: '1-point',
             glyphAdd: '1-point-add',
             tooltipAddId: 'styleeditor.addMarkRule',
-            supportedTypes: exactMatchGeometrySymbol
-                ? ['point', 'vector']
-                : ['point', 'linestring', 'polygon', 'vector'],
+            supportedTypes: ['point', 'linestring', 'polygon', 'vector'],
             params: {
                 wellKnownName: property.shape({
                     label: 'styleeditor.shape'
@@ -109,6 +221,12 @@ const getBlocks = ({
                     key: 'strokeWidth',
                     label: 'styleeditor.strokeWidth'
                 }),
+                ...(!shouldHideVectorStyleOptions && {
+                    strokeDasharray: property.dasharray({
+                        label: 'styleeditor.strokeStyle',
+                        key: 'strokeDasharray'
+                    })
+                }),
                 radius: property.size({
                     key: 'radius',
                     label: 'styleeditor.radius'
@@ -116,9 +234,10 @@ const getBlocks = ({
                 rotate: property.rotate({
                     label: 'styleeditor.rotation'
                 }),
-                ...(!shouldHide3DOptions && point3dStyleOptions({
+                ...(!shouldHideVectorStyleOptions && point3dStyleOptions({
                     isDisabled: () => !enable3dStyleOptions
-                }))
+                })),
+                ...(!shouldHideVectorStyleOptions && pointGeometryTransformation({}))
             },
             defaultProperties: {
                 kind: 'Mark',
@@ -139,9 +258,7 @@ const getBlocks = ({
             glyph: 'point',
             glyphAdd: 'point-plus',
             tooltipAddId: 'styleeditor.addIconRule',
-            supportedTypes: exactMatchGeometrySymbol
-                ? ['point', 'vector']
-                : ['point', 'linestring', 'polygon', 'vector'],
+            supportedTypes: ['point', 'linestring', 'polygon', 'vector'],
             hideMenu: true,
             params: {
                 image: property.image({
@@ -152,7 +269,7 @@ const getBlocks = ({
                     label: 'styleeditor.format',
                     key: 'format',
                     isVisible: (value, { image } = {}, format) => {
-                        return format !== 'css'
+                        return value?.name !== 'msMarkerIcon' && format !== 'css'
                         && !isObject(image)
                         && !['png', 'jpg', 'svg', 'gif', 'jpeg'].includes(image.split('.').pop());
                     },
@@ -168,9 +285,11 @@ const getBlocks = ({
                 rotate: property.rotate({
                     label: 'styleeditor.rotation'
                 }),
-                ...(!shouldHide3DOptions && point3dStyleOptions({
+                ...(!shouldHideVectorStyleOptions && anchorProperty()),
+                ...(!shouldHideVectorStyleOptions && point3dStyleOptions({
                     isDisabled: () => !enable3dStyleOptions
-                }))
+                })),
+                ...(!shouldHideVectorStyleOptions && pointGeometryTransformation({}))
             },
             defaultProperties: {
                 kind: 'Icon',
@@ -227,10 +346,11 @@ const getBlocks = ({
                     key: 'join',
                     isDisabled: () => !!enable3dStyleOptions
                 }),
-                ...(!shouldHide3DOptions && vector3dStyleOptions({
+                ...(!shouldHideVectorStyleOptions && vector3dStyleOptions({
                     label: 'styleeditor.clampToGround',
                     isDisabled: () => !enable3dStyleOptions
-                }))
+                })),
+                ...(!shouldHideVectorStyleOptions && lineGeometryTransformation({}))
             },
             defaultProperties: {
                 kind: 'Line',
@@ -278,11 +398,17 @@ const getBlocks = ({
                     key: 'outlineWidth',
                     label: 'styleeditor.outlineWidth'
                 }),
-                ...(!shouldHide3DOptions && vector3dStyleOptions({
+                ...(!shouldHideVectorStyleOptions && {
+                    outlineDasharray: property.dasharray({
+                        label: 'styleeditor.outlineStyle',
+                        key: 'outlineDasharray'
+                    })
+                }),
+                ...(!shouldHideVectorStyleOptions && vector3dStyleOptions({
                     label: 'styleeditor.clampOutlineToGround',
                     isDisabled: () => !enable3dStyleOptions
                 })),
-                ...(!shouldHide3DOptions && polygon3dStyleOptions({
+                ...(!shouldHideVectorStyleOptions && polygon3dStyleOptions({
                     isDisabled: (value, properties) => !properties?.msClampToGround || !enable3dStyleOptions
                 }))
             },
@@ -366,7 +492,7 @@ const getBlocks = ({
             glyphAdd: 'model-plus',
             disableAdd: () => !enable3dStyleOptions,
             tooltipAddId: 'styleeditor.addModelRule',
-            supportedTypes: ['point', 'vector'],
+            supportedTypes: ['point', 'linestring', 'polygon', 'vector'],
             hideMenu: true,
             params: {
                 model: property.model({
@@ -413,7 +539,8 @@ const getBlocks = ({
                 }),
                 ...heightPoint3dOptions({
                     isDisabled: () => !enable3dStyleOptions
-                })
+                }),
+                ...(!shouldHideVectorStyleOptions && pointGeometryTransformation({}))
             },
             defaultProperties: {
                 kind: 'Model',
@@ -428,9 +555,7 @@ const getBlocks = ({
             kind: 'Text',
             glyph: 'font',
             tooltipAddId: 'styleeditor.addTextRule',
-            supportedTypes: exactMatchGeometrySymbol
-                ? ['point', 'vector']
-                : ['point', 'linestring', 'polygon', 'vector'],
+            supportedTypes: ['point', 'linestring', 'polygon', 'vector'],
             params: {
                 label: property.select({
                     key: 'label',
@@ -441,7 +566,7 @@ const getBlocks = ({
                     getOptions: ({ attributes }) => {
                         return attributes?.map((option) => ({
                             value: '{{' + option.attribute + '}}',
-                            label: option.attribute
+                            label: option.label || option.attribute
                         })) || [];
                     }
                 }),
@@ -475,6 +600,7 @@ const getBlocks = ({
                     label: 'styleeditor.fontWeight',
                     key: 'fontWeight'
                 }),
+                ...(!shouldHideVectorStyleOptions && anchorProperty()),
                 haloColor: property.color({
                     label: 'styleeditor.haloColor',
                     key: 'haloColor',
@@ -496,9 +622,10 @@ const getBlocks = ({
                     label: 'styleeditor.offsetY',
                     axis: 'y'
                 }),
-                ...(!shouldHide3DOptions && point3dStyleOptions({
+                ...(!shouldHideVectorStyleOptions && point3dStyleOptions({
                     isDisabled: () => !enable3dStyleOptions
-                }))
+                })),
+                ...(!shouldHideVectorStyleOptions && pointGeometryTransformation({}))
             },
             defaultProperties: {
                 kind: 'Text',
@@ -529,6 +656,59 @@ const getBlocks = ({
                 kind: 'Raster',
                 opacity: 1,
                 contrastEnhancement: {}
+            }
+        },
+        Circle: {
+            kind: 'Circle',
+            glyph: '1-circle',
+            glyphAdd: '1-circle-add',
+            tooltipAddId: 'styleeditor.addCircleRule',
+            supportedTypes: [],
+            params: {
+                color: property.color({
+                    key: 'color',
+                    opacityKey: 'opacity',
+                    label: 'styleeditor.color'
+                }),
+                outlineColor: property.color({
+                    key: 'outlineColor',
+                    opacityKey: 'outlineOpacity',
+                    label: 'styleeditor.outlineColor',
+                    stroke: true
+                }),
+                outlineWidth: property.width({
+                    key: 'outlineWidth',
+                    label: 'styleeditor.outlineWidth'
+                }),
+                outlineDasharray: property.dasharray({
+                    label: 'styleeditor.outlineStyle',
+                    key: 'outlineDasharray'
+                }),
+                radius: property.number({
+                    key: 'radius',
+                    label: 'styleeditor.radius',
+                    uom: 'm',
+                    fallbackValue: 0,
+                    maxWidth: 125
+                }),
+                geodesic: property.bool({
+                    key: 'geodesic',
+                    label: 'styleeditor.geodesic'
+                }),
+                ...(!shouldHideVectorStyleOptions && vector3dStyleOptions({
+                    label: 'styleeditor.clampOutlineToGround',
+                    isDisabled: () => !enable3dStyleOptions
+                })),
+                ...(!shouldHideVectorStyleOptions && polygon3dStyleOptions({
+                    isDisabled: (value, properties) => !properties?.msClampToGround || !enable3dStyleOptions
+                }))
+            },
+            defaultProperties: {
+                kind: 'Circle',
+                color: '#dddddd',
+                opacity: 1,
+                outlineColor: '#777777',
+                outlineWidth: 1
             }
         }
     };
@@ -561,7 +741,7 @@ const getBlocks = ({
                         getOptions: ({ attributes }) => {
                             return attributes?.map((option) => ({
                                 value: option.attribute,
-                                label: option.attribute,
+                                label: option.label || option.attribute,
                                 disabled: option.disabled
                             }));
                         }

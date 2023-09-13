@@ -1,6 +1,7 @@
 import proj4 from 'proj4';
 
-import { reprojectBbox, bboxToFeatureGeometry, getExtentForProjection } from "../CoordinatesUtils";
+import { reprojectBbox, bboxToFeatureGeometry } from "../CoordinatesUtils";
+import { getProjection } from "../ProjectionUtils";
 import booleanIntersects from "@turf/boolean-intersects";
 import { getXLabelFormatter, getYLabelFormatter } from './GridLabelsUtils';
 import chunk from "lodash/chunk";
@@ -328,16 +329,16 @@ export function createGrid(interval, mapProjection, gridProjection, extent, proj
         projMinX,
         projMaxX
     );
-    const leftPoints = orderBy(linePoints(centerX, -interval, projMinX, centerX));
-    const rightPoints = orderBy(linePoints(centerX, interval, centerX, projMaxX));
+    const leftPoints = orderBy(linePoints(centerX, -interval, minX, centerX));
+    const rightPoints = orderBy(linePoints(centerX, interval, centerX, maxX));
 
     const centerY = clamp(
         Math.floor(gridCenterY / interval) * interval,
         projMinY,
         projMaxY
     );
-    const downPoints = orderBy(linePoints(centerY, -interval, projMinY, centerY));
-    const upPoints = orderBy(linePoints(centerY, interval, centerY, projMaxY));
+    const downPoints = orderBy(linePoints(centerY, -interval, minY, centerY));
+    const upPoints = orderBy(linePoints(centerY, interval, centerY, maxY));
 
     const xLines = limitTo([...leftPoints, centerX, ...rightPoints]
         .map(p => getXLine(p, minY, maxY, squaredTolerance, gridProjection || "EPSG:4326", mapProjection))
@@ -407,10 +408,10 @@ export function getGridGeoJson({
     pixelRatio = devicePixelRatio,
     frameSize = 0.0
 }) {
-    const resolution = (resolutions ?? getResolutions(mapProjection))[zoom];
+    const resolution = (resolutions ?? getResolutions(mapProjection))[Math.round(zoom)];
     const mapToGrid = proj4(mapProjection, gridProjection).forward;
     const gridToMap = proj4(gridProjection, mapProjection).forward;
-    const projectionCenter = mapToGrid(getCenter(getExtentForProjection(gridProjection).extent));
+    const projectionCenter = mapToGrid(getCenter(getProjection(gridProjection).extent));
     const interval = getInterval(
         intervals ?? getIntervals(gridProjection),
         projectionCenter,
@@ -425,7 +426,7 @@ export function getGridGeoJson({
         mapProjection,
         gridProjection,
         extent,
-        getExtentForProjection(mapProjection).extent,
+        getProjection(mapProjection).extent,
         center ?? getCenter(extent),
         squaredTolerance,
         maxLines,

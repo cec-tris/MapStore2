@@ -11,7 +11,9 @@ import {
     gridUpdateToQueryUpdate,
     getAttributesList,
     getAttributesNames,
-    featureTypeToGridColumns
+    featureTypeToGridColumns,
+    supportsFeatureEditing,
+    areLayerFeaturesEditable
 } from '../FeatureGridUtils';
 
 
@@ -163,6 +165,36 @@ describe('FeatureGridUtils', () => {
         expect(queryUpdateFilter.filterFields[4].value).toBe(10);
         expect(queryUpdateFilter.filterFields[4].operator).toBe("<");
     });
+    it('gridUpdateToQueryUpdate with cql filters in filters', () => {
+        const gridUpdate1 = {
+            filters: [{format: 'cql', body: 'STATE_NAME = \'Texas\''}]
+        };
+
+        const oldFilterObject = {
+            "groupFields": [{"id": "ATTR_1_STRING", "logic": "OR", "groupId": 1, "index": 0}],
+            "filterFields": [
+                {
+                    "attribute": "ATTR_1_STRING",
+                    "rowId": 1608204971082,
+                    "type": "string",
+                    "groupId": "ATTR_1_STRING",
+                    "operator": "ilike",
+                    "value": "cat"
+                },
+                {"attribute": "ATTR_1_STRING",
+                    "rowId": 1608204971082,
+                    "type": "string",
+                    "groupId": "ATTR_1_STRING",
+                    "operator": "ilike",
+                    "value": "to"
+                }
+            ]};
+        const queryUpdateFilter = gridUpdateToQueryUpdate(gridUpdate1, oldFilterObject);
+        expect(queryUpdateFilter.filters.length).toBe(1);
+        expect(queryUpdateFilter.filters[0].format).toBe('cql');
+        expect(queryUpdateFilter.filters[0].body).toBe('STATE_NAME = \'Texas\'');
+        expect(queryUpdateFilter.filterFields.length).toBe(2);
+    });
     it('getAttributesList', () => {
         const attributes = [
             {
@@ -245,7 +277,7 @@ describe('FeatureGridUtils', () => {
         const describe = {featureTypes: [{properties: [{name: 'Test1', type: "xsd:number"}, {name: 'Test2', type: "xsd:number"}]}]};
         const columnSettings = {name: 'Test1', hide: false};
         const options = [{name: 'Test1', title: 'Some title', description: 'Some description'}];
-        const featureGridColumns = featureTypeToGridColumns(describe, columnSettings, {options});
+        const featureGridColumns = featureTypeToGridColumns(describe, columnSettings, [], {options});
         expect(featureGridColumns.length).toBe(2);
         featureGridColumns.forEach((fgColumns, index) => {
             if (index === 0) {
@@ -259,6 +291,69 @@ describe('FeatureGridUtils', () => {
             expect(fgColumns.editable).toBeFalsy();
             expect(fgColumns.sortable).toBeTruthy();
             expect(fgColumns.width).toBe(200);
+        });
+    });
+    it('test featureTypeToGridColumns with headerRenderer, filterRenderer, formatter and editor', () => {
+        const DUMMY = () => {};
+        const describe = {featureTypes: [{properties: [{name: 'Test1', type: "xsd:number"}, {name: 'Test2', type: "xsd:number"}]}]};
+        const columnSettings = {name: 'Test1', hide: false};
+        const options = [{name: 'Test1', title: 'Some title', description: 'Some description'}];
+        const featureGridColumns = featureTypeToGridColumns(describe, columnSettings, [], {options}, {getHeaderRenderer: () => DUMMY, getFilterRenderer: () => DUMMY, getFormatter: () => DUMMY, getEditor: () => DUMMY});
+        expect(featureGridColumns.length).toBe(2);
+        featureGridColumns.forEach((fgColumns, index) => {
+            if (index === 0) {
+                expect(fgColumns.description).toBe('Some description');
+                expect(fgColumns.title).toBe('Some title');
+                expect(fgColumns.showTitleTooltip).toBeTruthy();
+            }
+            expect(['Test1', 'Test2'].includes(fgColumns.name)).toBeTruthy();
+            expect(fgColumns.resizable).toBeTruthy();
+            expect(fgColumns.filterable).toBeTruthy();
+            expect(fgColumns.editable).toBeFalsy();
+            expect(fgColumns.sortable).toBeTruthy();
+            expect(fgColumns.width).toBe(200);
+            expect(fgColumns.headerRenderer).toBeTruthy();
+            expect(fgColumns.filterRenderer).toBeTruthy();
+            expect(fgColumns.formatter).toBeTruthy();
+            expect(fgColumns.editor).toBeTruthy();
+        });
+    });
+    it('featureTypeToGridColumns with fields', () => {
+        const describe = {featureTypes: [{properties: [{name: 'Test1', type: "xsd:number"}, {name: 'Test2', type: "xsd:number"}]}]};
+        const columnSettings = {name: 'Test1', hide: false};
+        const fields = [{name: 'Test1', type: "xsd:number", alias: 'Test1 alias'}];
+        const featureGridColumns = featureTypeToGridColumns(describe, columnSettings, fields);
+        expect(featureGridColumns.length).toBe(2);
+        expect(featureGridColumns[0].title).toBe('Test1 alias');
+        // test alias empty string
+        expect(featureTypeToGridColumns(describe, columnSettings, [{name: "Test1", alias: ""}])[0].title).toEqual('Test1');
+        // test localized alias
+        expect(featureTypeToGridColumns(describe, columnSettings, [{name: "Test1", alias: {"default": "XX"}}])[0].title.default).toEqual('XX');
+        // test localized alias with empty default
+        expect(featureTypeToGridColumns(describe, columnSettings, [{name: "Test1", alias: {"default": ""}}])[0].title.default).toEqual('Test1');
+
+    });
+    describe("supportsFeatureEditing", () => {
+        it('test supportsFeatureEditing with valid layer type', () => {
+            let layer = {type: "wms", id: "test"};
+            expect(supportsFeatureEditing(layer)).toBeTruthy();
+            layer.type = "wfs";
+            expect(supportsFeatureEditing(layer)).toBeTruthy();
+        });
+        it('test supportsFeatureEditing with invalid layer type', () => {
+            const layer = {type: "wmts", id: "test"};
+            expect(supportsFeatureEditing(layer)).toBeFalsy();
+        });
+    });
+    describe("areLayerFeaturesEditable", () => {
+        it("test areLayerFeaturesEditable with valid layer type", () => {
+            expect(areLayerFeaturesEditable({type: "wms"})).toBeTruthy();
+        });
+        it("test areLayerFeaturesEditable with valid layer type and disableFeaturesEditing", () => {
+            expect(areLayerFeaturesEditable({type: "wms", disableFeaturesEditing: true})).toBeFalsy();
+        });
+        it("test areLayerFeaturesEditable with invalid layer type", () => {
+            expect(areLayerFeaturesEditable({type: "wmts"})).toBeFalsy();
         });
     });
 });

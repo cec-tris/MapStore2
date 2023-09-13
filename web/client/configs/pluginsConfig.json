@@ -152,7 +152,19 @@
       "description": "plugins.Share.description",
       "dependencies": [
         "SidebarMenu"
+      ],
+      "children": [
+        "Permalink"
+      ],
+      "autoEnableChildren": [
+        "Permalink"
       ]
+    },
+    {
+      "name": "Permalink",
+      "glyph": "link",
+      "title": "plugins.Permalink.title",
+      "description": "plugins.Permalink.description"
     },
     {
       "name": "BackgroundSelector",
@@ -165,7 +177,7 @@
       "title": "plugins.Annotations.title",
       "description": "plugins.Annotations.description",
       "dependencies": [
-        "SidebarMenu"
+        "TOC"
       ]
     },
     {
@@ -338,7 +350,10 @@
       "description": "plugins.About.description",
       "dependencies": [
         "SidebarMenu"
-      ]
+      ],
+      "defaultConfig": {
+        "githubUrl": "https://github.com/geosolutions-it/MapStore2/tree/"
+      }
     },
     {
       "name": "MousePosition",
@@ -621,6 +636,24 @@
       "glyph": "map-view",
       "title": "plugins.MapViews.title",
       "description": "plugins.MapViews.description",
+      "dependencies": [
+        "SidebarMenu"
+      ]
+    },
+    {
+      "name": "LongitudinalProfileTool",
+      "glyph": "1-line",
+      "title": "plugins.LongitudinalProfileTool.title",
+      "description": "plugins.LongitudinalProfileTool.description",
+      "dependencies": [
+        "SidebarMenu"
+      ]
+    },
+    {
+      "name": "GeoProcessingTools",
+      "glyph": "star",
+      "title": "plugins.GeoProcessingTools.title",
+      "description": "plugins.GeoProcessingTools.description",
       "dependencies": [
         "SidebarMenu"
       ]

@@ -152,7 +152,20 @@
       "description": "plugins.Share.description",
       "dependencies": [
         "SidebarMenu"
+      ],
+      "children": [
+        "Permalink"
+      ],
+      "autoEnableChildren": [
+        "Permalink"
       ]
+    },
+    {
+      "name": "Permalink",
+      "glyph": "link",
+      "title": "plugins.Permalink.title",
+      "description": "plugins.Permalink.description",
+      "denyUserSelection": true
     },
     {
       "name": "BackgroundSelector",
@@ -338,7 +351,10 @@
       "description": "plugins.About.description",
       "dependencies": [
         "SidebarMenu"
-      ]
+      ],
+      "defaultConfig": {
+        "githubUrl": "https://github.com/geosolutions-it/MapStore2/tree/"
+      }
     },
     {
       "name": "MousePosition",

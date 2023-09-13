@@ -22,6 +22,44 @@ This is a list of things to check if you want to update from a previous version 
 
 ## Migration from 2023.01.xx to 2023.02.00
 
+### About plugin cfg changes
+
+Starting this release **2023.02.00** we have included a new *cfg* option the About plugin called **githubUrl**
+
+We suggest you to edit About plugin cfg of **localConfig.json** adding the following
+
+```diff
+{
+-    "name": "About"
++    "name": "About",
++    "cfg": {
++      "githubUrl": "https://github.com/GITHUB_USER/REPO_NAME/tree/"
++    }
+```
+
+inside `configs/pluginsConfig.json` you can add this to the About plugin definition
+
+```diff
+      "name": "About",
+      "glyph": "info-sign",
+      "title": "plugins.About.title",
+      "description": "plugins.About.description",
+      "dependencies": [
+        "SidebarMenu"
+-      ]
++      ],
++      "defaultConfig": {
++        "githubUrl": "https://github.com/GITHUB_USER/REPO_NAME/tree/"
++      }
+    },
+```
+
+### NodeJS/NPM upgrade
+
+In this release we updated all our systems to use node 16/NPM 8. This because Node 12 is actually out of maintenance.
+We are going to support soon more recent versions of NodeJS solving the related issues.
+So make you sure to use the correct version of NodeJS/NPM to build things correctly. See the [requirements](../requirements/#debug-build) section of the document for the details.
+
 ### Visualization mode in map configuration
 
 The map configuration stores the information related to the visualization mode 2D or 3D after saving a map.
@@ -91,6 +129,129 @@ The old spring maven repositories that do not exist anymore have been removed fr
 -                <enabled>false</enabled>
 -            </snapshots>
 -        </repository>
+```
+
+### New Permalink plugin
+
+As part this release, permalink plugin is added to MapStore. The new plugin is already configured in standard MapStore application, but if you are working on a project or if you customized the configuration files, you may need to update them to introduce the new plugin.
+
+In any case on an existing installation you **must** update the database adding the category to make the plugin work.
+
+#### Add Permalink plugin to localConfig.json
+
+In the case you customized your `configs/localConfig.json` file in your project/installation, to add the permalink plugin you will have to update it as following:
+
+- Add the "Permalink" plugin to the pages you want to use this plugin. Pages plugins are in the `plugins` section in the root of `localConfig.json`,  so you have to add "Permalink" entry to `desktop`, `dashboard` and `geostory` arrays, like this:
+
+```json
+{
+    "desktop": [
+        ...
+        "Permalink",
+        ...
+    ],
+    "dashboard": [
+        ...
+        "Permalink",
+        ...
+    ],
+    "geostory": [
+        ...
+        "Permalink",
+        ...
+    ]
+}
+```
+
+- To activate the functionality, you must add a new `permalink` section to `plugins` root object of `localConfig.json`, as shown below
+
+```json
+{
+    "permalink": [
+        "Permalink",
+        "FeedbackMask"
+    ]
+}
+```
+
+#### Using Permalink in new contexts
+
+The plugins available for contexts are listed in the file `configs/pluginsConfig.json`. In your project/installation, you may need to edit this configuration to make the plugin selectable for your context.
+Existing contexts need to be updated separately, after applying these changes
+
+- Find the "Share" plugin configuration in the `plugins` array in the root of  `pluginsConfig.json` configuration file and modify it as shown below (adding `children` and `autoEnableChildren` sections:
+
+```json
+    {
+      "name": "Share",
+      "glyph": "share",
+      "title": "plugins.Share.title",
+      "description": "plugins.Share.description",
+      "dependencies": [
+        "SidebarMenu"
+      ],
+      "children": [
+        "Permalink"
+      ],
+      "autoEnableChildren": [
+        "Permalink"
+      ]
+    }
+```
+
+- Add "Permalink" plugin configuration to the `plugins` array in the root of `pluginsConfig.json`
+
+```json
+    {
+      "name": "Permalink",
+      "glyph": "link",
+      "title": "plugins.Permalink.title",
+      "description": "plugins.Permalink.description"
+    },
+```
+
+- the app pages inside a MapStore project must be updated with a new entry, only for projects using permalink feature, here an example:
+
+```js
+import Permalink from '@mapstore/product/pages/Permalink';
+import productAppConfig from "@mapstore/product/appConfig";
+
+const appConfig = {
+    ...productAppConfig,
+    pages: [
+        // my custom pages ...,
+        {
+            name: "permalink",
+            path: "/permalink/:pid",
+            component: Permalink
+        }
+    ]
+};
+```
+
+#### Database Update
+
+Add new category `PERMALINK` to `gs_category` table. To update your database you need to apply this SQL scripts to your database
+
+##### PostgreSQL
+
+```sql
+-- New PERMALINK category
+INSERT INTO geostore.gs_category(id, name) VALUES (nextval('geostore.hibernate_sequence'), 'PERMALINK') ON CONFLICT DO NOTHING;
+```
+
+##### H2
+
+```sql
+-- New PERMALINK category
+INSERT INTO gs_category(name) VALUES ('PERMALINK');
+```
+
+##### Oracle
+
+```sql
+-- New PERMALINK category
+INSERT INTO gs_category(id, name) VALUES (hibernate_sequence.nextval, ‘PERMALINK');
 ```
 
 ## Migration from 2022.02.02 to 2023.01.00

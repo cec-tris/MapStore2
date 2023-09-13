@@ -15,12 +15,14 @@ The layer settings panel is composed of four sections:
 
 * Display
 
+* Fields
+
 * Style
 
 * Feature Info
 
 !!!warning
-    For WMTS layers the Style and the Feature Info sections are not implemented. Moreover the Display section is limited to the Transparency level parameter.
+    For WMTS layers the Fields, the Style and the Feature Info sections are not implemented. Moreover the Display section is limited to the Transparency layer parameter.
 
 ## General information
 
@@ -30,23 +32,27 @@ By default, as soon as the user opens the layer settings panel the General infor
 
 In this page it is possible to:
 
-* Change the *Title*
+* Change the **Title**
 
-* Set the *Title translations*, that will be switched by changing the language
+* Set the translation of the layer title by opening the **Localize Text** popup through the <img src="../img/button/localize_button.jpg" class="ms-docbutton"/> button. This way the language of the title changes according to the  current language setting in [MapStore](https://mapstore.geosolutionsgroup.com/mapstore/#/)
 
-* Take a look at the *Name* of the layer
+<video class="ms-docimage" controls><source src="../img/layer-settings/lacalize-layer-title.mp4"/></video>
 
-* Edit the layer's *Description*
+* Take a look at the **Name** of the layer
 
-* Set the layer *Group*
+* Edit the layer's **Description**
 
-* Configure the *Tooltip* that appears moving the cursor over the layer's item in TOC. In this case the user can decide that the *Title*, the *Description*, both or nothing will be displayed. Moreover you can set the *Placement* of the tooltip, choosing between *Top*, *Right* or *Bottom*:
+* Set the layer **Group**
+
+* Configure the **Tooltip** that appears moving the cursor over the layer's item in TOC. In this case the user can decide that the *Title*, the *Description*, both or nothing will be displayed. Moreover you can set the *Placement* of the tooltip, choosing between *Top*, *Right* or *Bottom*:
 
 <img src="../img/layer-settings/tooltip_options.jpg" class="ms-docimage"  style="max-width:400px;"/>
 
 Setting a tooltip that shows the Title and the Description on the Right, for example, it can be similar to the following:
 
 <img src="../img/layer-settings/custom_tooltip.jpg" class="ms-docimage"/>
+
+* **Disable editing on attribute table**. This option allows to disable [the editing function](attributes-table.md#editing-and-removing-existing-features) in Attribute Table. In case a layer has been set as read-only through this option, the <img src="../img/button/edit_button.jpg" class="ms-docbutton"/> icon will not be available in the Attribute Table and in the[Identify](navigation-toolbar.md#identify-tool) panel for the selected layer. This option is unchecked by default and it can be controlled only by users with editing permissions on the map.
 
 ## Display
 
@@ -63,13 +69,14 @@ In particular, the user is allowed to:
 
 * Set the size of layer tiles: choosing between `256` or `512`
 
+!!!Warning
+    The *Format* and *Layer tile size* options are available only for the layers added from CSW and WMS catalog sources.
+
 * Set the opacity value of the layer (in %)
 
 * Enable/disable the **Visibility limits** to display the layer only within certain scale limits. The user is allowed to request the `MinScaleDenominator` and  `MaxScaleDenominator` value present on the *WMS GetCapabilities* of the layer though the <img src="../img/button/sync_to_server.jpg" class="ms-docbutton"/> button or set the *Max value* and the *Min value* and select the *Limits type* choosing between `Scale` or `Resolution`.
 
 * Enable/disable the transparency for that layer
-
-* Enable/disable the use of the layer cached tiles  (if checked, the *Tiled=true* URL parameter will be added to the WMS request and to [use tiles cached with GeoWebCache](https://docs.geoserver.org/latest/en/user/geowebcache/using.html#direct-integration-with-geoserver-wms))
 
 * Decide to display the image as a single tile or as multiple tiles
 
@@ -77,14 +84,91 @@ In particular, the user is allowed to:
 
 * Enable/disable the *Force proxy* layer option. If enabled, forces the application to check the source and applies proxy if needed.
 
+* Enable/disable the use of the layer cached tiles. If checked, the *Tiled=true* URL parameter will be added to the WMS request to [use tiles cached with GeoWebCache](https://docs.geoserver.org/latest/en/user/geowebcache/using.html#direct-integration-with-geoserver-wms).
+When the *Use cache options* is enabled, more controls are enabled so that it is possible for the user to check if the current map settings match any GWC ***standard*** Gridset defined on the server side for the given WMS layer (**Check available tile grids information** <img src="../img/button/update_button.jpg" class="ms-docbutton"/>). At the same time, it is also possible to change the setting strategy (based on the WMTS service response) to strictly adapt layer settings on the client side to the ones matching any remote ***custom*** Gridset defined for the current map settings (**Use remote custom tile grids** <img src="../img/button/tile_grid.jpg" class="ms-docbutton"/> button).
+
+!!!note
+
+    When the **Check available tile grids information** <img src="../img/button/update_button.jpg" class="ms-docbutton"/> button is clicked, an info icon <img src="../img/button/info_ion.jpg" class="ms-docbutton"/> appears to inform the user if the current map settings (Projection, Tile size, Image Format) are properly matching the ones of the given Tile Grids defined on the server side configuration for the layer.
+
+    <img src="../img/layer-settings/default_gridset_info.jpg" class="ms-docimage"  style="max-width:300px;"/>
+
+    When the **Use remote custom tile grids** button is enabled, it turns green <img src="../img/button/tile_grid_green.jpg" class="ms-docbutton"/> and a WMTS request is performed by MapStore to fetch precise information to more finely adapt the layer settings on the client side to the ones of the matching Tile Grid defined on the server. The scope of the info icon <img src="../img/button/info_ion.jpg" class="ms-docbutton"/> in this case is still the same but through this strategy MapStore provides a finer tuning of the client side layer settings to better fit the tile grid defined on the server side and so provide better accuracy of cache matching.
+
+    <img src="../img/layer-settings/green_info.jpg" class="ms-docimage"  style="max-width:300px;"/>
+
+    In case the current map/layer settings (Projection, Tile size, Image Format) do not match any of the server-side defined Tile Grids for the given layer the Info panel shows a warning message to indicate the reason for the mismatch so that it is possible for the user to change the needed setting accordingly (for example changing the [map projection](footer.md#crs-selector) or selecting a different [tile size and/or tile format](layer-settings.md#display)).
+
+    <img src="../img/layer-settings/warning_info.jpg" class="ms-docimage"  style="max-width:300px;"/>
+
+!!!warning
+    The Gridset compatibility check made by MapStore whose result is shown by the Info tooltip, is usually quite reliable but should be considered anyway only to provide general matching indicators aimed at highlighting possible compatibility issues between the current layer/map settings and the remote Tile Grid. Due to the cache tolerance considered on the server side by GWC, it might even happen in some cases that the settings available on the client side don't HIT the tile cache even if all the checks listed are successful. At the same time, when the standard gridset is used, gridsets check may fail even if all WMS request are effectively HITTING the cache (e.g. because the WMTS reports a list of origins).
+
 * Set the layer *Legend* with custom *Width* and *Height* options. Both of these field values if greater than the default legend's size of 12, then the custom values gets applied on the legend width and height display property
 
 * A preview of the legend is shown with the applied custom values from Legend fields above.
 
 !!!Warning
     The *Format* and *Layer tile size* options are available only for the layers added from CSW and WMS catalog sources.
-!!!note
-    Cached tiles works with WMS only with standard gridsets (exponential). When MapStore uses custom scales, the tile cache can not be used. This because WMS TileGrid for OpenLayers (internal MapStore mapping library) and the TileGrid generated by GeoServer have different origins (top-left vs bottom-left). While for exponential resolutions the top left remains fixed (because there is only an integer number of tiles in the interval between top-left and bottom-left corner of the bbox, 1, 2, 4, 8 ....) with custom resolutions the number of tiles is not integer, so the coordinate of the tile of top-left may vary across scales. More details about this limitation in this [issue](https://github.com/geosolutions-it/MapStore2/issues/9025) on GitHub.
+
+!!!Warning
+    On the *Display* tab, only the following options are available for a **3D Tile** layer:
+
+    * The **Visibility limits** to display the layer only within certain scale limits, as reported above.
+
+    * The **Height Offset** above the ground.
+
+    <img src="../img/layer-settings/display-3d-tiles.jpg" class="ms-docimage"  style="max-width:450px;"/>
+
+## Fields
+
+From this section of the *Settings* panel, [MapStore](https://mapstore.geosolutionsgroup.com/mapstore/#/) allows the user to add aliases to layer fields.
+
+<img src="../img/layer-settings/fields_settings.jpg" class="ms-docimage"  style="max-width:500px;"/>
+
+The panel shows the fields (feature attributes) of the layer. For each field the following are specified:
+
+* the **Name** of the field
+* the **Alias** of the field, which by default is empty
+* the **Type** of field
+
+The *Name* and the *Type* of the field cannot be modified, while the alias can be specified by the user.
+
+Using the **Localize** <img src="../img/button/localize_button.jpg" class="ms-docbutton"/> button, a popup opens so that it is possible to configure the alias of the field as well as its translations.
+
+<img src="../img/layer-settings/localize-popup.jpg" class="ms-docimage"  style="max-width:500px;"/>
+
+Setting the aliases, it is possible to configure the desired attribute names to be shown in all supported [MapStore](https://mapstore.geosolutionsgroup.com/mapstore/#/) tools for this functionality and manage related translations accordingly.
+
+The aliases configured in Layers Settings will be used for the following supported [MapStore](https://mapstore.geosolutionsgroup.com/mapstore/#/) tools:
+
+* [Attribute Table](attributes-table.md)
+
+<video class="ms-docimage" controls><source src="../img/layer-settings/lacalize-attribute-table.mp4"/></video>
+
+* [Filter layer](filtering-layers.md#layer-filter)
+
+<video class="ms-docimage" controls><source src="../img/layer-settings/localize-filter.mp4"/></video>
+
+* [Identify](navigation-toolbar.md#identify-tool) (only `properties` output format)
+
+<video class="ms-docimage" controls><source src="../img/layer-settings/localize-identify.mp4"/></video>
+
+* [Visual Style Editor](layer-settings.md#visual-editor-style)
+
+<video class="ms-docimage" controls><source src="../img/layer-settings/localize-style.mp4"/></video>
+
+* [Charts Widget](widgets.md#chart) and [Table Widget](widgets.md#table)
+
+<video class="ms-docimage" controls><source src="../img/layer-settings/localize-widget.mp4"/></video>
+
+Through the toolbar available on the top-center of the *Fields* panel, it is possible to:
+
+<img src="../img/layer-settings/fields_toolbar.jpg" class="ms-docimage"  style="max-width:500px;"/>
+
+* **Reload** the list of fields from the data source using the <img src="../img/button/reload_button.jpg" class="ms-docbutton"/> button
+
+* **Clear all customization** in the UI by using the <img src="../img/button/clear_button.jpg" class="ms-docbutton"/> button
 
 ## Style
 
@@ -130,7 +214,7 @@ Here the user can set the *Title* and the *Abstract* (optional), and through the
 
 Existing styles can be edited clicking on the <img src="../img/button/style_editor_edit_button.jpg" class="ms-docbutton"/> button. The page that opens allows the user to customize the style in the related format:
 
-<img src="../img/layer-settings/style_editor_edit_new_style.gif" class="ms-docimage"  style="max-width:700px;">
+<video class="ms-docimage"  style="max-width:700px;" controls><source src="../img/layer-settings/style_editor_edit_new_style.mp4"></video>
 
 The editor is easy to approach thanks also to the following functions:
 
@@ -189,13 +273,13 @@ The line rule is used to style linear features of the layer: clicking on the <im
 
 The editor can change the `Stroke color`, the `Stroke width`, the `Line style` (*continuous*, *dashed*, etc), the `Line cap` (*Butt*, *Round*, *Square*) and the `Line join` (*Bevel*, *Round*, *Miter*). An example can be the following one:
 
-<img src="../img/layer-settings/ex_line_style.gif" class="ms-docimage">
+<video class="ms-docimage" controls><source src="../img/layer-settings/ex_line_style.mp4"></video>
 
 #### Fill
 
 The Fill rule is used to style polygon features. Clicking on <img src="../img/button/add_fill_button.jpg" class="ms-docbutton"/> button, the editor is allowed to customize the `Fill color`, the `Outline color` and the `Outline width`:
 
-<img src="../img/layer-settings/ex_fill_style.gif" class="ms-docimage">
+<video class="ms-docimage" controls><source src="../img/layer-settings/ex_fill_style.mp4"></video>
 
 #### Text
 
@@ -205,7 +289,7 @@ The Text rule is used to style features as text labels. Text labels are position
 
 The editor is allowed to type the name of the layer attribute to use for the `Label` and the dropdown list is filtered accordingly to show the existing attributes that are matching the entered text (the user can anyway directly select an attribute from the list). Moreover, the style editor can customize the `Font Family` (*DejaVu Sans*, *Serif*, etc), choose the font `Color`, `Size`, `Style` (*Normal* or *Italic*) and `Halo weight` (*Normal* or *Bold*) and select the desired `Halo color` and `Halo weight`. It is also possible to choose the text `Rotation` and `Offset` (*x* and *y*). En example can be the following one
 
-<img src="../img/layer-settings/ex_text_style.gif" class="ms-docimage">
+<video class="ms-docimage" controls><source src="../img/layer-settings/ex_text_style.mp4"></video>
 
 ### Style Methods
 
@@ -271,7 +355,7 @@ The [MapStore](https://mapstore.geosolutionsgroup.com/mapstore/#/) **Visual Styl
 
 * Customization of the **Fill color**
 
-<img src="../img/layer-settings/ex_3dtiles_style.gif" class="ms-docimage">
+<video class="ms-docimage" controls><source src="../img/layer-settings/ex_3dtiles_style.mp4"></video>
 
 * Style Rule filtering based on the available [properties dictionary](https://github.com/CesiumGS/3d-tiles/tree/1.0/specification#properties) defined in the tileset.json
 
@@ -290,13 +374,13 @@ In 3D mode [MapStore](https://mapstore.geosolutionsgroup.com/mapstore/#/) allows
   In addition the **3D model** rule type is also available.
 From the *Visual Style Editor*, by clicking on <img src="../img/button/3D-model-button.jpg" class="ms-docbutton"/> button, the 3D model symbolizer panel opens to allow adding a 3D model (based on [glTF](https://github.com/KhronosGroup/glTF), GLB is also allowed) as an external graphic by specifying its *URL* (see also the [Cesium documentation](https://cesium.com/learn/cesiumjs/ref-doc/ModelGraphics.html?classFilter=Model)). Furthermore, it is possible to customize the 3D model `Scale`, `Rotation` and `Color`. Take a look at the following example.
 
-<img src="../img/layer-settings/3d-model-style-ex.gif" class="ms-docimage">
+<video class="ms-docimage" controls><source src="../img/layer-settings/3d-model-style-ex.mp4"></video>
 
 !!!Warning
     For the Vector layer, the *Visual Style Editor* have some limitations:
 
     * It's possible to apply only one type of symbolizer at the time, so if the rule editor shows multiple rule with the same filter, only the first one is used.
-    
+
     * For the *Line symbolizers*: the *Line cap* and *Line join* options are not available as properties in Cesium
 
 Furthermore, for **WFS layers**, [MapStore](https://mapstore.geosolutionsgroup.com/mapstore/#/) adds some additional styling options in the *Visual Style Editor* such as:
@@ -369,6 +453,10 @@ In this case the user can customize the information format:
 In particular, by clicking on the <img src="../img/button/edit_button.jpg" class="ms-docbutton"/> button, the following text editor appears:
 
 <img src="../img/layer-settings/edit_custom_format.jpg" class="ms-docimage"  style="max-width:600px;"/>
+
+!!!note
+    The Identify Template editor, by clicking the <img src="../img/button/image_button.jpg" class="ms-docbutton"/> button, allows to insert images using direct URLs of resources available on the web. At the same point it also allows to parse needed image URLs from available feature attributes (eg. attributes reporting image URL values or images in base64). The same markdown syntax (eg. `${properties.IMAGE}`) can also be used in this case so that, at run time, MapStore is able to parse attribute values to finally display images accordingly in the Identify panel.
+    <video class="ms-docimage"  style="max-width:600px;" controls><source src="../img/layer-settings/image_on_template.mp4"/></video>
 
 Here it is possible to insert the text to be displayed through the [Identify Tool](navigation-toolbar.md#identify-tool), with the possibility to wrap the desired properties. <br>
 Let's make an example: we assume to have a layer where each record corresponds to a USA State geometry in the map. In the [Attribute Table](attributes-table.md#attribute-table) of this layer there's the `STATE_NAME` field that, for each record, contains a text value with the name of the State. <br>

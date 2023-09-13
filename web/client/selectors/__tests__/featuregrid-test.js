@@ -37,7 +37,13 @@ import {
     queryOptionsSelector,
     showTimeSync,
     timeSyncActive,
-    multiSelect, isViewportFilterActive, viewportFilter, isFilterByViewportSupported
+    multiSelect,
+    isViewportFilterActive,
+    viewportFilter,
+    isFilterByViewportSupported,
+    selectedLayerFieldsSelector,
+    editingAllowedGroupsSelector,
+    isEditingAllowedSelector
 } from '../featuregrid';
 
 const idFt1 = "idFt1";
@@ -644,5 +650,146 @@ describe('Test featuregrid selectors', () => {
             }
         };
         expect(isFilterByViewportSupported(state)).toBe(false);
+    });
+    it('selectedLayerFieldsSelector', () => {
+        const FIELD = {
+            name: 'name',
+            type: 'string',
+            alias: 'Name'
+        };
+        const state = {
+            featuregrid: {
+                selectedLayer: 'TEST_LAYER'
+            },
+            layers: {
+                flat: [{
+                    id: "TEST_LAYER",
+                    title: "Test Layer",
+                    name: 'editing:polygons.test',
+                    fields: [FIELD]
+                }]
+            }
+        };
+        expect(selectedLayerFieldsSelector(state)).toEqual([FIELD]);
+    });
+    it('editingAllowedGroupsSelector', () => {
+        const editingAllowedGroups = ['test'];
+        expect(editingAllowedGroupsSelector({
+            featuregrid: {
+                editingAllowedGroups
+            }
+        })).toEqual(editingAllowedGroups);
+    });
+    describe('isEditingAllowedSelector', () => {
+        const state = {
+            featuregrid: {
+                canEdit: false,
+                editingAllowedRoles: ['USER'],
+                editingAllowedGroups: ['test']
+            },
+            security: {
+                user: {
+                    role: 'USER',
+                    groups: {
+                        group: {
+                            enabled: true,
+                            groupName: 'test'
+                        }
+                    }
+                }
+            }
+        };
+        it('test isEditingAllowedSelector with canEdit', () => {
+            expect(isEditingAllowedSelector({
+                ...state,
+                featuregrid: {
+                    canEdit: true
+                }
+            })).toBeTruthy();
+        });
+        it('test isEditingAllowedSelector with ALL role', () => {
+            expect(isEditingAllowedSelector({
+                ...state,
+                featuregrid: {
+                    editingAllowedRoles: ["ALL"]
+                }
+            })).toBeTruthy();
+        });
+        it('test isEditingAllowedSelector with defaults', () => {
+            expect(isEditingAllowedSelector({
+                featuregrid: {
+                    editingAllowedRoles: ["ADMIN"],
+                    editingAllowedGroups: []
+                },
+                security: {
+                    user: {
+                        role: 'ADMIN',
+                        groups: {
+                            group: {
+                                enabled: true,
+                                groupName: 'test'
+                            }
+                        }
+                    }
+                }
+            })).toBeTruthy();
+        });
+        it('test isEditingAllowedSelector with ADMIN user matching allowedGroups', () => {
+            expect(isEditingAllowedSelector({
+                featuregrid: {
+                    editingAllowedGroups: ['test']
+                },
+                security: {
+                    user: {
+                        role: 'ADMIN',
+                        groups: {
+                            group: {
+                                enabled: true,
+                                groupName: 'test'
+                            }
+                        }
+                    }
+                }
+            })).toBeTruthy();
+        });
+        it('test isEditingAllowedSelector with non-admin user matching allowed roles', () => {
+            expect(isEditingAllowedSelector({
+                ...state,
+                featuregrid: {
+                    editingAllowedRoles: ['USER']
+                }
+            })).toBeTruthy();
+        });
+        it('test isEditingAllowedSelector with non-admin user with non-allowed groups', () => {
+            expect(isEditingAllowedSelector({
+                ...state,
+                featuregrid: {
+                    editingAllowedRoles: ['USER1'],
+                    editingAllowedGroups: ['some']
+                }
+            })).toBeFalsy();
+        });
+        it('test isEditingAllowedSelector with non-admin user and with default editingAllowedRoles', () => {
+            expect(isEditingAllowedSelector({
+                ...state,
+                featuregrid: {}
+            })).toBeFalsy();
+        });
+        it('test isEditingAllowedSelector with ADMIN user and with default editingAllowedRoles', () => {
+            expect(isEditingAllowedSelector({
+                featuregrid: {},
+                security: {
+                    user: {
+                        role: 'ADMIN',
+                        groups: {
+                            group: {
+                                enabled: true,
+                                groupName: 'test'
+                            }
+                        }
+                    }
+                }
+            })).toBeTruthy();
+        });
     });
 });

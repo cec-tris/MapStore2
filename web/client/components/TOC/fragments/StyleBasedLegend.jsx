@@ -9,8 +9,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import MarkIcon from './MarkIcon';
 import { Glyphicon } from 'react-bootstrap';
+import { parseSymbolizerExpressions } from '../../../utils/styleparser/StyleParserUtils';
 
-function WFSLegend({ style }) {
+function StyleBasedLegend({ style }) {
     const renderIcon = (symbolizer) => {
         const {
             color,
@@ -25,7 +26,7 @@ function WFSLegend({ style }) {
             fillOpacity,
             image,
             rotate
-        } = symbolizer;
+        } = parseSymbolizerExpressions(symbolizer);
         switch (symbolizer.kind) {
         case 'Line':
             let displayWidth = width;
@@ -55,6 +56,16 @@ function WFSLegend({ style }) {
                     strokeOpacity={outlineOpacity}
                 />
             </svg>);
+        case 'Circle':
+            return (<svg viewBox="0 0 50 50">
+                <circle cx="25" cy="25" r="25"
+                    fill={color}
+                    opacity={opacity}
+                    stroke={outlineColor}
+                    strokeWidth={outlineWidth}
+                    strokeOpacity={outlineOpacity}
+                />
+            </svg>);
         case 'Mark':
             return <MarkIcon symbolizer={symbolizer} />;
         case 'Icon':
@@ -64,13 +75,30 @@ function WFSLegend({ style }) {
             </svg>);
         case 'Model':
             return <Glyphicon glyph="model"/>;
+        case 'Text':
+            return (<svg viewBox="0 0 16 16">
+                <text x="8" y="8" text-anchor="middle" alignment-baseline="middle"  style={{
+                    fontSize: symbolizer.size < 14 ? symbolizer.size : 14,
+                    fill: symbolizer.color,
+                    fontFamily: symbolizer?.font?.join(', '),
+                    fontStyle: symbolizer.fontStyle,
+                    fontWeight: symbolizer.fontWeight,
+                    ...((symbolizer.haloWidth && symbolizer.haloColor) && {
+                        paintOrder: 'stroke',
+                        stroke: symbolizer.haloColor,
+                        strokeWidth: 1,
+                        strokeLinecap: 'round',
+                        strokeLinejoin: 'round'
+                    })
+                }} >La</text>
+            </svg>);
         default:
             return null;
         }
     };
 
     const renderRules = (rules) => {
-        return rules.map((rule) => {
+        return (rules || []).map((rule) => {
             return (<div className="wfs-legend-rule" key={rule.ruleId}>
                 <div className="wfs-legend-icon">{renderIcon(rule.symbolizers[0])}</div>
                 <span>{rule.name || ''}</span>
@@ -87,8 +115,8 @@ function WFSLegend({ style }) {
     </>;
 }
 
-WFSLegend.propTypes = {
+StyleBasedLegend.propTypes = {
     style: PropTypes.object
 };
 
-export default WFSLegend;
+export default StyleBasedLegend;

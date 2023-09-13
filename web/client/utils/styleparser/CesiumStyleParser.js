@@ -8,8 +8,19 @@
 import * as Cesium from 'cesium';
 import chroma from 'chroma-js';
 import { castArray, isNumber, isEmpty, isEqual, pick, range } from 'lodash';
-
 import { needProxy, getProxyUrl } from '../ProxyUtils';
+import {
+    resolveAttributeTemplate,
+    geoStylerStyleFilter,
+    drawIcons,
+    getImageIdFromSymbolizer,
+    parseSymbolizerExpressions
+} from './StyleParserUtils';
+import { geometryFunctionsLibrary } from './GeometryFunctionsUtils';
+import EllipseGeometryLibrary from '@cesium/engine/Source/Core/EllipseGeometryLibrary';
+import CylinderGeometryLibrary from '@cesium/engine/Source/Core/CylinderGeometryLibrary';
+
+const getGeometryFunction = geometryFunctionsLibrary.cesium({ Cesium });
 
 function getCesiumColor({ color, opacity }) {
     const [r, g, b, a] = chroma(color).gl();
@@ -112,7 +123,11 @@ function getLeaderLinePositions({
             if (Cesium.defined(promise)) {
                 promise
                     .then((updatedPositions) => drawLine(updatedPositions?.[0]?.height ?? 0))
-                    .catch(() => drawLine(0));
+                    // the sampleTerrainMostDetailed from the Cesium Terrain is still using .otherwise
+                    // and it resolve everything in the .then
+                    // while the sampleTerrain uses .catch
+                    // the optional chain help us to avoid error if catch is not exposed by the promise
+                    ?.catch?.(() => drawLine(0));
             } else {
                 drawLine(0);
             }
@@ -244,17 +259,6 @@ function modifyPointHeight({ entity, symbolizer, properties }) {
     return;
 }
 
-function parseLabel(feature, label = '') {
-    if (!feature.properties) {
-        return label;
-    }
-    return Object.keys(feature.properties)
-        .reduce((str, key) => {
-            const regExp = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
-            return str.replace(regExp, feature.properties[key] ?? '');
-        }, label);
-}
-
 const HEIGHT_REFERENCE_CONSTANTS_MAP = {
     none: 'NONE',
     relative: 'RELATIVE_TO_GROUND',
@@ -281,16 +285,71 @@ const GRAPHIC_KEYS = [
     'wall'
 ];
 
+const anchorToOrigin = (anchor) => {
+    switch (anchor) {
+    case 'top-left':
+        return {
+            horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+            verticalOrigin: Cesium.VerticalOrigin.TOP
+        };
+    case 'top':
+        return {
+            horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+            verticalOrigin: Cesium.VerticalOrigin.TOP
+        };
+    case 'top-right':
+        return {
+            horizontalOrigin: Cesium.HorizontalOrigin.RIGHT,
+            verticalOrigin: Cesium.VerticalOrigin.TOP
+        };
+    case 'left':
+        return {
+            horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+            verticalOrigin: Cesium.VerticalOrigin.CENTER
+        };
+    case 'center':
+        return {
+            horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+            verticalOrigin: Cesium.VerticalOrigin.CENTER
+        };
+    case 'right':
+        return {
+            horizontalOrigin: Cesium.HorizontalOrigin.RIGHT,
+            verticalOrigin: Cesium.VerticalOrigin.CENTER
+        };
+    case 'bottom-left':
+        return {
+            horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM
+        };
+    case 'bottom':
+        return {
+            horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM
+        };
+    case 'bottom-right':
+        return {
+            horizontalOrigin: Cesium.HorizontalOrigin.RIGHT,
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM
+        };
+    default:
+        return {
+            horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+            verticalOrigin: Cesium.VerticalOrigin.CENTER
+        };
+    }
+};
+
 const getGraphics = ({
-    symbolizer,
+    symbolizer: _symbolizer,
     images,
-    getImageIdFromSymbolizer,
     entity,
     globalOpacity,
     properties,
     map,
     sampleTerrain
 }) => {
+    const symbolizer = parseSymbolizerExpressions(_symbolizer, { properties });
     if (symbolizer.kind === 'Mark') {
         modifyPointHeight({ entity, symbolizer, properties });
         const { image, width, height } = images.find(({ id }) => id === getImageIdFromSymbolizer(symbolizer)) || {};
@@ -336,6 +395,8 @@ const getGraphics = ({
                 billboard: new Cesium.BillboardGraphics({
                     image,
                     scale,
+                    ...anchorToOrigin(symbolizer.anchor),
+                    pixelOffset: symbolizer.offset ? new Cesium.Cartesian2(symbolizer.offset[0], symbolizer.offset[1]) : null,
                     rotation: Cesium.Math.toRadians(-1 * symbolizer.rotate || 0),
                     disableDepthTestDistance: symbolizer.msBringToFront ? Number.POSITIVE_INFINITY : 0,
                     heightReference: Cesium.HeightReference[HEIGHT_REFERENCE_CONSTANTS_MAP[symbolizer.msHeightReference] || 'NONE'],
@@ -359,7 +420,7 @@ const getGraphics = ({
             billboard,
             polyline,
             label: new Cesium.LabelGraphics({
-                text: parseLabel({ properties }, symbolizer.label),
+                text: resolveAttributeTemplate({ properties }, symbolizer.label, ''),
                 font: [symbolizer.fontStyle, symbolizer.fontWeight,  `${symbolizer.size}px`, castArray(symbolizer.font || ['serif']).join(', ')]
                     .filter(val => val)
                     .join(' '),
@@ -367,6 +428,7 @@ const getGraphics = ({
                     color: symbolizer.color,
                     opacity: 1 * globalOpacity
                 }),
+                ...anchorToOrigin(symbolizer.anchor),
                 disableDepthTestDistance: symbolizer.msBringToFront ? Number.POSITIVE_INFINITY : 0,
                 heightReference: Cesium.HeightReference[HEIGHT_REFERENCE_CONSTANTS_MAP[symbolizer.msHeightReference] || 'NONE'],
                 pixelOffset: new Cesium.Cartesian2(symbolizer?.offset?.[0] ?? 0, symbolizer?.offset?.[1] ?? 0),
@@ -433,23 +495,30 @@ const getGraphics = ({
         }));
     }
     if (symbolizer.kind === 'Line') {
-        return Promise.resolve({
-            polyline: new Cesium.PolylineGraphics({
-                material: symbolizer?.dasharray
-                    ? getCesiumDashArray({
-                        color: symbolizer.color,
-                        opacity: symbolizer.opacity * globalOpacity,
-                        dasharray: symbolizer.dasharray
-                    })
-                    : getCesiumColor({
-                        color: symbolizer.color,
-                        opacity: symbolizer.opacity * globalOpacity
-                    }),
-                width: symbolizer.width,
-                positions: entity._msStoredCoordinates.polyline,
-                clampToGround: symbolizer.msClampToGround
-            })
+        const polyline = new Cesium.PolylineGraphics({
+            material: symbolizer?.dasharray
+                ? getCesiumDashArray({
+                    color: symbolizer.color,
+                    opacity: symbolizer.opacity * globalOpacity,
+                    dasharray: symbolizer.dasharray
+                })
+                : getCesiumColor({
+                    color: symbolizer.color,
+                    opacity: symbolizer.opacity * globalOpacity
+                }),
+            width: symbolizer.width,
+            positions: entity._msStoredCoordinates.polyline,
+            clampToGround: symbolizer.msClampToGround,
+            arcType: symbolizer.msClampToGround
+                ? Cesium.ArcType.GEODESIC
+                : Cesium.ArcType.NONE
         });
+        const geometryFunction = getGeometryFunction(symbolizer);
+        if (geometryFunction) {
+            geometryFunction({ polyline });
+        }
+
+        return Promise.resolve({ polyline });
     }
     if (symbolizer.kind === 'Fill') {
         const polygon = new Cesium.PolygonGraphics({
@@ -465,7 +534,10 @@ const getGraphics = ({
                 Cesium.ClassificationType.TERRAIN :
                 symbolizer.msClassificationType === '3d' ?
                     Cesium.ClassificationType.CESIUM_3D_TILE :
-                    Cesium.ClassificationType.BOTH} )
+                    Cesium.ClassificationType.BOTH} ),
+            arcType: symbolizer.msClampToGround
+                ? Cesium.ArcType.GEODESIC
+                : Cesium.ArcType.NONE
         });
 
         let polyline;
@@ -474,10 +546,16 @@ const getGraphics = ({
         // this only for the footprint
         if (symbolizer.outlineColor && symbolizer.outlineWidth !== 0) {
             polyline = new Cesium.PolylineGraphics({
-                material: getCesiumColor({
-                    color: symbolizer.outlineColor,
-                    opacity: symbolizer.outlineOpacity * globalOpacity
-                }),
+                material: symbolizer?.outlineDasharray
+                    ? getCesiumDashArray({
+                        color: symbolizer.outlineColor,
+                        opacity: symbolizer.outlineOpacity * globalOpacity,
+                        dasharray: symbolizer.outlineDasharray
+                    })
+                    : getCesiumColor({
+                        color: symbolizer.outlineColor,
+                        opacity: symbolizer.outlineOpacity * globalOpacity
+                    }),
                 width: symbolizer.outlineWidth,
                 positions: entity._msStoredCoordinates.polygon.getValue().positions,
                 clampToGround: symbolizer.msClampToGround,
@@ -485,11 +563,112 @@ const getGraphics = ({
                     Cesium.ClassificationType.TERRAIN :
                     symbolizer.msClassificationType === '3d' ?
                         Cesium.ClassificationType.CESIUM_3D_TILE :
-                        Cesium.ClassificationType.BOTH} )
+                        Cesium.ClassificationType.BOTH} ),
+                arcType: symbolizer.msClampToGround
+                    ? Cesium.ArcType.GEODESIC
+                    : Cesium.ArcType.NONE
             });
         }
         return Promise.resolve({
             polygon,
+            ...(polyline && { polyline })
+        });
+    }
+    if (symbolizer.kind === 'Circle') {
+
+        const radius = symbolizer.radius;
+        const geodesic = symbolizer.geodesic;
+        const slices = 128;
+        const center = entity.position.getValue(Cesium.JulianDate.now()).clone();
+        let positions;
+        let polyline;
+        let polygon;
+        if (geodesic) {
+            const { outerPositions } = EllipseGeometryLibrary.computeEllipsePositions({
+                granularity: 0.02,
+                semiMajorAxis: radius,
+                semiMinorAxis: radius,
+                rotation: 0,
+                center
+            }, false, true);
+            positions = Cesium.Cartesian3.unpackArray(outerPositions);
+            positions = [...positions, positions[0]];
+        } else {
+            const modelMatrix = Cesium.Matrix4.multiplyByTranslation(
+                Cesium.Transforms.eastNorthUpToFixedFrame(
+                    center
+                ),
+                new Cesium.Cartesian3(0, 0, 0),
+                new Cesium.Matrix4()
+            );
+            positions = CylinderGeometryLibrary.computePositions(0.0, radius, radius, slices, false);
+            positions = Cesium.Cartesian3.unpackArray(positions);
+            positions = [...positions.splice(0, Math.ceil(positions.length / 2))];
+            positions = positions.map((cartesian) =>
+                Cesium.Matrix4.multiplyByPoint(modelMatrix, cartesian, new Cesium.Cartesian3())
+            );
+            positions = [...positions, positions[0]];
+        }
+
+        if (positions) {
+            polygon = new Cesium.PolygonGraphics({
+                material: getCesiumColor({
+                    color: symbolizer.color,
+                    opacity: symbolizer.opacity * globalOpacity
+                }),
+                hierarchy: new Cesium.PolygonHierarchy(positions),
+                ...(geodesic
+                    ? {
+                        perPositionHeight: !symbolizer.msClampToGround,
+                        ...(!symbolizer.msClampToGround ? undefined : {classificationType: symbolizer.msClassificationType === 'terrain' ?
+                            Cesium.ClassificationType.TERRAIN :
+                            symbolizer.msClassificationType === '3d' ?
+                                Cesium.ClassificationType.CESIUM_3D_TILE :
+                                Cesium.ClassificationType.BOTH} ),
+                        arcType: Cesium.ArcType.GEODESIC
+                    }
+                    : {
+                        perPositionHeight: true,
+                        arcType: Cesium.ArcType.NONE
+                    })
+            });
+        }
+
+        // outline properties is not working in some browser see https://github.com/CesiumGS/cesium/issues/40
+        // this is a workaround to visualize the outline with the correct side
+        // this only for the footprint
+        if (positions && symbolizer.outlineColor && symbolizer.outlineWidth !== 0) {
+            polyline = new Cesium.PolylineGraphics({
+                material: symbolizer?.outlineDasharray
+                    ? getCesiumDashArray({
+                        color: symbolizer.outlineColor,
+                        opacity: symbolizer.outlineOpacity * globalOpacity,
+                        dasharray: symbolizer.outlineDasharray
+                    })
+                    : getCesiumColor({
+                        color: symbolizer.outlineColor,
+                        opacity: symbolizer.outlineOpacity * globalOpacity
+                    }),
+                width: symbolizer.outlineWidth,
+                positions,
+                ...(geodesic
+                    ? {
+                        clampToGround: symbolizer.msClampToGround,
+                        ...(!symbolizer.msClampToGround ? undefined : {classificationType: symbolizer.msClassificationType === 'terrain' ?
+                            Cesium.ClassificationType.TERRAIN :
+                            symbolizer.msClassificationType === '3d' ?
+                                Cesium.ClassificationType.CESIUM_3D_TILE :
+                                Cesium.ClassificationType.BOTH} ),
+                        arcType: Cesium.ArcType.GEODESIC
+                    }
+                    : {
+                        clampToGround: false,
+                        arcType: Cesium.ArcType.NONE
+                    })
+            });
+        }
+        return Promise.resolve({
+            ...(polygon && { polygon }),
             ...(polyline && { polyline })
         });
     }
@@ -499,9 +678,7 @@ const getGraphics = ({
 function getStyleFuncFromRules({
     rules = []
 } = {}, {
-    images = [],
-    getImageIdFromSymbolizer,
-    geoStylerStyleFilter = () => true
+    images = []
 }) {
     return ({
         entities,
@@ -509,13 +686,23 @@ function getStyleFuncFromRules({
         opacity: globalOpacity = 1,
         sampleTerrain = Cesium.sampleTerrain
     }) => Promise.all(
-        (entities || []).map((entity) => new Promise(resolve => {
+        ([...(entities || [])]).map((entity) => new Promise(resolve => {
+            if (entity._msAdditional) {
+                entity.entityCollection.remove(entity);
+                return resolve(null);
+            }
             let coordinates = {};
             GRAPHIC_KEYS.forEach((graphicKey) => {
                 if (!entity._msStoredCoordinates) {
                     coordinates[graphicKey] = getPositionByGraphicKey(graphicKey, entity) || undefined;
                 }
             });
+            if (entity._msAdditionalEntities) {
+                entity._msAdditionalEntities.forEach(additionalEntity => {
+                    entity.entityCollection.remove(additionalEntity);
+                });
+                entity._msAdditionalEntities = undefined;
+            }
             if (!entity._msStoredCoordinates) {
                 entity._msStoredCoordinates = coordinates;
             }
@@ -534,42 +721,122 @@ function getStyleFuncFromRules({
                     symbolizer.kind === 'Fill' && entity._msStoredCoordinates.polygon
                 );
 
-                const symbolizer = pointGeometrySymbolizers[pointGeometrySymbolizers.length - 1]
+                const circleGeometrySymbolizers = entitySymbolizers.filter((symbolizer) =>
+                    symbolizer.kind === 'Circle' && entity.position
+                );
+
+                const additionalPointSymbolizers = entitySymbolizers.filter((symbolizer, idx) =>
+                    ['Mark', 'Icon', 'Text', 'Model'].includes(symbolizer.kind)
+                    && (
+                        entity._msStoredCoordinates.polygon
+                        || entity._msStoredCoordinates.polyline
+                        || entity.position && (
+                            circleGeometrySymbolizers.length === 0
+                                ? idx < pointGeometrySymbolizers.length - 1
+                                : true
+                        )
+                    )
+                );
+
+                const getAdditionalEntities = () => {
+                    if (additionalPointSymbolizers.length > 0) {
+                        entity._msAdditionalEntities = [];
+                        return Promise.all([...additionalPointSymbolizers].reverse().map((symbolizer, idx) => {
+                            return new Promise(resolveAdditional => {
+                                const geometryFunction = entity.position
+                                    ? () => null
+                                    : getGeometryFunction({ msGeometry: { name: 'centerPoint' }, ...symbolizer });
+                                if (geometryFunction) {
+                                    const additionalEntity = entity.entityCollection.add({
+                                        position: entity.position
+                                            ? entity.position.getValue(Cesium.JulianDate.now()).clone()
+                                            : new Cesium.Cartesian3(0, 0, 0)
+                                    });
+                                    additionalEntity._msStoredCoordinates = entity._msStoredCoordinates;
+                                    additionalEntity._msAdditional = true;
+                                    additionalEntity.properties = entity.properties;
+                                    geometryFunction(additionalEntity);
+                                    entity._msAdditionalEntities.push(additionalEntity);
+                                    return getGraphics({
+                                        symbolizer,
+                                        images,
+                                        entity: additionalEntity,
+                                        globalOpacity,
+                                        properties,
+                                        map,
+                                        sampleTerrain
+                                    }).then((graphics) => {
+                                        GRAPHIC_KEYS.forEach((graphicKey) => {
+                                            additionalEntity[graphicKey] = undefined;
+                                        });
+                                        Object.keys(graphics).forEach(graphicKey => {
+                                            additionalEntity[graphicKey] = graphics[graphicKey];
+                                        });
+                                        if (additionalEntity.billboard) {
+                                            // use eyeOffset as zIndex
+                                            additionalEntity.billboard.eyeOffset = new Cesium.Cartesian3(0, 0, (idx + 1) * 10);
+                                        }
+                                        resolveAdditional(additionalEntity);
+                                    });
+                                }
+                                return resolveAdditional(null);
+                            });
+                        }));
+                    }
+                    return Promise.resolve(null);
+                };
+                // if the circle symbolizer exists it should be prioritize over point symbolizers
+                // point symobolizer will be added as additional entities
+                const symbolizer = circleGeometrySymbolizers[circleGeometrySymbolizers.length - 1]
+                    || pointGeometrySymbolizers[pointGeometrySymbolizers.length - 1]
                     || polylineGeometrySymbolizers[polylineGeometrySymbolizers.length - 1]
                     || polygonGeometrySymbolizers[polygonGeometrySymbolizers.length - 1];
 
-                if (symbolizer && (!isEqual(symbolizer, entity._msSymbolizer) || isGlobalOpacityChanged(entity, globalOpacity))) {
-                    return getGraphics({
-                        symbolizer,
-                        images,
-                        getImageIdFromSymbolizer,
-                        entity,
-                        globalOpacity,
-                        properties,
-                        map,
-                        sampleTerrain
-                    }).then((graphics) => {
-                        if (!isEmpty(graphics)) {
-                            GRAPHIC_KEYS.forEach((graphicKey) => {
-                                entity[graphicKey] = undefined;
-                            });
-                            Object.keys(graphics).forEach(graphicKey => {
-                                entity[graphicKey] = graphics[graphicKey];
-                            });
-                        }
-                        entity._msSymbolizer = symbolizer;
-                        entity._msGlobalOpacity = globalOpacity;
-                        resolve(entity);
-                    });
+                const clearEntity = () => {
+                    if (!symbolizer && entity._msSymbolizer) {
+                        GRAPHIC_KEYS.forEach((graphicKey) => {
+                            entity[graphicKey] = undefined;
+                        });
+                        entity._msSymbolizer = undefined;
+                        entity._msGlobalOpacity = undefined;
+                    }
+                    resolve(entity);
+                };
+
+                if ((symbolizer && (
+                    !isEqual(symbolizer, entity._msSymbolizer)
+                    || isGlobalOpacityChanged(entity, globalOpacity)
+                )) || additionalPointSymbolizers.length > 0) {
+                    return getAdditionalEntities().then(() => symbolizer
+                        ? getGraphics({
+                            symbolizer,
+                            images,
+                            entity,
+                            globalOpacity,
+                            properties,
+                            map,
+                            sampleTerrain
+                        }).then((graphics) => {
+                            if (!isEmpty(graphics)) {
+                                GRAPHIC_KEYS.forEach((graphicKey) => {
+                                    entity[graphicKey] = undefined;
+                                });
+                                Object.keys(graphics).forEach(graphicKey => {
+                                    entity[graphicKey] = graphics[graphicKey];
+                                });
+                            }
+                            entity._msSymbolizer = symbolizer;
+                            entity._msGlobalOpacity = globalOpacity;
+                            if (entity.billboard) {
+                                // use eyeOffset as zIndex
+                                entity.billboard.eyeOffset = new Cesium.Cartesian3(0, 0, 0);
+                            }
+                            resolve(entity);
+                        })
+                        : clearEntity());
                 }
-                if (!symbolizer && entity._msSymbolizer) {
-                    GRAPHIC_KEYS.forEach((graphicKey) => {
-                        entity[graphicKey] = undefined;
-                    });
-                    entity._msSymbolizer = undefined;
-                    entity._msGlobalOpacity = undefined;
-                }
-                return resolve(entity);
+
+                return clearEntity();
             }
 
             GRAPHIC_KEYS.forEach((graphicKey) => {
@@ -579,18 +846,13 @@ function getStyleFuncFromRules({
             entity._msGlobalOpacity = undefined;
             return resolve(entity);
         }))
-    );
+    // map.scene.requestRender(); does not work without a setTimeout
+    // it seems there is need of a small delay to correctly request the next map rendering
+    // requestRender is used by layer to update the style
+    ).then((response) => new Promise((resolve) => setTimeout(() => resolve(response))));
 }
 
 class CesiumStyleParser {
-
-    constructor({ drawIcons, getImageIdFromSymbolizer, geoStylerStyleFilter } = {}) {
-        this._drawIcons = drawIcons ? drawIcons : () => Promise.resolve(null);
-        this._getImageIdFromSymbolizer = getImageIdFromSymbolizer
-            ? getImageIdFromSymbolizer
-            : (symbolizer) => symbolizer.symbolizerId;
-        this._geoStylerStyleFilter = geoStylerStyleFilter ? geoStylerStyleFilter : () => true;
-    }
 
     readStyle() {
         return new Promise((resolve, reject) => {
@@ -605,13 +867,9 @@ class CesiumStyleParser {
     writeStyle(geoStylerStyle) {
         return new Promise((resolve, reject) => {
             try {
-                this._drawIcons(geoStylerStyle)
+                drawIcons(geoStylerStyle)
                     .then((images = []) => {
-                        const styleFunc = getStyleFuncFromRules(geoStylerStyle, {
-                            images,
-                            getImageIdFromSymbolizer: this._getImageIdFromSymbolizer,
-                            geoStylerStyleFilter: this._geoStylerStyleFilter
-                        });
+                        const styleFunc = getStyleFuncFromRules(geoStylerStyle, { images });
                         resolve(styleFunc);
                     });
             } catch (error) {

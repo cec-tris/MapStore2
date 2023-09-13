@@ -14,7 +14,8 @@ import {
     updateGeoStoryFeedbackMaskVisibility,
     detectNewPage,
     feedbackMaskPromptLogin,
-    redirectUnauthorizedUserOnNewLoadError
+    redirectUnauthorizedUserOnNewLoadError,
+    updatePermalinkFeedbackMaskVisibility
 } from '../feedbackMask';
 
 import {
@@ -31,6 +32,8 @@ import { loadGeostory, geostoryLoaded, loadGeostoryError } from '../../actions/g
 import { LOGIN_REQUIRED } from '../../actions/security';
 import { onLocationChanged } from 'connected-react-router';
 import { testEpic, addTimeoutEpic, TEST_TIMEOUT } from './epicTestUtils';
+import { contextLoadError } from '../../actions/context';
+import { loadPermalink, loadPermalinkError, permalinkLoaded } from '../../actions/permalink';
 
 describe('feedbackMask Epics', () => {
 
@@ -224,6 +227,30 @@ describe('feedbackMask Epics', () => {
         }
         });
     });
+    it('test feedbackMaskPromptLogin on context 404', done => {
+        const ACTIONS_EMITTED = 2;
+        const error = {status: 404, statusText: 'Forbidden'};
+        testEpic(addTimeoutEpic(feedbackMaskPromptLogin, 10), ACTIONS_EMITTED, contextLoadError({error}), actions => {
+            expect(actions.length).toBe(ACTIONS_EMITTED);
+            actions.map((action) => {
+                switch (action.type) {
+                case TEST_TIMEOUT:
+                    break;
+                case LOGIN_REQUIRED:
+                    break;
+                default:
+                    done(new Error("Action not recognized"));
+                }
+            });
+            done();
+        },
+        {router: {
+            location: {
+                pathname: '/context/Context/1'
+            }
+        }
+        });
+    });
     it('should navigate to homepage when user made some changes to new map, and prompt appears', (done) => {
         const epicResponse = (actions) => {
             expect(actions.length).toBe(1);
@@ -274,5 +301,34 @@ describe('feedbackMask Epics', () => {
         };
 
         testEpic(redirectUnauthorizedUserOnNewLoadError, 1, configureError({status: 403}), epicResponse, initState);
+    });
+    it('test updatePermalinkFeedbackMaskVisibility loaded', (done) => {
+        const epicResult = actions => {
+            expect(actions.length).toBe(3);
+            const loadingAction = actions[0];
+            expect(loadingAction.type).toBe(FEEDBACK_MASK_LOADING);
+            const loadedAction = actions[1];
+            expect(loadedAction.type).toBe(FEEDBACK_MASK_LOADED);
+            const enabledAction = actions[2];
+            expect(enabledAction.type).toBe(FEEDBACK_MASK_ENABLED);
+            expect(enabledAction.enabled).toBe(false);
+            done();
+        };
+        testEpic(updatePermalinkFeedbackMaskVisibility, 3, [loadPermalink(), permalinkLoaded()], epicResult, {});
+    });
+
+    it('test updatePermalinkFeedbackMaskVisibility error', (done) => {
+        const epicResult = actions => {
+            expect(actions.length).toBe(3);
+            const loadingAction = actions[0];
+            expect(loadingAction.type).toBe(FEEDBACK_MASK_LOADING);
+            const loadedAction = actions[1];
+            expect(loadedAction.type).toBe(FEEDBACK_MASK_LOADED);
+            const enabledAction = actions[2];
+            expect(enabledAction.type).toBe(FEEDBACK_MASK_ENABLED);
+            expect(enabledAction.enabled).toBe(true);
+            done();
+        };
+        testEpic(updatePermalinkFeedbackMaskVisibility, 3, [loadPermalink(), loadPermalinkError()], epicResult, {});
     });
 });

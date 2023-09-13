@@ -8,21 +8,11 @@
 import * as Cesium from 'cesium';
 import expect from 'expect';
 
-import { getImageIdFromSymbolizer, geoStylerStyleFilter } from '../../VectorStyleUtils';
 import CesiumStyleParser from '../CesiumStyleParser';
 
-let images = [];
-
-const parser = new CesiumStyleParser({
-    getImageIdFromSymbolizer,
-    drawIcons: () => Promise.resolve(images),
-    geoStylerStyleFilter
-});
+const parser = new CesiumStyleParser();
 
 describe('CesiumStyleParser', () => {
-    afterEach(() => {
-        images = [];
-    });
     describe('readStyle', () => {
         it('should return null, read function not implemented', (done) => {
             parser.readStyle()
@@ -52,6 +42,7 @@ describe('CesiumStyleParser', () => {
                                 outlineColor: '#00ff00',
                                 outlineOpacity: 0.25,
                                 outlineWidth: 2,
+                                outlineDasharray: [10, 10],
                                 msClassificationType: 'terrain',
                                 msClampToGround: true
                             }
@@ -79,6 +70,7 @@ describe('CesiumStyleParser', () => {
                                 expect(entities[0].polyline.width.getValue()).toBe(2);
                                 expect({ ...entities[0].polyline.material.color.getValue() }).toEqual({ red: 0, green: 1, blue: 0, alpha: 0.25 });
                                 expect(entities[0].polyline.clampToGround.getValue()).toBe(true);
+                                expect(entities[0].polyline.material.dashPattern.getValue()).toBe(65280);
                                 done();
                             }).catch(done);
                     });
@@ -236,15 +228,6 @@ describe('CesiumStyleParser', () => {
                 ]
             };
 
-            const canvas = document.createElement('canvas');
-
-            images.push({
-                id: getImageIdFromSymbolizer(style.rules[0].symbolizers[0]),
-                image: canvas,
-                width: 32,
-                height: 32
-            });
-
             parser.writeStyle(style)
                 .then((styleFunc) => {
                     Cesium.GeoJsonDataSource.load({
@@ -258,7 +241,7 @@ describe('CesiumStyleParser', () => {
                         const entities = dataSource?.entities?.values;
                         return styleFunc({ entities })
                             .then(() => {
-                                expect(entities[0].billboard.image.getValue()).toBe(canvas);
+                                expect(entities[0].billboard.image.getValue().tagName).toBe('CANVAS');
                                 expect(entities[0].billboard.scale.getValue()).toBe(1);
                                 expect(entities[0].billboard.rotation.getValue()).toBe(-Math.PI / 2);
                                 expect(entities[0].billboard.disableDepthTestDistance.getValue()).toBe(Number.POSITIVE_INFINITY);
@@ -279,25 +262,18 @@ describe('CesiumStyleParser', () => {
                         symbolizers: [
                             {
                                 kind: 'Icon',
-                                image: 'path/to/image',
+                                /* png 1px x 1px */
+                                image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQYV2NgAAIAAAUAAarVyFEAAAAASUVORK5CYII=',
                                 opacity: 0.5,
                                 size: 32,
                                 rotate: 90,
-                                msBringToFront: true
+                                msBringToFront: true,
+                                anchor: 'bottom-left'
                             }
                         ]
                     }
                 ]
             };
-
-            const img = new Image();
-
-            images.push({
-                id: getImageIdFromSymbolizer(style.rules[0].symbolizers[0]),
-                image: img,
-                width: 256,
-                height: 256
-            });
 
             parser.writeStyle(style)
                 .then((styleFunc) => {
@@ -312,11 +288,13 @@ describe('CesiumStyleParser', () => {
                         const entities = dataSource?.entities?.values;
                         return styleFunc({ entities })
                             .then(() => {
-                                expect(entities[0].billboard.image.getValue()).toBe(img);
+                                expect(entities[0].billboard.image.getValue().src).toBe('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQYV2NgAAIAAAUAAarVyFEAAAAASUVORK5CYII=');
                                 expect({ ...entities[0].billboard.color.getValue() }).toEqual({ red: 1, green: 1, blue: 1, alpha: 0.5 });
-                                expect(entities[0].billboard.scale.getValue()).toBe(0.125);
+                                expect(entities[0].billboard.scale.getValue()).toBe(32);
                                 expect(entities[0].billboard.rotation.getValue()).toBe(-Math.PI / 2);
                                 expect(entities[0].billboard.disableDepthTestDistance.getValue()).toBe(Number.POSITIVE_INFINITY);
+                                expect(entities[0].billboard.horizontalOrigin.getValue()).toBe(Cesium.HorizontalOrigin.LEFT);
+                                expect(entities[0].billboard.verticalOrigin.getValue()).toBe(Cesium.VerticalOrigin.BOTTOM);
                                 expect(entities[0].billboard.heightReference.getValue()).toBe(Cesium.HeightReference.NONE);
                                 done();
                             }).catch(done);
@@ -392,7 +370,8 @@ describe('CesiumStyleParser', () => {
                                 fontWeight: 'bold',
                                 font: ['Arial'],
                                 size: 32,
-                                rotate: 90
+                                rotate: 90,
+                                anchor: 'top-right'
                             }
                         ]
                     }
@@ -420,6 +399,8 @@ describe('CesiumStyleParser', () => {
                                 expect({ ...entities[0].label.fillColor.getValue() }).toEqual({ red: 0, green: 0, blue: 0, alpha: 1 });
                                 expect({ ...entities[0].label.outlineColor.getValue() }).toEqual({ red: 1, green: 1, blue: 1, alpha: 1 });
                                 expect(entities[0].label.outlineWidth.getValue()).toBe(2);
+                                expect(entities[0].label.horizontalOrigin.getValue()).toBe(Cesium.HorizontalOrigin.RIGHT);
+                                expect(entities[0].label.verticalOrigin.getValue()).toBe(Cesium.VerticalOrigin.TOP);
                                 expect(entities[0].label.heightReference.getValue()).toBe(Cesium.HeightReference.NONE);
                                 done();
                             }).catch(done);
@@ -462,7 +443,8 @@ describe('CesiumStyleParser', () => {
                         symbolizers: [
                             {
                                 kind: 'Icon',
-                                image: 'path/to/image',
+                                /* png 1px x 1px */
+                                image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQYV2NgAAIAAAUAAarVyFEAAAAASUVORK5CYII=',
                                 opacity: 0.5,
                                 size: 32,
                                 rotate: 90,
@@ -512,24 +494,6 @@ describe('CesiumStyleParser', () => {
                     }
                 ]
             };
-
-            const canvas = document.createElement('canvas');
-
-            images.push({
-                id: getImageIdFromSymbolizer(style.rules[0].symbolizers[0]),
-                image: canvas,
-                width: 32,
-                height: 32
-            });
-
-            const img = new Image();
-
-            images.push({
-                id: getImageIdFromSymbolizer(style.rules[1].symbolizers[0]),
-                image: img,
-                width: 256,
-                height: 256
-            });
 
             parser.writeStyle(style)
                 .then((styleFunc) => {
@@ -613,13 +577,7 @@ describe('CesiumStyleParser', () => {
                     }
                 ]
             };
-            const canvas = document.createElement('canvas');
-            images.push({
-                id: getImageIdFromSymbolizer(style.rules[0].symbolizers[0]),
-                image: canvas,
-                width: 32,
-                height: 32
-            });
+
             const sampleTerrainTest = () => Promise.resolve([new Cesium.Cartographic(9, 45, 1000)]);
             parser.writeStyle(style).then((styleFunc) => {
                 return Cesium.GeoJsonDataSource.load({type: "FeatureCollection", features: [{type: "Feature", properties: {}, geometry: {type: "Point", coordinates: [9, 45]}}]})
@@ -671,13 +629,6 @@ describe('CesiumStyleParser', () => {
                     }
                 ]
             };
-            const canvas = document.createElement('canvas');
-            images.push({
-                id: getImageIdFromSymbolizer(style.rules[0].symbolizers[0]),
-                image: canvas,
-                width: 32,
-                height: 32
-            });
             const sampleTerrainTest = () => Promise.resolve([new Cesium.Cartographic(9, 45, 1000)]);
             parser.writeStyle(style).then((styleFunc) => {
                 return Cesium.GeoJsonDataSource.load({type: "FeatureCollection", features: [{type: "Feature", properties: {}, geometry: {type: "Point", coordinates: [9, 45]}}]})
@@ -729,13 +680,6 @@ describe('CesiumStyleParser', () => {
                     }
                 ]
             };
-            const canvas = document.createElement('canvas');
-            images.push({
-                id: getImageIdFromSymbolizer(style.rules[0].symbolizers[0]),
-                image: canvas,
-                width: 32,
-                height: 32
-            });
             const sampleTerrainTest = () => Promise.resolve([new Cesium.Cartographic(9, 45, 1000)]);
             parser.writeStyle(style).then((styleFunc) => {
                 return Cesium.GeoJsonDataSource.load({type: "FeatureCollection", features: [{type: "Feature", properties: {}, geometry: {type: "Point", coordinates: [9, 45]}}]})
@@ -756,6 +700,53 @@ describe('CesiumStyleParser', () => {
                         });
                     });
             }).catch(done);
+        });
+
+        it('should write a style function with fill symbolizer', (done) => {
+            const style = {
+                name: '',
+                rules: [
+                    {
+                        filter: undefined,
+                        name: '',
+                        symbolizers: [
+                            {
+                                kind: 'Circle',
+                                color: '#ff0000',
+                                opacity: 0.5,
+                                outlineColor: '#00ff00',
+                                outlineWidth: 2,
+                                radius: 1000000,
+                                geodesic: true,
+                                outlineOpacity: 0.25,
+                                outlineDasharray: [10, 10]
+                            }
+                        ]
+                    }
+                ]
+            };
+            parser.writeStyle(style)
+                .then((styleFunc) => {
+                    Cesium.GeoJsonDataSource.load({
+                        type: 'Feature',
+                        properties: {},
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [7, 41]
+                        }
+                    }).then((dataSource) => {
+                        const entities = dataSource?.entities?.values;
+                        return styleFunc({ entities })
+                            .then(() => {
+                                expect({ ...entities[0].polygon.material.color.getValue() }).toEqual({ red: 1, green: 0, blue: 0, alpha: 0.5 });
+                                expect(entities[0].polyline.width.getValue()).toBe(2);
+                                expect(entities[0].polyline.material.dashPattern.getValue()).toBe(65280);
+                                expect({ ...entities[0].polyline.material.color.getValue() }).toEqual({ red: 0, green: 1, blue: 0, alpha: 0.25 });
+
+                                done();
+                            }).catch(done);
+                    });
+                });
         });
     });
 });

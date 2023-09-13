@@ -14,6 +14,9 @@ import isNaN from 'lodash/isNaN';
 import { getProxyUrl, needProxy } from "../../../../utils/ProxyUtils";
 import { getStyleParser } from '../../../../utils/VectorStyleUtils';
 import { polygonToClippingPlanes } from '../../../../utils/cesium/PrimitivesUtils';
+import tinycolor from 'tinycolor2';
+import googleOnWhiteLogo from '../img/google_on_white_hdpi.png';
+import googleOnNonWhiteLogo from '../img/google_on_non_white_hdpi.png';
 
 function getStyle({ style }) {
     const { format, body } = style || {};
@@ -41,9 +44,9 @@ function getStyle({ style }) {
 function updateModelMatrix(tileSet, { heightOffset }) {
     if (!isNaN(heightOffset) && isNumber(heightOffset)) {
         const boundingSphere = tileSet.boundingSphere;
-        const cartographic = Cesium.Cartographic.fromCartesian(boundingSphere.center);
-        const surface = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
-        const offset = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, heightOffset);
+        const cartographic = Cesium.Cartographic.fromCartesian(boundingSphere.center);          // undefined if the cartesian is at the center of the ellipsoid
+        const surface = Cesium.Cartesian3.fromRadians(cartographic?.longitude || 0, cartographic?.latitude || 0, 0.0);
+        const offset = Cesium.Cartesian3.fromRadians(cartographic?.longitude || 0, cartographic?.latitude || 0, heightOffset);
         const translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3());
         tileSet.modelMatrix =  Cesium.Matrix4.fromTranslation(translation);
     }
@@ -84,48 +87,81 @@ function ensureReady(tileSet, callback) {
     }
 }
 
+// Google Photorealistic 3D Tiles requires both attribution and brand logo (see https://cloud.google.com/blog/products/maps-platform/commonly-asked-questions-about-our-recently-launched-photorealistic-3d-tiles)
+// The attribution are dynamic and updated directly with the `showCreditsOnScreen` property (see https://developers.google.com/maps/documentation/tile/policies#3d_tiles)
+// The brand logo instead is not managed by the Cesium3DTileset class and must to be included in the credits
+function updateGooglePhotorealistic3DTilesBrandLogo(map, options, tileSet) {
+    if ((options?.url || '').includes('https://tile.googleapis.com')) {
+        if (!tileSet._googleCredit) {
+            const bodyStyle = window?.getComputedStyle ? window.getComputedStyle(document.body, null) : null;
+            const bodyBackgroundColor = bodyStyle?.getPropertyValue ? bodyStyle.getPropertyValue('background-color') : '#ffffff';
+            const src = tinycolor(bodyBackgroundColor).isDark()
+                ? googleOnNonWhiteLogo
+                : googleOnWhiteLogo;
+            tileSet._googleCredit = new Cesium.Credit(`<img src="${src}" title="Google" style="padding:0 0.5rem"/>`, true);
+            return map.creditDisplay.addStaticCredit(tileSet._googleCredit);
+        }
+        return map.creditDisplay.removeStaticCredit(tileSet._googleCredit);
+    }
+    return null;
+}
+
 Layers.registerType('3dtiles', {
     create: (options, map) => {
         if (options.visibility && options.url) {
 
-            const tileSet = map.scene.primitives.add(new Cesium.Cesium3DTileset({
-                url: new Cesium.Resource({
-                    url: options.url,
-                    proxy: needProxy(options.url) ? new Cesium.DefaultProxy(getProxyUrl()) : undefined
-                    // TODO: axios supports also adding access tokens or credentials (e.g. authkey, Authentication header ...).
-                    // if we want to use internal cesium functionality to retrieve data
-                    // we need to create a utility to set a CesiumResource that applies also this part.
-                    // in addition to this proxy.
-                })
-            }));
+            let tileSet;
+            const resource = new Cesium.Resource({
+                url: options.url,
+                proxy: needProxy(options.url) ? new Cesium.DefaultProxy(getProxyUrl()) : undefined
+                // TODO: axios supports also adding access tokens or credentials (e.g. authkey, Authentication header ...).
+                // if we want to use internal cesium functionality to retrieve data
+                // we need to create a utility to set a CesiumResource that applies also this part.
+                // in addition to this proxy.
+            });
+            Cesium.Cesium3DTileset.fromUrl(resource,
+                {
+                    showCreditsOnScreen: true
+                }
+            ).then((_tileSet) => {
+                tileSet = _tileSet;
+                updateGooglePhotorealistic3DTilesBrandLogo(map, options, tileSet);
+                map.scene.primitives.add(tileSet);
+                // assign the original mapstore id of the layer
+                tileSet.msId = options.id;
 
-            // assign the original mapstore id of the layer
-            tileSet.msId = options.id;
-
-            ensureReady(tileSet, () => {
-                updateModelMatrix(tileSet, options);
-                clip3DTiles(tileSet, options, map);
-                getStyle(options)
-                    .then((style) => {
-                        if (style) {
-                            tileSet.style = new Cesium.Cesium3DTileStyle(style);
-                        }
-                    });
+                ensureReady(tileSet, () => {
+                    updateModelMatrix(tileSet, options);
+                    clip3DTiles(tileSet, options, map);
+                    getStyle(options)
+                        .then((style) => {
+                            if (style) {
+                                tileSet.style = new Cesium.Cesium3DTileStyle(style);
+                            }
+                        });
+                });
             });
 
             return {
                 detached: true,
-                tileSet,
+                getTileSet: () => tileSet,
+                resource,
                 remove: () => {
-                    map.scene.primitives.remove(tileSet);
+                    if (tileSet) {
+                        updateGooglePhotorealistic3DTilesBrandLogo(map, options, tileSet);
+                        map.scene.primitives.remove(tileSet);
+                    }
                 },
                 setVisible: (visible) => {
-                    tileSet.show = !!visible;
+                    if (tileSet) {
+                        tileSet.show = !!visible;
+                    }
                 }
             };
         }
         return {
             detached: true,
+            getTileSet: () => undefined,
             remove: () => {},
             setVisible: () => {}
         };
@@ -138,29 +174,30 @@ Layers.registerType('3dtiles', {
             layer.remove();
             return null;
         }
+        const tileSet = layer?.getTileSet();
         if (
             (!isEqual(newOptions.clippingPolygon, oldOptions.clippingPolygon)
             || newOptions.clippingPolygonUnion !== oldOptions.clippingPolygonUnion
             || newOptions.clipOriginalGeometry !== oldOptions.clipOriginalGeometry)
-         && layer?.tileSet) {
-            ensureReady(layer.tileSet, () => {
-                clip3DTiles(layer.tileSet, newOptions, map);
+         && tileSet) {
+            ensureReady(tileSet, () => {
+                clip3DTiles(tileSet, newOptions, map);
             });
         }
-        if (!isEqual(newOptions.style, oldOptions.style) && layer?.tileSet) {
-            ensureReady(layer.tileSet, () => {
+        if (!isEqual(newOptions.style, oldOptions.style) && tileSet) {
+            ensureReady(tileSet, () => {
                 getStyle(newOptions)
                     .then((style) => {
-                        if (style && layer?.tileSet) {
-                            layer.tileSet.makeStyleDirty();
-                            layer.tileSet.style = new Cesium.Cesium3DTileStyle(style);
+                        if (style && tileSet) {
+                            tileSet.makeStyleDirty();
+                            tileSet.style = new Cesium.Cesium3DTileStyle(style);
                         }
                     });
             });
         }
-        if (layer?.tileSet && newOptions.heightOffset !== oldOptions.heightOffset) {
-            ensureReady(layer.tileSet, () => {
-                updateModelMatrix(layer.tileSet, newOptions);
+        if (tileSet && newOptions.heightOffset !== oldOptions.heightOffset) {
+            ensureReady(tileSet, () => {
+                updateModelMatrix(tileSet, newOptions);
             });
         }
         return null;

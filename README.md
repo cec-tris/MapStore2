@@ -2,7 +2,7 @@
 
 ![Build Checks](https://github.com/geosolutions-it/MapStore2/actions/workflows/CI.yml/badge.svg?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/geosolutions-it/MapStore2/badge.svg?branch=master)](https://coveralls.io/github/geosolutions-it/MapStore2?branch=master)
-[![Documentation Status](https://readthedocs.org/projects/mapstore2/badge/?version=latest)](https://docs.mapstore.geosolutionsgroup.com/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/mapstore/badge/?version=latest)](https://docs.mapstore.geosolutionsgroup.com/en/latest/?badge=latest)
 [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/fold_left.svg?style=social&label=Follow%20%40mapstore2)](https://twitter.com/mapstore2)
 
 MapStore is a framework to build *web mapping* applications using standard mapping libraries, such as <a href="http://openlayers.org/" target="_blank">OpenLayers</a> and <a href="http://leafletjs.com/" target="_blank">Leaflet</a>. For more information check the <a href="https://docs.mapstore.geosolutionsgroup.com/en/latest/" target="_blank">MapStore documentation!</a>
@@ -157,7 +157,7 @@ For more information check <a href="https://github.com/geosolutions-it/MapStore2
 Here below is a small list of organizations using MapStore either directly or through [GeoNode](https://geonode.org/). If you want us to add (or remove :( ) your organization from this list, please, contact simone.giannecchini@geosolutionsgroup.com.
 
 - [City of Genova - Italy](https://mappe.comune.genova.it/MapStore2/#/)
-- City of Bozen - Italy
+- [https://sit.comune.bolzano.it/mapstore2/#/](City of Bozen - Italy)
 - City of Florence - Italy
 - City of Munich - Germany
 - Rennes Metropole - France
@@ -181,3 +181,5 @@ Here below is a small list of organizations using MapStore either directly or th
 - Earth-i - UK
 - MapStand - UK
 - [County of Milan - Italy](https://inlineainfrastrutture.cittametropolitana.mi.it/mapstore)
+- [Nordeste Municipality - Portugal](https://sigweb.cmnordeste.pt/mapstore/#/)
+- [Corvo Muncipality - Portugal](https://geocorvo.pt/mapstore/#/)

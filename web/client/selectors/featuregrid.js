@@ -14,13 +14,13 @@ import { currentLocaleSelector } from './locale';
 import { isSimpleGeomType } from '../utils/MapUtils';
 import { toChangesMap } from '../utils/FeatureGridUtils';
 import { layerDimensionSelectorCreator } from './dimension';
-import { userRoleSelector } from './security';
+import { isUserAllowedSelectorCreator } from './security';
 import {isCesium, mapTypeSelector} from './maptype';
 import { attributesSelector, describeSelector } from './query';
-import {createShallowSelectorCreator} from "../utils/ReselectUtils";
+import { createShallowSelectorCreator } from "../utils/ReselectUtils";
 import isEqual from "lodash/isEqual";
-import {mapBboxSelector, projectionSelector} from "./map";
-import {bboxToFeatureGeometry} from "../utils/CoordinatesUtils";
+import { mapBboxSelector, projectionSelector } from "./map";
+import { bboxToFeatureGeometry } from "../utils/CoordinatesUtils";
 import { MapLibraries } from '../utils/MapTypeUtils';
 
 export const getLayerById = getLayerFromId;
@@ -76,6 +76,7 @@ export const getAttributeFilters = state => state && state.featuregrid && state.
 export const selectedLayerParamsSelector = state => get(getLayerById(state, selectedLayerIdSelector(state)), "params");
 export const selectedLayerSelector = state => getLayerById(state, selectedLayerIdSelector(state));
 export const editingAllowedRolesSelector = state => get(state, "featuregrid.editingAllowedRoles", ["ADMIN"]);
+export const editingAllowedGroupsSelector = state => get(state, "featuregrid.editingAllowedGroups", []);
 export const canEditSelector = state => state && state.featuregrid && state.featuregrid.canEdit;
 /**
  * selects featuregrid state
@@ -110,6 +111,17 @@ export const getAttributeFilter = (state, name) => get(getAttributeFilters(state
 export const getTitleSelector = state => {
     const title = getTitle(getLayerById(state, selectedLayerIdSelector(state)));
     return isObject(title) ? title[currentLocaleSelector(state)] || title.default || '' : title;
+};
+
+/**
+ * Returns the current selected layer (featuregrid) fields, if any.
+ * @param {*} state
+ * @returns {object} the current selected layer fields, if any
+ */
+export const selectedLayerFieldsSelector = state => {
+    const layer = getLayerById(state, selectedLayerIdSelector(state));
+    const fields = get(layer, "fields", []);
+    return fields;
 };
 export const getCustomizedAttributes = state => {
     return (attributesSelector(state) || []).map(att => {
@@ -181,12 +193,15 @@ export const queryOptionsSelector = state => {
         cqlFilter
     };
 };
-export const isEditingAllowedSelector = state => {
-    const role = userRoleSelector(state);
-    const editingAllowedRoles = editingAllowedRolesSelector(state) || ['ADMIN'];
+export const isEditingAllowedSelector = (state) => {
+    const allowedRoles = editingAllowedRolesSelector(state);
+    const allowedGroups = editingAllowedGroupsSelector(state);
     const canEdit = canEditSelector(state);
-
-    return (editingAllowedRoles.indexOf(role) !== -1 || canEdit) && !isCesium(state);
+    const isAllowed = isUserAllowedSelectorCreator({
+        allowedRoles,
+        allowedGroups
+    })(state);
+    return (canEdit || isAllowed) && !isCesium(state);
 };
 export const paginationSelector = state => get(state, "featuregrid.pagination");
 export const useLayerFilterSelector = state => get(state, "featuregrid.useLayerFilter", true);

@@ -5,7 +5,7 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, {useEffect} from 'react';
+import React, {useMemo} from 'react';
 import {connect} from 'react-redux';
 import {createSelector, createStructuredSelector} from 'reselect';
 import {bindActionCreators} from 'redux';
@@ -17,10 +17,10 @@ import ContainerDimensions from 'react-container-dimensions';
 import Grid from '../../components/data/featuregrid/FeatureGrid';
 import BorderLayout from '../../components/layout/BorderLayout';
 import { toChangesMap} from '../../utils/FeatureGridUtils';
-import { initPlugin, sizeChange, setUp, setSyncTool} from '../../actions/featuregrid';
+import { sizeChange, setUp, setSyncTool } from '../../actions/featuregrid';
 import {mapLayoutValuesSelector} from '../../selectors/maplayout';
 import {paginationInfo, describeSelector, wfsURLSelector, typeNameSelector} from '../../selectors/query';
-import {modeSelector, changesSelector, newFeaturesSelector, hasChangesSelector, selectedFeaturesSelector, getDockSize} from '../../selectors/featuregrid';
+import {modeSelector, changesSelector, newFeaturesSelector, hasChangesSelector, selectedLayerFieldsSelector, selectedFeaturesSelector, getDockSize} from '../../selectors/featuregrid';
 
 import {getPanels, getHeader, getFooter, getDialogs, getEmptyRowsView, getFilterRenderers} from './panels/index';
 import {gridTools, gridEvents, pageEvents, toolbarEvents} from './index';
@@ -70,7 +70,11 @@ const Dock = connect(createSelector(
   *    }]
   *}
   * ```
-  * @prop {object} cfg.editingAllowedRoles array of user roles allowed to enter in edit mode
+  * @prop {string[]} cfg.editingAllowedRoles array of user roles allowed to enter in edit mode.
+  * Support predefined ('ADMIN', 'USER', 'ALL') and custom roles. Default value is ['ADMIN'].
+  * Configuring with ["ALL"] allows all users to have access regardless of user's permission.
+  * @prop {string[]} cfg.editingAllowedGroups array of user groups allowed to enter in edit mode.
+  * When configured, gives the editing permissions to users members of one of the groups listed.
   * @prop {boolean} cfg.virtualScroll default true. Activates virtualScroll. When false the grid uses normal pagination
   * @prop {number} cfg.maxStoredPages default 5. In virtual Scroll mode determines the size of the loaded pages cache
   * @prop {number} cfg.vsOverScan default 20. Number of rows to load above/below the visible slice of the grid
@@ -94,7 +98,7 @@ const Dock = connect(createSelector(
   *
   * @classdesc
   * `FeatureEditor` Plugin, also called *FeatureGrid*, provides functionalities to browse/edit data via WFS. The grid can be configured to use paging or
-  * <br/>virtual scroll mechanisms. By default virtual scroll is enabled. When on virtual scroll mode, the maxStoredPages param
+  * <br/>virtual scroll mechanisms. By default, virtual scroll is enabled. When on virtual scroll mode, the maxStoredPages param
   * sets the size of loaded pages cache, while vsOverscan and scrollDebounce params determine the behavior of grid scrolling
   * and of row loading.
   * <br/>Furthermore it can be configured to use custom editor cells for certain layers/columns, specifying the rules to recognize them. If no rule matches, then it will be used the default editor based on the dataType of that column.
@@ -181,119 +185,93 @@ const FeatureDock = (props = {
         setDockSize: () => {},
         zIndex: 1060
     };
-    // columns={[<aside style={{backgroundColor: "red", flex: "0 0 12em"}}>column-selector</aside>]}
     const items = props?.items ?? [];
     const toolbarItems = items.filter(({target}) => target === 'toolbar');
-    // const editors = items.filter(({target}) => target === 'editors');
-
-    useEffect(() => {
-        props.initPlugin({virtualScroll, editingAllowedRoles: props.editingAllowedRoles, maxStoredPages: props.maxStoredPages});
-    }, [
-        virtualScroll,
-        (props.editingAllowedRoles ?? []).join(","), // this avoids multiple calls when the array remains the equal
-        props.maxStoredPages
-    ]);
-
+    const filterRenderers = useMemo(() => getFilterRenderers(props.describe, props.fields), [props.describe, props.fields]);
     return (
-        <Dock {...dockProps} onSizeChange={size => { props.onSizeChange(size, dockProps); }}>
-            {props.open &&
-        <ContainerDimensions>
-            { ({ height }) =>
-            // added height to solve resize issue in firefox, edge and ie
-                <BorderLayout
-                    className="feature-grid-container"
-                    key={"feature-grid-container"}
-                    height={height - (42 + 32)}
-                    header={getHeader({
-                        toolbarItems,
-                        hideCloseButton: props.hideCloseButton,
-                        hideLayerTitle: props.hideLayerTitle,
-                        pluginCfg: props.pluginCfg
-                    })}
-                    columns={getPanels(props.tools)}
-                    footer={getFooter(props)}>
-                    {getDialogs(props.tools)}
-                    <Grid
-                        showCheckbox={props.showCheckbox}
-                        editingAllowedRoles={props.editingAllowedRoles}
-                        customEditorsOptions={props.customEditorsOptions}
-                        autocompleteEnabled={props.autocompleteEnabled}
-                        url={props.url}
-                        typeName={props.typeName}
-                        filterRenderers={getFilterRenderers(props.describe)}
-                        enableColumnFilters={props.enableColumnFilters}
-                        emptyRowsView={getEmptyRowsView()}
-                        focusOnEdit={props.focusOnEdit}
-                        newFeatures={props.newFeatures}
-                        changes={props.changes}
-                        mode={props.mode}
-                        select={props.select}
-                        key={"feature-grid-container"}
-                        columnSettings={props.attributes}
-                        gridEvents={props.gridEvents}
-                        pageEvents={props.pageEvents}
-                        describeFeatureType={props.describe}
-                        features={props.features}
-                        minHeight={600}
-                        tools={props.gridTools}
-                        pagination={props.pagination}
-                        pages={props.pages}
-                        virtualScroll={virtualScroll}
-                        maxStoredPages={props.maxStoredPages}
-                        vsOverScan={props.vsOverScan}
-                        scrollDebounce={props.scrollDebounce}
-                        size={props.size}
-                        actionOpts={{maxZoom}}
-                        dateFormats={props.dateFormats}
-                    />
-                </BorderLayout> }
+        <div className={"feature-grid-wrapper"}>
+            <Dock  {...dockProps} onSizeChange={size => { props.onSizeChange(size, dockProps); }}>
+                {props.open &&
+                    (<ContainerDimensions>
+                        { ({ height }) =>
+                        // added height to solve resize issue in firefox, edge and ie
+                            <BorderLayout
+                                className="feature-grid-container"
+                                key={"feature-grid-container"}
+                                height={height - (42 + 32)}
+                                header={getHeader({
+                                    toolbarItems,
+                                    hideCloseButton: props.hideCloseButton,
+                                    hideLayerTitle: props.hideLayerTitle,
+                                    pluginCfg: props.pluginCfg
+                                })}
+                                columns={getPanels(props.tools)}
+                                footer={getFooter(props)}>
+                                {getDialogs(props.tools)}
+                                <Grid
+                                    showCheckbox={props.showCheckbox}
+                                    editingAllowedRoles={props.editingAllowedRoles}
+                                    customEditorsOptions={props.customEditorsOptions}
+                                    autocompleteEnabled={props.autocompleteEnabled}
+                                    url={props.url}
+                                    typeName={props.typeName}
+                                    filterRenderers={filterRenderers}
+                                    enableColumnFilters={props.enableColumnFilters}
+                                    emptyRowsView={getEmptyRowsView()}
+                                    focusOnEdit={props.focusOnEdit}
+                                    newFeatures={props.newFeatures}
+                                    changes={props.changes}
+                                    mode={props.mode}
+                                    select={props.select}
+                                    key={"feature-grid-container"}
+                                    columnSettings={props.attributes}
+                                    fields={props.fields}
+                                    gridEvents={props.gridEvents}
+                                    pageEvents={props.pageEvents}
+                                    describeFeatureType={props.describe}
+                                    features={props.features}
+                                    minHeight={600}
+                                    tools={props.gridTools}
+                                    pagination={props.pagination}
+                                    pages={props.pages}
+                                    virtualScroll={virtualScroll}
+                                    maxStoredPages={props.maxStoredPages}
+                                    vsOverScan={props.vsOverScan}
+                                    scrollDebounce={props.scrollDebounce}
+                                    size={props.size}
+                                    actionOpts={{maxZoom}}
+                                    dateFormats={props.dateFormats}
+                                />
+                            </BorderLayout> }
 
-        </ContainerDimensions>
-            }
-        </Dock>);
+                    </ContainerDimensions>)
+                }
+            </Dock>
+        </div>);
 };
-const selector = createSelector(
-    state => get(state, "featuregrid.open"),
-    state => get(state, "featuregrid.customEditorsOptions"),
-    state => get(state, "queryform.autocompleteEnabled"),
-    state => wfsURLSelector(state),
-    state => typeNameSelector(state),
-    state => get(state, 'featuregrid.features') || EMPTY_ARR,
-    describeSelector,
-    state => get(state, "featuregrid.attributes"),
-    state => get(state, "featuregrid.tools"),
-    selectedFeaturesSelector,
-    modeSelector,
-    changesSelector,
-    newFeaturesSelector,
-    hasChangesSelector,
-    state => get(state, 'featuregrid.focusOnEdit', false),
-    state => get(state, 'featuregrid.enableColumnFilters'),
-    createStructuredSelector(paginationInfo),
-    state => get(state, 'featuregrid.pages'),
-    state => get(state, 'featuregrid.pagination.size'),
-    (open, customEditorsOptions, autocompleteEnabled, url, typeName, features = EMPTY_ARR, describe, attributes, tools, select, mode, changes, newFeatures = EMPTY_ARR, hasChanges, focusOnEdit, enableColumnFilters, pagination, pages, size) => ({
-        open,
-        customEditorsOptions,
-        autocompleteEnabled,
-        url,
-        typeName,
-        hasChanges,
-        newFeatures,
-        features,
-        describe,
-        attributes,
-        tools,
-        select,
-        mode,
-        focusOnEdit,
-        enableColumnFilters,
-        changes: toChangesMap(changes),
-        pagination,
-        pages,
-        size
-    })
-);
+export const selector = createStructuredSelector({
+    open: state => get(state, "featuregrid.open"),
+    customEditorsOptions: state => get(state, "featuregrid.customEditorsOptions"),
+    autocompleteEnabled: state => get(state, "queryform.autocompleteEnabled"),
+    url: state => wfsURLSelector(state),
+    typeName: state => typeNameSelector(state),
+    features: state => get(state, 'featuregrid.features') || EMPTY_ARR,
+    describe: describeSelector,
+    fields: selectedLayerFieldsSelector,
+    attributes: state => get(state, "featuregrid.attributes"),
+    tools: state => get(state, "featuregrid.tools"),
+    select: selectedFeaturesSelector,
+    mode: modeSelector,
+    changes: state => toChangesMap(changesSelector(state)),
+    newFeatures: state => newFeaturesSelector(state) || EMPTY_ARR,
+    hasChanges: hasChangesSelector,
+    focusOnEdit: state => get(state, 'featuregrid.focusOnEdit', false),
+    enableColumnFilters: state => get(state, 'featuregrid.enableColumnFilters'),
+    pagination: createStructuredSelector(paginationInfo),
+    pages: state => get(state, 'featuregrid.pages'),
+    size: state => get(state, 'featuregrid.pagination.size')
+});
+
 const EditorPlugin = compose(
     connect(() => ({}),
         (dispatch) => ({
@@ -330,7 +308,6 @@ const EditorPlugin = compose(
         (dispatch) => ({
             gridEvents: bindActionCreators(gridEvents, dispatch),
             pageEvents: bindActionCreators(pageEvents, dispatch),
-            initPlugin: bindActionCreators((options) => initPlugin(options), dispatch),
             toolbarEvents: bindActionCreators(toolbarEvents, dispatch),
             gridTools: gridTools.map((t) => ({
                 ...t,
