@@ -20,6 +20,7 @@ import SearchBarToolbar from '../../search/SearchBarToolbar';
 import { defaultSearchWrapper } from '../../search/SearchBarUtils';
 import BookmarkSelect, {BookmarkOptions} from "../searchbookmarkconfig/BookmarkSelect";
 import CoordinatesSearch, {CoordinateOptions} from "../searchcoordinates/CoordinatesSearch";
+import RouteSearch from "../searchroute/RouteSearch";
 
 export default ({
     activeSearchTool: activeTool = 'addressSearch',
@@ -46,6 +47,7 @@ export default ({
     showAddressSearchOption = true,
     showCoordinatesSearchOption = true,
     showBookMarkSearchOption = true,
+    showRouteSearchOption = true,
     onSearch,
     onSearchReset,
     onSearchTextChange,
@@ -96,6 +98,19 @@ export default ({
                 onChangeActiveSearchTool={onChangeActiveSearchTool}
                 onClearBookmarkSearch={onClearBookmarkSearch}
             />);
+    }
+
+    if(showRouteSearchOption){
+        searchMenuOptions.push( 
+            <MenuItem active={activeTool === "routeSearch"} onClick={()=>{
+                    console.log("chumano active find route")
+                    onClearBookmarkSearch("selected");
+                    onChangeActiveSearchTool("routeSearch");
+                }}
+            >
+                <Glyphicon glyph={'polyline-dash'}/> <Message msgId="search.routeSearch"/>
+            </MenuItem>
+        );
     }
 
     let searchByBookmarkConfig;
@@ -154,6 +169,10 @@ export default ({
                 {
                     activeTool === "bookmarkSearch" && showBookMarkSearchOption &&
                         <BookmarkSelect mapInitial={props.mapInitial}/>
+                }
+                {
+                    activeTool === "routeSearch" && 
+                    <RouteSearch />    
                 }
                 <SearchBarToolbar
                     splitTools={false}
