@@ -12,6 +12,9 @@ const styles = {
     },
     value :{
         wordWrap: 'break-word'
+    },
+    image: {
+        height: "100px",padding:5,objectPosition:"top", objectFit: "cover"
     }
 }
 const TextView = ({label, value})=>{
@@ -21,20 +24,44 @@ const TextView = ({label, value})=>{
     </div>
 }
 
-const ImgView = ({label, value})=>{
-    const {thumbnailUrl, url}  = value;
-    return <div className='external-item row'>
+
+const FileView = ({label, value})=>{
+    const {thumbnailUrl, url, name, mimetype}  = value;
+    //TODO: remove fixUrl, fixThumbUrl
+    const fixUrl =  'https://'+ url;
+    const fixThumbUrl = 'https://dev.opendata.tris.vn/api/preview/images/'+ thumbnailUrl
+    return <div className='external-item row' >
         <div class="col-xs-6" style={styles.label}>{label}:</div>                            
         <div class="col-xs-6" style={styles.value}>
             <a href={url} target="_new">
-                <img width="100%%" height="auto" src={thumbnailUrl} title={label} alt={label}/>
+                <img style={styles.image} width="100%%"  src={thumbnailUrl} title={label} alt={label}/>
             </a>
         </div>
     </div>
 }
 
-const FileView = ({label, value})=>{
-    const {thumbnailUrl, url}  = value;
+const LinkView  = ({label, url})=>{
+    //TODO: remove fixUrl
+    const fixUrl =  'https://'+ url;
+    return <div className='external-item row'>
+        <div class="col-xs-6" style={styles.label}>{label}:</div>                            
+        <div class="col-xs-6" style={styles.value}>
+            <a href={url} target="_new">
+                {label}
+            </a>
+        </div>
+    </div>
+}
+
+const FolderView  = ({label, value})=>{
+    const {url}  = value;
+    return <LinkView label={label} url={url}/>
+}
+
+const PropertiesView  = ({label, name, values})=>{
+    //values = [[{label:"","value":""}]]
+    const {thumbnailUrl, url}  = values;
+
     return <div className='external-item row'>
         <div class="col-xs-6" style={styles.label}>{label}:</div>                            
         <div class="col-xs-6" style={styles.value}>
@@ -47,8 +74,10 @@ const FileView = ({label, value})=>{
 
 const viewers = {
     'text' : TextView,
-    'img' : ImgView,
+    'img' : FileView,
     'file' : FileView,
+    'folder': FolderView,
+    'properties': null
 }
 
 const DataView = ({item})=>{
@@ -56,16 +85,27 @@ const DataView = ({item})=>{
     return View ? <View {...item} /> : null
 }
 
-export const ExternalViewer = ({layer = {}, feature})=>{
+function getDataHubId(feature){
     const {properties} = feature;
+    
+    const geoNodePageConfig = window.__GEONODE_CONFIG__;
+    let {dataHubField} = geoNodePageConfig
+    dataHubField = dataHubField || 'datahubid'
+    const dataId = properties?.[dataHubField];
+    console.log({dataHubField})
+    return dataId;
+}
+
+const DataHubInfoViewer = ({layer = {}, feature})=>{
     const {title} = layer;
-    const dataId = properties?.datahubid;
+    const dataId = getDataHubId(feature);
+
     const [error, setError] = useState(false)
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState(undefined)
 
     function fetchData(dataId){
-        const getDataFuc = API.Utils.getService("GET_EXTERNAL_DATA_API")
+        const getDataFuc = API.Utils.getService("GET_DATAHUB_API")
         if(!getDataFuc) {
             setError({
                 messageId: 'errorNotSetGetIconsApiService'
@@ -76,8 +116,9 @@ export const ExternalViewer = ({layer = {}, feature})=>{
         setLoading(true)
         setError(false);
         
-        getDataFuc(dataId).then(data=>{
-            setData(data); // {items :[] , schema: {}}
+        getDataFuc(dataId).then(response=>{
+            // {dataid, data : {link , fields :[ {label, type, value: {} }]}}
+            setData(response?.data); 
             setError(false) 
             setLoading(false)
         }).catch(ex=>{
@@ -96,7 +137,7 @@ export const ExternalViewer = ({layer = {}, feature})=>{
         fetchData(dataId,title)
     },[dataId, title])
 
-    const {fields} = data || {}
+    const {fields, link} = data || {}
     const noItems = !fields || fields.length ===0;
 
     if(!dataId) return null;
@@ -107,7 +148,9 @@ export const ExternalViewer = ({layer = {}, feature})=>{
                     glyph="exclamation-sign"
                     tooltipId={`styleeditor.icons.${error.messageId}`}
                 />}
-        {!loading && noItems && <span>Không có thông tin nào </span>}
+
+        {!loading && link && <LinkView label={'Kho dữ liệu'} url={link} />}
+        {!loading && noItems && <span>Không có thông tin nào</span>}
 
         {!loading && fields && <div className='external-data-viewer__items'>
                 {fields.map(o=> (
@@ -116,4 +159,15 @@ export const ExternalViewer = ({layer = {}, feature})=>{
             </div>
         }
     </div>
+}
+
+export const ExternalViewer = (props)=>{
+    const geoNodePageConfig = window.__GEONODE_CONFIG__;
+    const {dataHubEnabled} = geoNodePageConfig
+    
+    if(!dataHubEnabled) return null;
+    const dataId = getDataHubId(props.feature)
+    if(!dataId) return null;
+
+    return <DataHubInfoViewer {...props}/>
 }
