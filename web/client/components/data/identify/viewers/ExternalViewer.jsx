@@ -92,7 +92,6 @@ function getDataHubId(feature){
     let {dataHubField} = geoNodePageConfig
     dataHubField = dataHubField || 'datahubid'
     const dataId = properties?.[dataHubField];
-    console.log({dataHubField})
     return dataId;
 }
 
@@ -100,7 +99,7 @@ const DataHubInfoViewer = ({layer = {}, feature})=>{
     const {title} = layer;
     const dataId = getDataHubId(feature);
 
-    const [error, setError] = useState(false)
+    const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState(undefined)
 
@@ -114,14 +113,21 @@ const DataHubInfoViewer = ({layer = {}, feature})=>{
         };
 
         setLoading(true)
-        setError(false);
+        setError(null);
         
         getDataFuc(dataId).then(response=>{
-            // {dataid, data : {link , fields :[ {label, type, value: {} }]}}
-            setData(response?.data); 
-            setError(false) 
+            if(response.errorCode == 'GISHUB_OBJECT_NOT_FOUND'){
+                setError({
+                    messageId: response.errorCode
+                }) 
+            }else{
+                // {dataid, data : {link , fields :[ {label, type, value: {} }]}}
+                setData(response?.data); 
+                setError(null) 
+            }
             setLoading(false)
-        }).catch(ex=>{
+        }).catch(error=>{
+            console.error(error)
             setData(undefined)
             setError({
                 messageId: 'errorGetExternalData'
@@ -144,14 +150,16 @@ const DataHubInfoViewer = ({layer = {}, feature})=>{
 
     return <div className='external-data-viewer'>
         {loading ? <Loader size={30}/> : null}
-        {!loading && error && <Glyphicon
+        {!loading && error && <>
+            <Glyphicon
                     glyph="exclamation-sign"
                     tooltipId={`styleeditor.icons.${error.messageId}`}
-                />}
+                />
+            {error.messageId=='GISHUB_OBJECT_NOT_FOUND' &&<span>Chưa đồng bộ kho dữ liệu</span>}
+            {error.messageId=='errorGetExternalData'&&  <span>Có lỗi bất thường</span> }
+        </>}
 
         {!loading && link && <LinkView label={'Kho dữ liệu'} url={link} />}
-        {!loading && noItems && <span>Không có thông tin nào</span>}
-
         {!loading && fields && <div className='external-data-viewer__items'>
                 {fields.map(o=> (
                     <DataView key={o.label} item={o}/>
